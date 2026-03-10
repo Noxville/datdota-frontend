@@ -1,0 +1,321 @@
+/* ==========================================================
+   DataTable — Virtualized sortable table with search & export
+   ========================================================== */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  position: relative;
+}
+
+/* --- Toolbar ---------------------------------------------- */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.search {
+  all: unset;
+  padding: 8px 14px;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-thin);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  width: 220px;
+  max-width: 100%;
+  transition: border-color var(--transition-fast);
+}
+
+.search::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.search:focus {
+  border-color: var(--color-primary-dim);
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.rowCount {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  padding-right: var(--space-xs);
+}
+
+.actionBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.actionBtn:hover {
+  color: var(--color-text);
+  border-color: var(--color-primary-dim);
+  background: var(--color-bg-raised);
+}
+
+/* --- Table ------------------------------------------------ */
+.tableOuter {
+  overflow: auto;
+  max-height: 70vh;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-raised);
+}
+
+/* --- Header ----------------------------------------------- */
+.thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-bg-elevated);
+}
+
+.headerRow {
+  display: flex;
+}
+
+.th {
+  padding: 10px 12px;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.sortable {
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.sortable:hover {
+  color: var(--color-text-secondary);
+}
+
+.sorted {
+  color: var(--color-accent-bright);
+}
+
+.thRight {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.sortIcon {
+  font-size: 0.5rem;
+  margin-left: 4px;
+}
+
+.tdRight {
+  justify-content: flex-end;
+}
+
+/* --- Body ------------------------------------------------- */
+.tbody {
+  width: 100%;
+}
+
+.tr {
+  display: flex;
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.tr:hover {
+  background: var(--color-bg-hover);
+}
+
+.td {
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Cell Renderers --------------------------------------- */
+.numeric {
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+  text-align: right;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.playerLink {
+  color: var(--color-accent-bright);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color var(--transition-fast);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playerLink:hover {
+  color: var(--color-primary);
+}
+
+/* --- Percent Cell ----------------------------------------- */
+.percentCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+}
+
+.percentBar {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+  min-width: 40px;
+}
+
+.percentFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--transition-normal);
+}
+
+/* --- Cell Tooltip ----------------------------------------- */
+.cellTooltip {
+  position: absolute;
+  z-index: 50;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+  padding: 8px 10px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  white-space: nowrap;
+  min-width: 160px;
+  animation: tooltipIn 80ms ease-out;
+}
+
+@keyframes tooltipIn {
+  from { opacity: 0; transform: translate(-50%, -100%) translateY(4px); }
+  to   { opacity: 1; transform: translate(-50%, -100%) translateY(0); }
+}
+
+/* Header-only tooltip: appears below the header */
+.headerTooltip {
+  position: absolute;
+  z-index: 50;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: headerTipIn 80ms ease-out;
+}
+
+.headerTooltip .tooltipHeader {
+  margin-bottom: 0;
+}
+
+@keyframes headerTipIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.tooltipHeader {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-dim);
+  margin-bottom: 4px;
+}
+
+.sparkline {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin-bottom: 4px;
+}
+
+.tooltipStats {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
+.tooltipStats strong {
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+/* --- Mobile ----------------------------------------------- */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .toolbarRight {
+    justify-content: space-between;
+  }
+
+  .tableOuter {
+    max-height: 60vh;
+  }
+
+  .th,
+  .td {
+    padding: 8px;
+    font-size: 0.72rem;
+  }
+}

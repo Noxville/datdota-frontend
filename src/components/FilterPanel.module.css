@@ -1,0 +1,662 @@
+/* ==========================================================
+   FilterPanel — Composable query filters
+   ========================================================== */
+
+.outer {
+  margin-bottom: var(--space-lg);
+}
+
+.animWrap {
+  overflow: hidden;
+  transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.panel {
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  animation: panelIn 180ms ease both;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm) var(--space-lg);
+  flex-wrap: wrap;
+  animation: summaryIn 180ms ease both;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes summaryIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Sections --------------------------------------------- */
+.section + .section {
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.sectionLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-primary-dim);
+  margin-bottom: var(--space-xs);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm) var(--space-md);
+  align-items: start;
+}
+
+/* --- Filter Group ----------------------------------------- */
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-text-secondary);
+}
+
+/* --- Inputs ----------------------------------------------- */
+.input {
+  all: unset;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-thin);
+  font-size: 0.8rem;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input:focus {
+  border-color: var(--color-primary-dim);
+}
+
+.input[type='date'] {
+  color-scheme: dark;
+}
+
+/* --- Date Row --------------------------------------------- */
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dateRow .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.dateSep {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+/* --- Select Button ---------------------------------------- */
+.selectBtn {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-thin);
+  font-size: 0.8rem;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.selectBtn:hover {
+  border-color: var(--color-primary-dim);
+}
+
+.selectBtnText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.caret {
+  font-size: 0.5rem;
+  color: var(--color-text-muted);
+}
+
+/* --- Dropdown --------------------------------------------- */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  margin-top: 2px;
+}
+
+.dropdownActions {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-elevated);
+  z-index: 1;
+}
+
+.dropdownActionBtn {
+  all: unset;
+  cursor: pointer;
+  flex: 1;
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-primary-dim);
+  text-align: center;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.dropdownActionBtn:hover {
+  color: var(--color-accent-bright);
+  background: var(--color-bg-hover);
+}
+
+.dropdownActionBtn + .dropdownActionBtn {
+  border-left: 1px solid var(--color-border-subtle);
+}
+
+.dropdownSearch {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-bg-elevated);
+  padding: 6px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.dropdownSearchInput {
+  all: unset;
+  width: 100%;
+  padding: 5px 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+.dropdownSearchInput::placeholder {
+  color: var(--color-text-muted);
+}
+
+.dropdownItem {
+  all: unset;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.dropdownItem:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.dropdownSecondary {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
+.dropdownItemActive {
+  color: var(--color-accent-bright);
+  background: var(--color-bg-hover);
+}
+
+/* --- Tags (selected autocomplete items) ------------------- */
+.autocompleteWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+.tagRemove {
+  all: unset;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+
+.tagRemove:hover {
+  color: var(--color-loss);
+}
+
+/* --- Checkboxes & Radios ---------------------------------- */
+.checkboxRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.checkboxStack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checkboxLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.checkboxLineLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.checkbox,
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  min-width: 90px;
+}
+
+.checkbox input,
+.radio input {
+  accent-color: var(--color-primary);
+}
+
+/* --- Range Slider + Number Input -------------------------- */
+.rangeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.range {
+  flex: 1;
+  accent-color: var(--color-primary);
+  min-width: 0;
+}
+
+.rangeInput {
+  all: unset;
+  width: 48px;
+  padding: 5px 6px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-thin);
+  font-size: 0.78rem;
+  color: var(--color-text);
+  text-align: center;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+  -moz-appearance: textfield;
+}
+
+.rangeInput::-webkit-outer-spin-button,
+.rangeInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rangeInput:focus {
+  border-color: var(--color-primary-dim);
+}
+
+/* --- Dual Range Slider ------------------------------------ */
+.dualRangeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dualRangeWrap {
+  position: relative;
+  flex: 1;
+  height: 24px;
+  min-width: 0;
+}
+
+.dualRangeTrack {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  transform: translateY(-50%);
+  background: var(--color-border);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.dualRangeFill {
+  position: absolute;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  background: var(--color-primary-dim);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.dualRangeThumb {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dualRangeThumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid var(--color-bg-deep);
+  cursor: pointer;
+  pointer-events: all;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.dualRangeThumb::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid var(--color-bg-deep);
+  cursor: pointer;
+  pointer-events: all;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Actions ---------------------------------------------- */
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.applyBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 10px 24px;
+  background: var(--color-primary);
+  color: var(--color-bg-deep);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.applyBtn:hover {
+  background: var(--color-accent-bright);
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.3);
+}
+
+.clearBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 10px 20px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-thin);
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.clearBtn:hover {
+  border-color: var(--color-primary-dim);
+  color: var(--color-text);
+}
+
+.collapseBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 10px 20px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-thin);
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  margin-left: auto;
+}
+
+.collapseBtn:hover {
+  border-color: var(--color-primary-dim);
+  color: var(--color-text);
+}
+
+/* --- Collapsed Summary ------------------------------------ */
+.summaryChips {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.summaryChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summaryChipLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-primary-dim);
+}
+
+.summaryEmpty {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.summaryActions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.expandBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 16px;
+  background: var(--color-primary);
+  color: var(--color-bg-deep);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.expandBtn:hover {
+  background: var(--color-accent-bright);
+}
+
+/* --- Mobile ----------------------------------------------- */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dateRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dateSep {
+    text-align: center;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .applyBtn,
+  .clearBtn,
+  .collapseBtn {
+    text-align: center;
+  }
+
+  .collapseBtn {
+    margin-left: 0;
+  }
+
+  .summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .summaryActions {
+    justify-content: stretch;
+  }
+
+  .expandBtn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,14 @@
+import { Outlet } from 'react-router-dom'
+import Navigation from './Navigation'
+import styles from './PageShell.module.css'
+
+export default function PageShell() {
+  return (
+    <div className={styles.shell}>
+      <Navigation />
+      <main className={styles.main}>
+        <Outlet />
+      </main>
+    </div>
+  )
+}

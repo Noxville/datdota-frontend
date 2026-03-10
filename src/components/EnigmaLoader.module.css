@@ -1,0 +1,142 @@
+/* ==========================================================
+   EnigmaLoader — Pixel-art Enigma channelling Black Hole
+   ========================================================== */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl) 0;
+}
+
+.enigma {
+  width: 160px;
+  height: auto;
+}
+
+.text {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-primary-dim);
+  animation: textPulse 1.6s ease-in-out infinite;
+}
+
+/* ═══ BLACK HOLE ═══ */
+
+.blackhole {
+  transform-origin: 100px 58px;
+}
+
+/* Slow rotation of the accretion disk */
+.diskSpin {
+  transform-origin: 100px 58px;
+  animation: diskRotate 6s linear infinite;
+}
+
+@keyframes diskRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Outer haze breathes */
+.haze {
+  animation: hazePulse 3s ease-in-out infinite;
+}
+
+@keyframes hazePulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+/* Einstein ring subtle pulse */
+.lensRing {
+  animation: lensPulse 4s ease-in-out infinite;
+}
+
+@keyframes lensPulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+
+/* ── Orbiting particles ── */
+/* Each particle orbits at different radii, speeds, and start angles */
+.particle1 {
+  offset-path: path('M 55,58 A 45,13 0 1,1 145,58 A 45,13 0 1,1 55,58');
+  animation: orbit1 2.4s linear infinite;
+}
+@keyframes orbit1 {
+  from { offset-distance: 0%; opacity: 0.8; }
+  to   { offset-distance: 100%; opacity: 0.8; }
+}
+
+.particle2 {
+  offset-path: path('M 62,58 A 38,11 0 1,1 138,58 A 38,11 0 1,1 62,58');
+  animation: orbit2 1.8s linear infinite;
+}
+@keyframes orbit2 {
+  from { offset-distance: 30%; opacity: 0.7; }
+  to   { offset-distance: 130%; opacity: 0.7; }
+}
+
+.particle3 {
+  offset-path: path('M 70,58 A 30,9 0 1,1 130,58 A 30,9 0 1,1 70,58');
+  animation: orbit3 1.3s linear infinite;
+}
+@keyframes orbit3 {
+  from { offset-distance: 60%; opacity: 0.9; }
+  to   { offset-distance: 160%; opacity: 0.9; }
+}
+
+.particle4 {
+  offset-path: path('M 76,58 A 24,7 0 1,1 124,58 A 24,7 0 1,1 76,58');
+  animation: orbit4 0.9s linear infinite;
+}
+@keyframes orbit4 {
+  from { offset-distance: 10%; opacity: 0.6; }
+  to   { offset-distance: 110%; opacity: 0.6; }
+}
+
+.particle5 {
+  offset-path: path('M 58,58 A 42,12 0 1,0 142,58 A 42,12 0 1,0 58,58');
+  animation: orbit5 3s linear infinite;
+}
+@keyframes orbit5 {
+  from { offset-distance: 45%; opacity: 0.7; }
+  to   { offset-distance: 145%; opacity: 0.7; }
+}
+
+/* ═══ ENIGMA SPRITE ═══ */
+
+.sprite {
+  /* Gentle float while channelling */
+  animation: spriteFloat 2s ease-in-out infinite;
+}
+
+@keyframes spriteFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+
+/* ── Channelling beams from hands ── */
+.beam1, .beam2 {
+  stroke-dasharray: 4 3;
+  animation: beamFlow 0.8s linear infinite;
+}
+
+.beam1 { animation-delay: 0s; }
+.beam2 { animation-delay: 0.4s; }
+
+@keyframes beamFlow {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -7; }
+}
+
+/* ── Text pulse ── */
+@keyframes textPulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}

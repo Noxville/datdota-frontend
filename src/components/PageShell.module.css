@@ -1,0 +1,14 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: var(--space-xl);
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  animation: fadeUp 350ms ease both;
+}

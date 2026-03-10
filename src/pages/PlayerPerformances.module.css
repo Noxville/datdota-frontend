@@ -1,0 +1,87 @@
+.page {
+  animation: fadeUp 350ms ease both;
+}
+
+.header {
+  margin-bottom: var(--space-lg);
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  margin-top: var(--space-xs);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+/* --- Empty State ------------------------------------------ */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.defaultLink {
+  padding: 10px 24px;
+  background: var(--color-primary);
+  color: var(--color-bg-deep);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.defaultLink:hover {
+  background: var(--color-accent-bright);
+  color: var(--color-bg-deep);
+}
+
+/* --- Loading ---------------------------------------------- */
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-xl);
+}
+
+.shimmer {
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-raised) 25%,
+    var(--color-bg-elevated) 50%,
+    var(--color-bg-raised) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* --- Error ------------------------------------------------ */
+.error {
+  padding: var(--space-lg);
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--color-loss);
+  font-size: 0.85rem;
+}
+
+/* --- Mobile ----------------------------------------------- */
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.75rem;
+  }
+}

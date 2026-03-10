@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Vite
+*.local
+
+# Hidden directories (editors, tools, etc.)
+.*/
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment (never commit secrets)
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript cache
+*.tsbuildinfo
+
+deploy.sh
