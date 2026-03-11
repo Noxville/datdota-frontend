@@ -6,7 +6,9 @@ import {
   useLeagueAutocomplete,
   useSplitAutocomplete,
 } from '../api/autocomplete'
-import { useStaticPatches, useStaticHeroes } from '../api/static'
+import { heroesById } from '../data/heroes'
+import { patches as staticPatches } from '../data/patches'
+import HeroImage from './HeroImage'
 import {
   fetchPlayerNames,
   fetchTeamNames,
@@ -152,11 +154,10 @@ function PatchSelect({
   value: string
   onChange: (v: string) => void
 }) {
-  const { data: patches } = useStaticPatches()
   const selected = value ? value.split(',').filter(Boolean) : []
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const allNames = patches?.map((p) => p.name) ?? []
+  const allNames = staticPatches.map((p) => p.name)
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -224,7 +225,6 @@ function HeroSelect({
   value: string
   onChange: (v: string) => void
 }) {
-  const { data: heroes } = useStaticHeroes()
   const selected = value ? value.split(',').filter(Boolean) : []
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -238,11 +238,9 @@ function HeroSelect({
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  const heroList = heroes
-    ? Object.entries(heroes)
-        .map(([id, h]) => ({ id, name: h.name }))
-        .sort((a, b) => a.name.localeCompare(b.name))
-    : []
+  const heroList = Object.entries(heroesById)
+    .map(([id, h]) => ({ id, name: h.name }))
+    .sort((a, b) => a.name.localeCompare(b.name))
 
   const filtered = search
     ? heroList.filter((h) => h.name.toLowerCase().includes(search.toLowerCase()))
@@ -258,7 +256,7 @@ function HeroSelect({
   const displayText =
     selected.length > 0
       ? selected
-          .map((id) => heroes?.[id]?.name ?? id)
+          .map((id) => heroesById[id]?.name ?? id)
           .join(', ')
       : 'All heroes'
 
@@ -369,7 +367,6 @@ function buildSummaryChips(
   filters: FilterValues,
   allPatchNames?: string[],
   entityNames?: Record<string, string>,
-  heroData?: Record<string, { name: string }>,
 ): { label: string; value: string }[] {
   const chips: { label: string; value: string }[] = []
   const names = entityNames ?? {}
@@ -420,12 +417,8 @@ function buildSummaryChips(
   }
 
   if (filters.heroes) {
-    const heroNames = filters.heroes
-      .split(',')
-      .filter(Boolean)
-      .map((id) => heroData?.[id]?.name ?? id)
-      .join(', ')
-    chips.push({ label: 'Heroes', value: heroNames })
+    // Store raw IDs so the renderer can show minihero icons
+    chips.push({ label: 'Heroes', value: filters.heroes })
   }
 
   return chips
@@ -440,9 +433,7 @@ export default function FilterPanel({
   onToggleCollapsed,
 }: FilterPanelProps) {
   const [draft, setDraft] = useState<FilterValues>({ ...filters })
-  const { data: patches } = useStaticPatches()
-  const { data: heroes } = useStaticHeroes()
-  const allPatchNames = patches?.map((p) => p.name)
+  const allPatchNames = staticPatches.map((p) => p.name)
   // Shared name map survives collapse/expand cycles
   const [entityNames, setEntityNames] = useState<Record<string, string>>({})
   const contentRef = useRef<HTMLDivElement>(null)
@@ -453,9 +444,16 @@ export default function FilterPanel({
     setEntityNames((prev) => ({ ...prev, [id]: name }))
   }
 
+  // Sync draft when the *applied* filters change (i.e. user clicks Apply or uses defaults).
+  // We serialise to compare so that unrelated URL changes (like fc=) don't clobber the draft.
+  const filtersJson = JSON.stringify(filters)
+  const prevFiltersJson = useRef(filtersJson)
   useEffect(() => {
-    setDraft({ ...filters })
-  }, [filters])
+    if (filtersJson !== prevFiltersJson.current) {
+      prevFiltersJson.current = filtersJson
+      setDraft({ ...filters })
+    }
+  }, [filtersJson, filters])
 
   // Rehydrate entity names from info endpoints when loading from URL
   const didRehydrate = useRef(false)
@@ -546,7 +544,7 @@ export default function FilterPanel({
   const hasRow2 =
     show('after') || show('before') || show('tier') || show('split-type') || show('duration') || show('threshold')
 
-  const chips = buildSummaryChips(filters, allPatchNames, entityNames, heroes)
+  const chips = buildSummaryChips(filters, allPatchNames, entityNames)
 
   // Tier + split-type merged toggle helpers
   const tiers = draft.tier ? draft.tier.split(',').filter(Boolean) : []
@@ -588,7 +586,16 @@ export default function FilterPanel({
               {chips.length > 0 ? (
                 chips.map((c) => (
                   <span key={c.label} className={styles.summaryChip}>
-                    <span className={styles.summaryChipLabel}>{c.label}:</span> {c.value}
+                    <span className={styles.summaryChipLabel}>{c.label}:</span>
+                    {c.label === 'Heroes' ? (
+                      <span className={styles.heroChipIcons}>
+                        {c.value.split(',').filter(Boolean).map((id) => (
+                          <HeroImage key={id} heroId={id} variant="mini" size={24} />
+                        ))}
+                      </span>
+                    ) : (
+                      <> {c.value}</>
+                    )}
                   </span>
                 ))
               ) : (

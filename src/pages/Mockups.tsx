@@ -1,64 +1,6 @@
-import { useState } from 'react'
 import EnigmaLoader from '../components/EnigmaLoader'
+import ErrorState from '../components/ErrorState'
 import styles from './Mockups.module.css'
-
-interface FontPairing {
-  name: string
-  description: string
-  displayFont: string
-  bodyFont: string
-  displayWeight: number
-  bodyWeight: number
-  googleImport: string
-  personality: string
-}
-
-const PAIRINGS: FontPairing[] = [
-  {
-    name: 'A — Sora + Fira Code',
-    description: 'Soft geometric sans with slightly rounded terminals. Japanese-inspired modernism. Excellent readability at all sizes.',
-    displayFont: "'Sora', sans-serif",
-    bodyFont: "'Fira Code', monospace",
-    displayWeight: 800,
-    bodyWeight: 300,
-    googleImport:
-      'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&family=Sora:wght@100;800&display=swap',
-    personality: 'Thoughtful minimalism',
-  },
-  {
-    name: 'B — Plus Jakarta Sans + Fira Code',
-    description: 'Contemporary geometric with generous x-height and open apertures. Designed for screens — extremely legible even at small sizes.',
-    displayFont: "'Plus Jakarta Sans', sans-serif",
-    bodyFont: "'Fira Code', monospace",
-    displayWeight: 800,
-    bodyWeight: 300,
-    googleImport:
-      'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&family=Plus+Jakarta+Sans:wght@200;800&display=swap',
-    personality: 'Crisp & modern',
-  },
-  {
-    name: 'C — Manrope + Fira Code',
-    description: 'Geometric grotesk with optical-size adjustments built in. Slightly wider letterforms for maximum clarity on data-heavy screens.',
-    displayFont: "'Manrope', sans-serif",
-    bodyFont: "'Fira Code', monospace",
-    displayWeight: 800,
-    bodyWeight: 300,
-    googleImport:
-      'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&family=Manrope:wght@200;800&display=swap',
-    personality: 'Quiet confidence',
-  },
-  {
-    name: 'D — Nunito Sans + Fira Code',
-    description: 'Rounded sans-serif with warm, approachable character. Very high readability due to generous curves and well-balanced proportions.',
-    displayFont: "'Nunito Sans', sans-serif",
-    bodyFont: "'Fira Code', monospace",
-    displayWeight: 900,
-    bodyWeight: 300,
-    googleImport:
-      'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&family=Nunito+Sans:wght@200;900&display=swap',
-    personality: 'Warm & readable',
-  },
-]
 
 const SAMPLE_HEROES = [
   { name: 'Anti-Mage', games: 1247, wins: 612, winrate: 49.08, picks: 892, bans: 1583 },
@@ -104,67 +46,36 @@ function WinrateBar({ value }: { value: number }) {
 }
 
 export default function Mockups() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const pairing = PAIRINGS[activeIndex]
-
   return (
     <>
-      <link rel="stylesheet" href={pairing.googleImport} />
-      {/* Preload all fonts */}
-      {PAIRINGS.map((p, i) =>
-        i !== activeIndex ? (
-          <link key={i} rel="preload" href={p.googleImport} as="style" />
-        ) : null,
-      )}
-
       <div
         className={styles.mockups}
         style={
           {
-            '--mock-display': pairing.displayFont,
-            '--mock-body': pairing.bodyFont,
-            '--mock-display-weight': pairing.displayWeight,
-            '--mock-body-weight': pairing.bodyWeight,
+            '--mock-display': "'Plus Jakarta Sans', sans-serif",
+            '--mock-body': "'Fira Code', monospace",
+            '--mock-display-weight': 800,
+            '--mock-body-weight': 300,
           } as React.CSSProperties
         }
       >
-        {/* Pairing Selector */}
-        <div className={styles.selector}>
-          <h2 className={styles.sectionTitle}>Font Pairings</h2>
-          <p className={styles.sectionDesc}>
-            Click to compare. Each pairing uses extreme weight contrast.
-          </p>
-          <div className={styles.tabs}>
-            {PAIRINGS.map((p, i) => (
-              <button
-                key={i}
-                className={`${styles.tab} ${i === activeIndex ? styles.tabActive : ''}`}
-                onClick={() => setActiveIndex(i)}
-              >
-                <span className={styles.tabLetter}>{String.fromCharCode(65 + i)}</span>
-                <span className={styles.tabName}>{p.name.split(' — ')[1]}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Pairing Info */}
+        {/* Font Pairing */}
         <div className={styles.pairingInfo}>
           <div className={styles.pairingMeta}>
-            <span className={styles.pairingPersonality}>{pairing.personality}</span>
-            <p className={styles.pairingDesc}>{pairing.description}</p>
+            <span className={styles.pairingPersonality}>Crisp &amp; modern</span>
+            <p className={styles.pairingDesc}>Plus Jakarta Sans 800 + Fira Code 300 — Contemporary geometric with generous x-height and open apertures.</p>
           </div>
           <div className={styles.fontSpecs}>
             <div className={styles.fontSpec}>
               <span className={styles.fontSpecLabel}>Display</span>
-              <span className={styles.fontSpecValue} style={{ fontFamily: pairing.displayFont, fontWeight: pairing.displayWeight }}>
-                {pairing.displayFont.split("'")[1]} {pairing.displayWeight}
+              <span className={styles.fontSpecValue} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800 }}>
+                Plus Jakarta Sans 800
               </span>
             </div>
             <div className={styles.fontSpec}>
               <span className={styles.fontSpecLabel}>Body</span>
-              <span className={styles.fontSpecValue} style={{ fontFamily: pairing.bodyFont, fontWeight: pairing.bodyWeight }}>
-                {pairing.bodyFont.split("'")[1]} {pairing.bodyWeight}
+              <span className={styles.fontSpecValue} style={{ fontFamily: "'Fira Code', monospace", fontWeight: 300 }}>
+                Fira Code 300
               </span>
             </div>
           </div>
@@ -436,6 +347,44 @@ export default function Mockups() {
             <EnigmaLoader />
             <EnigmaLoader text="Fetching data..." />
             <EnigmaLoader text="" />
+          </div>
+        </section>
+
+        {/* Error States */}
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Error States</h3>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginBottom: 'var(--space-md)' }}>
+            Used when API calls fail or return errors (503, timeouts, etc).
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--space-xl)', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <ErrorState />
+            <ErrorState
+              message="API Unavailable"
+              detail="The server returned a 503 error. This usually means maintenance is in progress."
+              onRetry={() => alert('Retry clicked')}
+            />
+          </div>
+        </section>
+
+        {/* Favicon */}
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Favicon</h3>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginBottom: 'var(--space-md)' }}>
+            Lowercase Greek delta (δ) — primary filled on dark.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-end' }}>
+            <svg width="64" height="64" viewBox="0 0 64 64" style={{ background: '#0f0f1a', borderRadius: 8, border: '1px solid var(--color-border)' }}>
+              <path d="M32 14 C24 14, 17 24, 17 34 C17 44, 23 52, 32 52 C41 52, 47 44, 47 34 C47 24, 40 14, 32 14 Z M32 22 C37 22, 40 28, 40 34 C40 40, 37 44, 32 44 C27 44, 24 40, 24 34 C24 28, 27 22, 32 22 Z" fill="#c48bc4" fillRule="evenodd" />
+              <path d="M36 16 C33 12, 30 10, 34 7 C38 4, 44 6, 46 10" fill="none" stroke="#c48bc4" strokeWidth="4.5" strokeLinecap="round" />
+            </svg>
+            <svg width="32" height="32" viewBox="0 0 64 64" style={{ background: '#0f0f1a', borderRadius: 4, border: '1px solid var(--color-border)' }}>
+              <path d="M32 14 C24 14, 17 24, 17 34 C17 44, 23 52, 32 52 C41 52, 47 44, 47 34 C47 24, 40 14, 32 14 Z M32 22 C37 22, 40 28, 40 34 C40 40, 37 44, 32 44 C27 44, 24 40, 24 34 C24 28, 27 22, 32 22 Z" fill="#c48bc4" fillRule="evenodd" />
+              <path d="M36 16 C33 12, 30 10, 34 7 C38 4, 44 6, 46 10" fill="none" stroke="#c48bc4" strokeWidth="4.5" strokeLinecap="round" />
+            </svg>
+            <svg width="16" height="16" viewBox="0 0 64 64" style={{ background: '#0f0f1a', borderRadius: 2, border: '1px solid var(--color-border)' }}>
+              <path d="M32 14 C24 14, 17 24, 17 34 C17 44, 23 52, 32 52 C41 52, 47 44, 47 34 C47 24, 40 14, 32 14 Z M32 22 C37 22, 40 28, 40 34 C40 40, 37 44, 32 44 C27 44, 24 40, 24 34 C24 28, 27 22, 32 22 Z" fill="#c48bc4" fillRule="evenodd" />
+              <path d="M36 16 C33 12, 30 10, 34 7 C38 4, 44 6, 46 10" fill="none" stroke="#c48bc4" strokeWidth="4.5" strokeLinecap="round" />
+            </svg>
           </div>
         </section>
       </div>

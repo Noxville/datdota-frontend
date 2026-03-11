@@ -60,6 +60,16 @@
   background: var(--color-bg-hover);
 }
 
+.navLinkAccent {
+  color: var(--color-accent);
+}
+
+.navLinkAccent:hover,
+.navLinkAccent.active {
+  color: var(--color-accent-bright);
+  background: var(--color-bg-hover);
+}
+
 .caret {
   font-size: 0.55rem;
   opacity: 0.5;
@@ -75,7 +85,7 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  min-width: 200px;
+  min-width: 230px;
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -116,4 +126,10 @@
   color: var(--color-text);
   background: var(--color-bg-hover);
   padding-left: calc(var(--space-md) + 4px);
+}
+
+.externalIcon {
+  font-size: 0.7rem;
+  opacity: 0.5;
+  margin-left: 4px;
 }

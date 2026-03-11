@@ -5,12 +5,19 @@ import styles from './Navigation.module.css'
 interface NavItem {
   label: string
   to?: string
+  accent?: boolean
   children?: NavGroup[]
+}
+
+interface NavGroupItem {
+  label: string
+  to: string
+  external?: string
 }
 
 interface NavGroup {
   heading?: string
-  items: { label: string; to: string }[]
+  items: NavGroupItem[]
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -146,7 +153,14 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: 'Ratings',
-    to: '/ratings',
+    children: [
+      {
+        items: [
+          { label: 'Overall', to: '/ratings' },
+          { label: 'Regional', to: '/ratings/regions' },
+        ],
+      },
+    ],
   },
   {
     label: 'Trivia',
@@ -158,6 +172,20 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Best Runs', to: '/trivia/best-runs' },
           { label: 'Awards', to: '/trivia/awards' },
           { label: 'Crits', to: '/crits' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'About',
+    accent: true,
+    children: [
+      {
+        items: [
+          { label: 'About Us', to: '/about' },
+          { label: 'Support datdota', to: '/support', external: 'https://ko-fi.com/datdota' },
+          { label: 'Terms of Service', to: '/terms' },
+          { label: 'API Swagger', to: '/api', external: 'https://api.datdota.com/swagger' },
         ],
       },
     ],
@@ -178,16 +206,30 @@ function Dropdown({
           {group.heading && (
             <div className={styles.dropdownHeading}>{group.heading}</div>
           )}
-          {group.items.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={styles.dropdownItem}
-              onClick={onClose}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {group.items.map((item) =>
+            item.external ? (
+              <a
+                key={item.to}
+                href={item.external}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.dropdownItem}
+                onClick={onClose}
+              >
+                {item.label}
+                <span className={styles.externalIcon}>&#8599;</span>
+              </a>
+            ) : (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={styles.dropdownItem}
+                onClick={onClose}
+              >
+                {item.label}
+              </Link>
+            ),
+          )}
         </div>
       ))}
     </div>
@@ -223,12 +265,12 @@ export default function Navigation() {
         {NAV_ITEMS.map((item, i) => (
           <div key={item.label} className={styles.itemWrapper}>
             {item.to && !item.children ? (
-              <Link to={item.to} className={styles.navLink}>
+              <Link to={item.to} className={`${styles.navLink} ${item.accent ? styles.navLinkAccent : ''}`}>
                 {item.label}
               </Link>
             ) : (
               <button
-                className={`${styles.navLink} ${openIndex === i ? styles.active : ''}`}
+                className={`${styles.navLink} ${item.accent ? styles.navLinkAccent : ''} ${openIndex === i ? styles.active : ''}`}
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
               >
                 {item.label}

@@ -8,72 +8,6 @@
   padding-bottom: var(--space-2xl);
 }
 
-/* --- Pairing Selector ------------------------------------- */
-.selector {
-  margin-bottom: var(--space-xl);
-}
-
-.tabs {
-  display: flex;
-  gap: var(--space-sm);
-  flex-wrap: wrap;
-  margin-top: var(--space-md);
-}
-
-.tab {
-  all: unset;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-bg-raised);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-normal);
-  min-width: 200px;
-}
-
-.tab:hover {
-  background: var(--color-bg-elevated);
-  border-color: var(--color-primary-dim);
-}
-
-.tabActive {
-  background: var(--color-bg-elevated);
-  border-color: var(--color-primary);
-  box-shadow: 0 0 16px rgba(196, 139, 196, 0.15);
-}
-
-.tabLetter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--color-primary-dim);
-  color: var(--color-bg-deep);
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-bold);
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.tabActive .tabLetter {
-  background: var(--color-primary);
-}
-
-.tabName {
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  color: var(--color-text-secondary);
-}
-
-.tabActive .tabName {
-  color: var(--color-text);
-}
-
 /* --- Pairing Info ----------------------------------------- */
 .pairingInfo {
   display: flex;
@@ -138,11 +72,6 @@
   font-size: 1.25rem;
   margin-bottom: var(--space-sm);
   color: var(--color-text);
-}
-
-.sectionDesc {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
 }
 
 /* --- Typography Scale ------------------------------------- */
@@ -793,15 +722,6 @@
 
 /* --- Mobile ----------------------------------------------- */
 @media (max-width: 768px) {
-  .tabs {
-    flex-direction: column;
-  }
-
-  .tab {
-    min-width: unset;
-    width: 100%;
-  }
-
   .pairingInfo {
     flex-direction: column;
   }

@@ -7,9 +7,3 @@ export {
   useItemAutocomplete,
   useSplitAutocomplete,
 } from './autocomplete'
-export {
-  useStaticHeroes,
-  useStaticPatches,
-  useStaticAbilities,
-  useStaticItems,
-} from './static'

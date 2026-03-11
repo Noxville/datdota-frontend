@@ -23,6 +23,45 @@ export interface PlayerPerformanceLine {
   goldSpent: number
 }
 
+export interface RatingEntry {
+  teamName: string
+  valveId: number
+  glickoRatingDate: string
+  eloRatingDate: string
+  elo32: {
+    current: number | null
+    sevenDayAvg: number | null
+    thirtyDayAvg: number | null
+    sevenDayAgo: number | null
+    thirtyDayAgo: number | null
+  }
+  elo64: {
+    current: number | null
+    sevenDayAvg: number | null
+    thirtyDayAvg: number | null
+    sevenDayAgo: number | null
+    thirtyDayAgo: number | null
+  }
+  glicko: {
+    mu: number | null
+    phi: number | null
+    sigma: number | null
+    rating: number | null
+    ratingSevenDaysAgo: number | null
+  }
+  glicko2: {
+    mu: number | null
+    phi: number | null
+    sigma: number | null
+    rating: number | null
+    ratingSevenDaysAgo: number | null
+  }
+  winsLastMonth: number | null
+  lossesLastMonth: number | null
+  logoId: string | null
+  region: string | null
+}
+
 export interface FilterValues {
   players?: string
   teams?: string

@@ -1,0 +1,113 @@
+.page {
+  max-width: 720px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 2rem;
+  color: var(--color-text);
+  margin-bottom: var(--space-xl);
+}
+
+.section {
+  margin-bottom: var(--space-xl);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.text a {
+  color: var(--color-accent-bright);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.text a:hover {
+  color: var(--color-primary);
+}
+
+.people {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-raised);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-primary-dim);
+}
+
+.personInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.personName {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.personRole {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.personLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.personLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.personLink:hover {
+  color: var(--color-text);
+  background: var(--color-bg-hover);
+}
+
+.personEllipsis {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  padding: var(--space-xs) var(--space-md);
+  font-style: italic;
+}

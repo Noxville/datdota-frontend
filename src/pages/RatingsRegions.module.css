@@ -1,0 +1,205 @@
+.page {
+  /* Break out of the 1440px parent to use more horizontal space */
+  width: calc(100vw - var(--space-xl) * 2);
+  max-width: 1800px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.date {
+  color: var(--color-text-secondary);
+}
+
+.datePicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.dateLabel {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dateInput {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  color-scheme: dark;
+  transition: border-color var(--transition-fast);
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: var(--color-primary-dim);
+}
+
+.clearDate {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-accent-bright);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.clearDate:hover {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.regions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-lg);
+}
+
+@media (min-width: 1200px) {
+  .regions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.regionCard {
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.regionHeader {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.regionName {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-dim);
+}
+
+.regionCount {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.regionTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.regionTable th {
+  padding: 6px 10px;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-secondary);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.regionTable th.numeric {
+  text-align: right;
+}
+
+.regionTable td {
+  padding: 6px 10px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.regionTable td.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.regionTable tr:last-child td {
+  border-bottom: none;
+}
+
+.regionTable tr:hover td {
+  background: var(--color-bg-hover);
+}
+
+.teamLink {
+  color: var(--color-accent-bright);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teamLink:hover {
+  color: var(--color-primary);
+}
+
+.teamLogo {
+  aspect-ratio: 5 / 3;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .datePicker {
+    width: 100%;
+  }
+
+  .regions {
+    grid-template-columns: 1fr;
+  }
+}

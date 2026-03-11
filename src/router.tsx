@@ -3,7 +3,12 @@ import PageShell from './components/PageShell'
 import Home from './pages/Home'
 import Mockups from './pages/Mockups'
 import PlayerPerformances from './pages/PlayerPerformances'
+import About from './pages/About'
+import Terms from './pages/Terms'
+import Ratings from './pages/Ratings'
+import RatingsRegions from './pages/RatingsRegions'
 import NotFound from './pages/NotFound'
+import { Cf500, CfAttack, CfWidget } from './pages/CloudflareError'
 
 const router = createBrowserRouter([
   {
@@ -35,10 +40,20 @@ const router = createBrowserRouter([
       // { path: '/matches/:id', element: <MatchDetail /> },
 
       // Ratings
-      // { path: '/ratings', element: <Ratings /> },
+      { path: '/ratings', element: <Ratings /> },
+      { path: '/ratings/regions', element: <RatingsRegions /> },
 
       // Leagues
       // { path: '/leagues/:id', element: <LeagueDetail /> },
+
+      // About
+      { path: '/about', element: <About /> },
+      { path: '/terms', element: <Terms /> },
+
+      // Cloudflare error pages
+      { path: '/cf500', element: <Cf500 /> },
+      { path: '/cfattack', element: <CfAttack /> },
+      { path: '/cfwidget', element: <CfWidget /> },
 
       // Catch-all
       { path: '*', element: <NotFound /> },

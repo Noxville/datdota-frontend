@@ -7,6 +7,10 @@ export function heroImageUrl(heroKey: string, variant: 'full' | 'gray' = 'full')
   return `${CDN_BASE}/images/heroes/${heroKey}_${variant}.png`
 }
 
+export function miniHeroImageUrl(heroKey: string): string {
+  return `${CDN_BASE}/images/miniheroes/${heroKey}.png`
+}
+
 export function abilityImageUrl(abilityShortName: string): string {
   return `${CDN_BASE}/images/ability/${abilityShortName}.png`
 }

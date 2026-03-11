@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { useCallback, useMemo, useEffect, useRef } from 'react'
 import type { FilterValues } from '../types'
-import { useStaticPatches } from '../api/static'
+import { patches as staticPatches } from '../data/patches'
 
 const FILTER_KEYS: (keyof FilterValues)[] = [
   'players',
@@ -50,8 +50,7 @@ function buildDefaults(
 
 export function useFilters(excludeDefaults?: (keyof FilterValues)[]) {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { data: patches } = useStaticPatches()
-  const latestPatch = patches?.[0]?.name
+  const latestPatch = staticPatches[0]?.name
   const didApplyDefaults = useRef(false)
 
   // When ?default=true is in the URL, replace it with the actual default values
