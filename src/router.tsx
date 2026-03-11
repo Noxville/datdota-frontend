@@ -7,6 +7,7 @@ import About from './pages/About'
 import Terms from './pages/Terms'
 import Ratings from './pages/Ratings'
 import RatingsRegions from './pages/RatingsRegions'
+import TeamStreaks from './pages/TeamStreaks'
 import NotFound from './pages/NotFound'
 import { Cf500, CfAttack, CfWidget } from './pages/CloudflareError'
 
@@ -42,6 +43,9 @@ const router = createBrowserRouter([
       // Ratings
       { path: '/ratings', element: <Ratings /> },
       { path: '/ratings/regions', element: <RatingsRegions /> },
+
+      // Trivia
+      { path: '/trivia/team-streaks/:type', element: <TeamStreaks /> },
 
       // Leagues
       // { path: '/leagues/:id', element: <LeagueDetail /> },

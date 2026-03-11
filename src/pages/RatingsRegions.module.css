@@ -189,6 +189,36 @@
   color: var(--color-text-muted);
 }
 
+.unregioned {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.unregionedLabel {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-right: var(--space-xs);
+}
+
+.unregionedLogo {
+  aspect-ratio: 5 / 3;
+  height: 24px;
+  object-fit: contain;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.unregionedLogo:hover {
+  opacity: 1;
+}
 
 @media (max-width: 640px) {
   .header {

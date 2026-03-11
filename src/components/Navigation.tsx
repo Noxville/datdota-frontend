@@ -96,9 +96,8 @@ const NAV_ITEMS: NavItem[] = [
       {
         heading: 'Vision',
         items: [
-          { label: 'Wards', to: '/events/wards?default=true' },
+          { label: 'Wards Placed', to: '/events/wards?default=true' },
           { label: 'Ward Map', to: '/events/ward-map?default=true' },
-          { label: 'Runes', to: '/events/runes?default=true' },
         ],
       },
       {
@@ -109,6 +108,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Tormentor', to: '/events/tormentor?default=true' },
           { label: 'Couriers', to: '/events/couriers?default=true' },
           { label: 'Buildings', to: '/events/buildings?default=true' },
+          { label: 'Runes', to: '/events/runes?default=true' },
         ],
       },
       {
@@ -126,9 +126,9 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       {
         items: [
-          { label: 'Items', to: '/items/distribution?default=true' },
-          { label: 'Neutrals', to: '/items/neutrals?default=true' },
-          { label: 'Progression', to: '/items/progression?default=true' },
+          { label: 'Fastest / Slowest', to: '/items/distribution?default=true' },
+          { label: 'Builds / Progression', to: '/items/progression?default=true' },
+          { label: 'Neutral Items', to: '/items/neutrals?default=true' },
           { label: 'Averages', to: '/items/averages?default=true' },
         ],
       },
@@ -166,12 +166,26 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Trivia',
     children: [
       {
+        heading: 'Team Records',
         items: [
-          { label: 'Team Streaks', to: '/trivia/team-streaks' },
-          { label: 'Player-Hero Streaks', to: '/trivia/player-hero-streaks' },
           { label: 'Best Runs', to: '/trivia/best-runs' },
-          { label: 'Awards', to: '/trivia/awards' },
-          { label: 'Crits', to: '/crits' },
+          { label: 'Best Streaks', to: '/trivia/team-streaks/best' },
+          { label: 'Worst Streaks', to: '/trivia/team-streaks/worst' },
+        ],
+      },
+      {
+        heading: 'Player-Hero Records',
+        items: [
+          { label: 'Best Streaks', to: '/trivia/player-hero-streaks/best' },
+          { label: 'Worst Streaks', to: '/trivia/player-hero-streaks/worst' },
+        ],
+      },
+      {
+        heading: 'Awards',
+        items: [
+          { label: 'Akke Award', to: '/trivia/akke' },
+          { label: 'Maelk Award', to: '/trivia/maelk' },
+          { label: 'Cty Award', to: '/trivia/cty' },
         ],
       },
     ],

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { type ColumnDef, type ColumnHelper, createColumnHelper } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { teamLogoUrl } from '../config'
@@ -212,7 +213,24 @@ const columns: ColumnDef<RatingsRow, unknown>[] = [
 ]
 
 export default function Ratings() {
-  const [date, setDate] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const date = searchParams.get('date') ?? ''
+
+  const setDate = useCallback(
+    (value: string) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        if (value) {
+          next.set('date', value)
+        } else {
+          next.delete('date')
+        }
+        return next
+      }, { replace: true })
+    },
+    [setSearchParams],
+  )
+
   const params = useMemo(() => {
     if (!date) return {}
     return { date: formatDateParam(date) }
@@ -239,7 +257,7 @@ export default function Ratings() {
         <div>
           <h1>Team Ratings</h1>
           <p className={styles.subtitle}>
-            Glicko-2 ratings for teams active in tier 1–2 events
+            Various ratings (Glicko / Elo based) for teams active in tier 1–2 events
             {ratingDate && <span className={styles.date}> — as of {ratingDate}</span>}
           </p>
         </div>

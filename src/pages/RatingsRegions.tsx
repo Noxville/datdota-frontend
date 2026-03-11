@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useApiQuery } from '../api/queries'
 import { teamLogoUrl } from '../config'
 import { TeamLogo } from '../components/DataTable'
@@ -37,6 +38,12 @@ const REGIONS: { key: string; label: string; apiRegions: string[] }[] = [
   { key: 'na', label: 'North America', apiRegions: ['na'] },
 ]
 
+interface UnregionedTeam {
+  teamName: string
+  valveId: number
+  logoId: string | null
+}
+
 function prepareRegionalData(data: RatingEntry[]) {
   // First, compute global rankings (same logic as /ratings)
   const globalRanked = data
@@ -49,6 +56,7 @@ function prepareRegionalData(data: RatingEntry[]) {
     .map((r, i) => ({ ...r, globalRank: i + 1 }))
 
   const globalRankMap = new Map(globalRanked.map((r) => [r.valveId, r.globalRank]))
+  const allApiRegions = REGIONS.flatMap((r) => r.apiRegions)
 
   // Group by region
   const regionData: Record<string, RankedTeam[]> = {}
@@ -69,7 +77,12 @@ function prepareRegionalData(data: RatingEntry[]) {
     regionData[region.key] = teams
   }
 
-  return regionData
+  // Teams without a known region
+  const unregioned: UnregionedTeam[] = globalRanked
+    .filter((r) => !r.region || !allApiRegions.includes(r.region))
+    .map((r) => ({ teamName: r.teamName, valveId: r.valveId, logoId: r.logoId }))
+
+  return { regionData, unregioned }
 }
 
 function FormatNum({ value, decimals = 0 }: { value: number | null; decimals?: number }) {
@@ -79,7 +92,24 @@ function FormatNum({ value, decimals = 0 }: { value: number | null; decimals?: n
 
 
 export default function RatingsRegions() {
-  const [date, setDate] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const date = searchParams.get('date') ?? ''
+
+  const setDate = useCallback(
+    (value: string) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        if (value) {
+          next.set('date', value)
+        } else {
+          next.delete('date')
+        }
+        return next
+      }, { replace: true })
+    },
+    [setSearchParams],
+  )
+
   const params = useMemo(() => {
     if (!date) return {}
     return { date: formatDateParam(date) }
@@ -90,7 +120,7 @@ export default function RatingsRegions() {
     params,
   )
 
-  const regionData = useMemo(() => prepareRegionalData(raw?.data ?? []), [raw])
+  const { regionData, unregioned } = useMemo(() => prepareRegionalData(raw?.data ?? []), [raw])
 
   const ratingDate = raw?.data?.[0]?.glickoRatingDate
     ? new Date(raw.data[0].glickoRatingDate).toLocaleDateString('en-GB', {
@@ -187,6 +217,21 @@ export default function RatingsRegions() {
               </div>
             )
           })}
+        </div>
+      )}
+
+      {unregioned.length > 0 && (
+        <div className={styles.unregioned}>
+          <span className={styles.unregionedLabel}>Teams without region:</span>
+          {unregioned.map((team) => (
+            <a key={team.valveId} href={`/teams/${team.valveId}`} title={team.teamName}>
+              <TeamLogo
+                logoUrl={team.logoId ? teamLogoUrl(team.logoId) : undefined}
+                name={team.teamName}
+                className={styles.unregionedLogo}
+              />
+            </a>
+          ))}
         </div>
       )}
     </div>

@@ -193,7 +193,7 @@ function PatchSelect({
         <span>{displayText}</span>
         <span className={styles.caret}>&#9662;</span>
       </button>
-      {open && patches && (
+      {open && staticPatches && (
         <div className={styles.dropdown}>
           <div className={styles.dropdownActions}>
             <button className={styles.dropdownActionBtn} onClick={selectAll}>
@@ -203,7 +203,7 @@ function PatchSelect({
               Deselect all
             </button>
           </div>
-          {patches.map((p) => (
+          {staticPatches.map((p) => (
             <button
               key={p.name}
               className={`${styles.dropdownItem} ${selected.includes(p.name) ? styles.dropdownItemActive : ''}`}

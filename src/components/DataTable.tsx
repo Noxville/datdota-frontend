@@ -108,6 +108,7 @@ type ColMeta = {
   numeric?: boolean
   heatmap?: 'high-good' | 'high-bad'
   tooltip?: string
+  grow?: boolean
 }
 
 function subsample(arr: number[], n: number): number[] {
@@ -289,6 +290,8 @@ interface VirtualRowProps {
   groupStartIds: Set<string>
   onCellEnter: (e: React.MouseEvent, colId: string, value: number) => void
   onCellLeave: () => void
+  measureRef?: (node: HTMLElement | null) => void
+  dataIndex?: number
 }
 
 const VirtualRow = memo(function VirtualRow({
@@ -298,11 +301,15 @@ const VirtualRow = memo(function VirtualRow({
   groupStartIds,
   onCellEnter,
   onCellLeave,
+  measureRef,
+  dataIndex,
 }: VirtualRowProps) {
   return (
-    <div className={styles.tr} style={style} role="row">
+    <div className={styles.tr} style={style} role="row" ref={measureRef} data-index={dataIndex}>
       {row.getVisibleCells().map((cell) => {
-        const isNumeric = (cell.column.columnDef.meta as ColMeta)?.numeric
+        const meta = cell.column.columnDef.meta as ColMeta | undefined
+        const isNumeric = meta?.numeric
+        const isGrow = meta?.grow
         const colId =
           cell.column.id ??
           (cell.column.columnDef as { accessorKey?: string }).accessorKey ??
@@ -311,11 +318,14 @@ const VirtualRow = memo(function VirtualRow({
         const heatColor = getCellHeatColor(colId, cellValue, columnStats)
         const hasStats = colId in columnStats
         const isGroupStart = groupStartIds.has(colId)
+        const cellStyle: React.CSSProperties = isGrow
+          ? { flex: 1, minWidth: cell.column.getSize(), color: heatColor }
+          : { width: cell.column.getSize(), color: heatColor }
         return (
           <div
             key={cell.id}
-            className={`${styles.td} ${isNumeric ? styles.tdRight : ''} ${isGroupStart ? styles.groupDivider : ''}`}
-            style={{ width: cell.column.getSize(), color: heatColor }}
+            className={`${styles.td} ${isNumeric ? styles.tdRight : ''} ${isGrow ? styles.tdGrow : ''} ${isGroupStart ? styles.groupDivider : ''}`}
+            style={cellStyle}
             role="cell"
             onMouseEnter={
               hasStats && typeof cellValue === 'number'
@@ -412,11 +422,14 @@ export default function DataTable<T>({
     return ids
   }, [table])
 
+  const hasGrowColumn = columns.some((c) => (c.meta as ColMeta | undefined)?.grow)
+
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => rowHeight,
     overscan: 15,
+    measureElement: hasGrowColumn ? (el) => el.getBoundingClientRect().height : undefined,
   })
 
   const handleCopy = useCallback(async () => {
@@ -585,19 +598,24 @@ export default function DataTable<T>({
                 {leafRow.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const sorted = header.column.getIsSorted()
-                  const isNumeric = (header.column.columnDef.meta as ColMeta)?.numeric
+                  const hMeta = header.column.columnDef.meta as ColMeta | undefined
+                  const isNumeric = hMeta?.numeric
+                  const isGrow = hMeta?.grow
                   const width = header.column.getSize()
                   const colId =
                     header.column.id ??
                     (header.column.columnDef as { accessorKey?: string }).accessorKey ??
                     ''
                   const tipLabel = headerTooltips[colId]
+                  const thStyle: React.CSSProperties = isGrow
+                    ? { flex: 1, minWidth: width }
+                    : { width }
 
                   return (
                     <div
                       key={header.id}
                       className={`${styles.th} ${canSort ? styles.sortable : ''} ${sorted ? styles.sorted : ''} ${isNumeric ? styles.thRight : ''}`}
-                      style={{ width }}
+                      style={thStyle}
                       onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                       role="columnheader"
                       onMouseEnter={tipLabel ? (e) => handleHeaderEnter(e, colId) : undefined}
@@ -630,12 +648,14 @@ export default function DataTable<T>({
                 groupStartIds={groupStartIds}
                 onCellEnter={handleCellEnter}
                 onCellLeave={handleCellLeave}
+                measureRef={hasGrowColumn ? virtualizer.measureElement : undefined}
+                dataIndex={virtualRow.index}
                 style={{
                   position: 'absolute',
                   top: 0,
                   transform: `translateY(${virtualRow.start}px)`,
                   width: '100%',
-                  height: `${rowHeight}px`,
+                  minHeight: `${rowHeight}px`,
                 }}
               />
             )
