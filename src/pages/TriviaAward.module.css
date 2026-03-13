@@ -1,0 +1,70 @@
+.page {
+  /* full width of parent */
+}
+
+.header {
+  margin-bottom: var(--space-lg);
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.description {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+}
+
+.link {
+  color: var(--color-accent-bright);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--color-primary);
+}
+
+.leagueLink {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.leagueLink:hover {
+  color: var(--color-text);
+}
+
+.heroCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.heroImg {
+  height: 20px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.win {
+  color: var(--color-win);
+  font-weight: 600;
+}
+
+.loss {
+  color: var(--color-loss);
+  font-weight: 600;
+}

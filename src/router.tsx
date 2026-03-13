@@ -8,6 +8,10 @@ import Terms from './pages/Terms'
 import Ratings from './pages/Ratings'
 import RatingsRegions from './pages/RatingsRegions'
 import TeamStreaks from './pages/TeamStreaks'
+import PlayerHeroStreaks from './pages/PlayerHeroStreaks'
+import BestRuns from './pages/BestRuns'
+import Scorigami from './pages/Scorigami'
+import TriviaAward from './pages/TriviaAward'
 import NotFound from './pages/NotFound'
 import { Cf500, CfAttack, CfWidget } from './pages/CloudflareError'
 
@@ -40,12 +44,19 @@ const router = createBrowserRouter([
       // { path: '/matches/finder', element: <MatchFinder /> },
       // { path: '/matches/:id', element: <MatchDetail /> },
 
+      { path: '/matches/scorigami', element: <Scorigami /> },
+
       // Ratings
       { path: '/ratings', element: <Ratings /> },
       { path: '/ratings/regions', element: <RatingsRegions /> },
 
       // Trivia
       { path: '/trivia/team-streaks/:type', element: <TeamStreaks /> },
+      { path: '/trivia/player-hero-streaks/:type', element: <PlayerHeroStreaks /> },
+      { path: '/trivia/best-runs', element: <BestRuns /> },
+      { path: '/trivia/akke', element: <TriviaAward /> },
+      { path: '/trivia/maelk', element: <TriviaAward /> },
+      { path: '/trivia/cty', element: <TriviaAward /> },
 
       // Leagues
       // { path: '/leagues/:id', element: <LeagueDetail /> },

@@ -17,7 +17,10 @@ const FILTER_KEYS: (keyof FilterValues)[] = [
   'leagues',
   'splits',
   'tier',
-  'valve-event',
+  'in-wins',
+  'in-losses',
+  'on-radiant',
+  'on-dire',
   'threshold',
   'default',
 ]

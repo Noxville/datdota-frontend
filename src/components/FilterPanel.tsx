@@ -39,7 +39,7 @@ const FILTER_CONFIG = {
   leagues: true,
   splits: true,
   tier: true,
-  'valve-event': true,
+  'result-faction': true,
   threshold: true,
 } as const
 
@@ -403,9 +403,18 @@ function buildSummaryChips(
     chips.push({ label: 'Duration', value: parts.join('\u2013') })
   }
 
-  if (filters['valve-event']) {
-    const veLabels: Record<string, string> = { yes: 'Yes', no: 'No', 'doesnt-matter': "Doesn't matter" }
-    chips.push({ label: 'Valve event', value: veLabels[filters['valve-event']] ?? filters['valve-event'] })
+  if (filters['in-wins'] === 'true' || filters['in-losses'] === 'true') {
+    const parts = []
+    if (filters['in-wins'] === 'true') parts.push('Wins')
+    if (filters['in-losses'] === 'true') parts.push('Losses')
+    chips.push({ label: 'Result', value: parts.join('/') })
+  }
+
+  if (filters['on-radiant'] === 'true' || filters['on-dire'] === 'true') {
+    const parts = []
+    if (filters['on-radiant'] === 'true') parts.push('Radiant')
+    if (filters['on-dire'] === 'true') parts.push('Dire')
+    chips.push({ label: 'Faction', value: parts.join('/') })
   }
 
   if (filters.roles) {
@@ -542,7 +551,7 @@ export default function FilterPanel({
   const hasRow1 =
     show('players') || show('teams') || show('heroes') || show('leagues') || show('splits') || show('patch')
   const hasRow2 =
-    show('after') || show('before') || show('tier') || show('split-type') || show('duration') || show('threshold')
+    show('after') || show('before') || show('tier') || show('split-type') || show('duration') || show('result-faction') || show('threshold')
 
   const chips = buildSummaryChips(filters, allPatchNames, entityNames)
 
@@ -743,6 +752,60 @@ export default function FilterPanel({
                             ))}
                           </div>
                         )}
+                      </div>
+                    </div>
+                  )}
+
+                  {show('result-faction') && (
+                    <div className={styles.filterGroup}>
+                      <label className={styles.label}>Result / Faction</label>
+                      <div className={styles.checkboxStack}>
+                        <div className={styles.checkboxLine}>
+                          <span className={styles.checkboxLineLabel}>Result</span>
+                          <label className={styles.checkbox}>
+                            <input
+                              type="checkbox"
+                              checked={draft['in-wins'] === 'true'}
+                              onChange={() =>
+                                update('in-wins', draft['in-wins'] === 'true' ? '' : 'true')
+                              }
+                            />
+                            <span>Wins</span>
+                          </label>
+                          <label className={styles.checkbox}>
+                            <input
+                              type="checkbox"
+                              checked={draft['in-losses'] === 'true'}
+                              onChange={() =>
+                                update('in-losses', draft['in-losses'] === 'true' ? '' : 'true')
+                              }
+                            />
+                            <span>Losses</span>
+                          </label>
+                        </div>
+                        <div className={styles.checkboxLine}>
+                          <span className={styles.checkboxLineLabel}>Faction</span>
+                          <label className={styles.checkbox}>
+                            <input
+                              type="checkbox"
+                              checked={draft['on-radiant'] === 'true'}
+                              onChange={() =>
+                                update('on-radiant', draft['on-radiant'] === 'true' ? '' : 'true')
+                              }
+                            />
+                            <span>Radiant</span>
+                          </label>
+                          <label className={styles.checkbox}>
+                            <input
+                              type="checkbox"
+                              checked={draft['on-dire'] === 'true'}
+                              onChange={() =>
+                                update('on-dire', draft['on-dire'] === 'true' ? '' : 'true')
+                              }
+                            />
+                            <span>Dire</span>
+                          </label>
+                        </div>
                       </div>
                     </div>
                   )}

@@ -1,5 +1,6 @@
 /* ==========================================================
    EnigmaLoader — Pixel-art Enigma channelling Black Hole
+   Waving arms + ethereal ghostly bottom
    ========================================================== */
 
 .wrap {
@@ -63,7 +64,6 @@
 }
 
 /* ── Orbiting particles ── */
-/* Each particle orbits at different radii, speeds, and start angles */
 .particle1 {
   offset-path: path('M 55,58 A 45,13 0 1,1 145,58 A 45,13 0 1,1 55,58');
   animation: orbit1 2.4s linear infinite;
@@ -119,6 +119,129 @@
 @keyframes spriteFloat {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-3px); }
+}
+
+/* ── Waving arms ──
+   Each segment waves with a staggered delay, creating a
+   sinusoidal wave from shoulder to fingertip.
+   The Y offset oscillates; segments further from shoulder
+   have more amplitude and more delay.                        */
+
+/* Left arm: segments 0 (shoulder) through 4 (hand) */
+.armL0 { animation: waveL0 1.2s ease-in-out infinite; }
+.armL1 { animation: waveL1 1.2s ease-in-out infinite; }
+.armL2 { animation: waveL2 1.2s ease-in-out infinite; }
+.armL3 { animation: waveL3 1.2s ease-in-out infinite; }
+.armL4 { animation: waveL4 1.2s ease-in-out infinite; }
+
+@keyframes waveL0 {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(0, -1px); }
+}
+@keyframes waveL1 {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(0, -2px); }
+  75%      { transform: translate(0, 2px); }
+}
+@keyframes waveL2 {
+  0%, 100% { transform: translate(0, 0); }
+  20%      { transform: translate(0, -3px); }
+  70%      { transform: translate(0, 3px); }
+}
+@keyframes waveL3 {
+  0%, 100% { transform: translate(0, 1px); }
+  15%      { transform: translate(0, -4px); }
+  65%      { transform: translate(0, 4px); }
+}
+@keyframes waveL4 {
+  0%, 100% { transform: translate(0, 2px); }
+  10%      { transform: translate(0, -5px); }
+  60%      { transform: translate(0, 5px); }
+}
+
+/* Right arm: mirrored wave (opposite phase) */
+.armR0 { animation: waveR0 1.2s ease-in-out infinite; }
+.armR1 { animation: waveR1 1.2s ease-in-out infinite; }
+.armR2 { animation: waveR2 1.2s ease-in-out infinite; }
+.armR3 { animation: waveR3 1.2s ease-in-out infinite; }
+.armR4 { animation: waveR4 1.2s ease-in-out infinite; }
+
+@keyframes waveR0 {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(0, 1px); }
+}
+@keyframes waveR1 {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(0, 2px); }
+  75%      { transform: translate(0, -2px); }
+}
+@keyframes waveR2 {
+  0%, 100% { transform: translate(0, 0); }
+  20%      { transform: translate(0, 3px); }
+  70%      { transform: translate(0, -3px); }
+}
+@keyframes waveR3 {
+  0%, 100% { transform: translate(0, -1px); }
+  15%      { transform: translate(0, 4px); }
+  65%      { transform: translate(0, -4px); }
+}
+@keyframes waveR4 {
+  0%, 100% { transform: translate(0, -2px); }
+  10%      { transform: translate(0, 5px); }
+  60%      { transform: translate(0, -5px); }
+}
+
+/* ── Ethereal wisps ──
+   Each wisp row drifts and fades, creating a ghostly
+   dissolving bottom half.                                    */
+
+.wisps {
+  animation: wispFlicker 2.5s ease-in-out infinite;
+}
+
+@keyframes wispFlicker {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.8; }
+}
+
+/* Individual wisp rows drift sideways with increasing amplitude */
+.wisp0 { animation: wispDrift0 2s ease-in-out infinite; }
+.wisp1 { animation: wispDrift1 2.2s ease-in-out infinite; }
+.wisp2 { animation: wispDrift2 2.5s ease-in-out infinite; }
+.wisp3 { animation: wispDrift3 2.8s ease-in-out infinite; }
+.wisp4 { animation: wispDrift4 3s ease-in-out infinite; }
+.wisp5 { animation: wispDrift5 3.2s ease-in-out infinite; }
+.wisp6 { animation: wispDrift6 3.5s ease-in-out infinite; }
+
+@keyframes wispDrift0 {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(1px); }
+}
+@keyframes wispDrift1 {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(-1px); }
+}
+@keyframes wispDrift2 {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50%      { transform: translateX(2px); opacity: 0.7; }
+}
+@keyframes wispDrift3 {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50%      { transform: translateX(-2px); opacity: 0.6; }
+}
+@keyframes wispDrift4 {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  30%      { transform: translateX(3px); opacity: 0.5; }
+  70%      { transform: translateX(-1px); opacity: 0.8; }
+}
+@keyframes wispDrift5 {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  40%      { transform: translateX(-3px); opacity: 0.4; }
+  80%      { transform: translateX(2px); opacity: 0.7; }
+}
+@keyframes wispDrift6 {
+  0%, 100% { transform: translate(0, 0); opacity: 1; }
+  50%      { transform: translate(2px, 2px); opacity: 0.3; }
 }
 
 /* ── Channelling beams from hands ── */

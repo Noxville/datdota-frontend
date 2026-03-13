@@ -76,7 +76,10 @@ export interface FilterValues {
   leagues?: string
   splits?: string
   tier?: string
-  'valve-event'?: string
+  'in-wins'?: string
+  'in-losses'?: string
+  'on-radiant'?: string
+  'on-dire'?: string
   threshold?: string
   default?: string
 }

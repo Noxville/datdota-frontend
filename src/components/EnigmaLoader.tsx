@@ -2,27 +2,57 @@ import React from 'react'
 import styles from './EnigmaLoader.module.css'
 
 /* ── Pixel-art sprite data ──────────────────────────────────
-   15 columns × 18 rows. Each char maps to a colour.
-   '.' = transparent                                         */
-const SPRITE = [
+   15 columns × 15 rows. Each char maps to a colour.
+   '.' = transparent
+   Arms are separate so they can be animated independently.
+   Bottom is ethereal wisps instead of legs/feet.              */
+
+// Main body (no arms, no legs)
+const BODY = [
   '......ttt......', // 0  turban tip
   '.....ttttt.....', // 1  turban upper
   '....tttjttt....', // 2  turban + jewel
   '....ttttttt....', // 3  turban base
   '.....ddddd.....', // 4  head
-  '.....dedded....', // 5  eyes  (note: asymmetric to look right at 1px)
+  '.....dedded....', // 5  eyes
   '.....ddmdd.....', // 6  mouth
   '......ddd......', // 7  neck
-  '.aa...ddd...aa.', // 8  hands raised
-  '..aa..ddd..aa..', // 9  upper arms
-  '...a.ddddd.a...', // 10 shoulders
+  '......ddd......', // 8  upper torso (no hands here)
+  '......ddd......', // 9  mid torso
+  '.....ddddd.....', // 10 shoulders
   '.....ddddd.....', // 11 upper torso
   '.....dcdcd.....', // 12 chest cosmic
   '.....ddddd.....', // 13 lower torso
   '.....bbbbb.....', // 14 belt
-  '.....dd.dd.....', // 15 upper legs
-  '.....dd.dd.....', // 16 lower legs
-  '.....ff.ff.....', // 17 feet
+]
+
+// Left arm segments (each row is an arm segment, animated with wave delay)
+// Segments go from shoulder outward: shoulder, upper, mid, lower, hand
+const LEFT_ARM = [
+  { col: 4, row: 10, ch: 'a' },  // shoulder joint
+  { col: 3, row: 9, ch: 'a' },   // upper arm
+  { col: 2, row: 8, ch: 'a' },   // mid arm
+  { col: 1, row: 8, ch: 'a' },   // lower arm
+  { col: 0, row: 8, ch: 'a' },   // hand
+]
+
+const RIGHT_ARM = [
+  { col: 10, row: 10, ch: 'a' },
+  { col: 11, row: 9, ch: 'a' },
+  { col: 12, row: 8, ch: 'a' },
+  { col: 13, row: 8, ch: 'a' },
+  { col: 14, row: 8, ch: 'a' },
+]
+
+// Ethereal bottom wisps — multiple rows that fade out
+const WISPS = [
+  { row: 0, pixels: '.....ddddd.....', opacity: 0.9 },
+  { row: 1, pixels: '......ddd......', opacity: 0.7 },
+  { row: 2, pixels: '.....dd.dd.....', opacity: 0.5 },
+  { row: 3, pixels: '......d.d......', opacity: 0.35 },
+  { row: 4, pixels: '.....d...d.....', opacity: 0.2 },
+  { row: 5, pixels: '......d.d......', opacity: 0.12 },
+  { row: 6, pixels: '.......d.......', opacity: 0.06 },
 ]
 
 const PALETTE: Record<string, string> = {
@@ -34,20 +64,19 @@ const PALETTE: Record<string, string> = {
   a: '#5c2d82', // arm highlight
   c: '#7b3f9e', // cosmic chest
   b: '#2a1040', // belt
-  f: '#1a0a30', // feet
 }
 
-const PX = 4 // pixel scale
+const PX = 4
 
-function PixelSprite({ x, y }: { x: number; y: number }) {
+function BodySprite({ x, y }: { x: number; y: number }) {
   const rects: React.ReactElement[] = []
-  for (let row = 0; row < SPRITE.length; row++) {
-    for (let col = 0; col < SPRITE[row].length; col++) {
-      const ch = SPRITE[row][col]
+  for (let row = 0; row < BODY.length; row++) {
+    for (let col = 0; col < BODY[row].length; col++) {
+      const ch = BODY[row][col]
       if (ch === '.') continue
       rects.push(
         <rect
-          key={`${row}-${col}`}
+          key={`b-${row}-${col}`}
           x={x + col * PX}
           y={y + row * PX}
           width={PX}
@@ -60,14 +89,63 @@ function PixelSprite({ x, y }: { x: number; y: number }) {
   return <g>{rects}</g>
 }
 
+function ArmSegments({ x, y, segments, side }: {
+  x: number; y: number
+  segments: typeof LEFT_ARM
+  side: 'left' | 'right'
+}) {
+  return (
+    <g>
+      {segments.map((seg, i) => (
+        <rect
+          key={`${side}-${i}`}
+          className={styles[`arm${side === 'left' ? 'L' : 'R'}${i}`]}
+          x={x + seg.col * PX}
+          y={y + seg.row * PX}
+          width={PX}
+          height={PX}
+          fill={PALETTE[seg.ch]}
+        />
+      ))}
+    </g>
+  )
+}
+
+function WispLayer({ x, y, wispData }: {
+  x: number; y: number
+  wispData: typeof WISPS
+}) {
+  const rects: React.ReactElement[] = []
+  for (const wisp of wispData) {
+    for (let col = 0; col < wisp.pixels.length; col++) {
+      const ch = wisp.pixels[col]
+      if (ch === '.') continue
+      rects.push(
+        <rect
+          key={`w-${wisp.row}-${col}`}
+          className={styles[`wisp${wisp.row}`]}
+          x={x + col * PX}
+          y={y + wisp.row * PX}
+          width={PX}
+          height={PX}
+          fill={PALETTE[ch]}
+          opacity={wisp.opacity}
+        />,
+      )
+    }
+  }
+  return <g className={styles.wisps}>{rects}</g>
+}
+
 /**
  * Pixel-art Enigma channelling Black Hole (Interstellar-inspired).
+ * Waving arms + ethereal ghostly bottom.
  */
 export default function EnigmaLoader({ text = 'Loading...' }: { text?: string }) {
-  // Sprite is 15 cols × 18 rows at PX=4 → 60 × 72
-  // We'll place it bottom-center of a 200×200 viewBox
   const spriteW = 15 * PX
   const spriteX = (200 - spriteW) / 2
+  const bodyY = 122
+  const wispY = bodyY + BODY.length * PX // wisps start right after belt
 
   return (
     <div className={styles.wrap}>
@@ -133,36 +211,17 @@ export default function EnigmaLoader({ text = 'Loading...' }: { text?: string })
 
         {/* ═══ BLACK HOLE ═══ centred at 100, 58 */}
         <g className={styles.blackhole}>
-
           {/* Outer haze glow */}
           <circle className={styles.haze} cx="100" cy="58" r="52" fill="url(#bhHaze)" />
 
           {/* Accretion disk — BACK half (behind the void) */}
           <g className={styles.diskSpin}>
-            <ellipse
-              cx="100" cy="58" rx="48" ry="14"
-              fill="none"
-              stroke="url(#diskWarm)"
-              strokeWidth="4"
-              clipPath="url(#diskClipBack)"
-              opacity="0.7"
-            />
-            <ellipse
-              cx="100" cy="58" rx="44" ry="12"
-              fill="none"
-              stroke="#ffc040"
-              strokeWidth="1.5"
-              clipPath="url(#diskClipBack)"
-              opacity="0.4"
-            />
+            <ellipse cx="100" cy="58" rx="48" ry="14" fill="none" stroke="url(#diskWarm)" strokeWidth="4" clipPath="url(#diskClipBack)" opacity="0.7" />
+            <ellipse cx="100" cy="58" rx="44" ry="12" fill="none" stroke="#ffc040" strokeWidth="1.5" clipPath="url(#diskClipBack)" opacity="0.4" />
           </g>
 
           {/* Gravitational lensing ring (Einstein ring) — vertical halo */}
-          <ellipse
-            className={styles.lensRing}
-            cx="100" cy="58" rx="26" ry="30"
-            fill="url(#bhLens)"
-          />
+          <ellipse className={styles.lensRing} cx="100" cy="58" rx="26" ry="30" fill="url(#bhLens)" />
 
           {/* Photon sphere — bright ring right at event horizon */}
           <circle cx="100" cy="58" r="22" fill="url(#bhPhoton)" />
@@ -172,30 +231,9 @@ export default function EnigmaLoader({ text = 'Loading...' }: { text?: string })
 
           {/* Accretion disk — FRONT half (in front of the void) */}
           <g className={styles.diskSpin}>
-            <ellipse
-              cx="100" cy="58" rx="48" ry="14"
-              fill="none"
-              stroke="url(#diskWarm)"
-              strokeWidth="5"
-              clipPath="url(#diskClipFront)"
-            />
-            <ellipse
-              cx="100" cy="58" rx="44" ry="12"
-              fill="none"
-              stroke="#ffe8a0"
-              strokeWidth="1.5"
-              clipPath="url(#diskClipFront)"
-              opacity="0.6"
-            />
-            {/* Hot inner edge */}
-            <ellipse
-              cx="100" cy="58" rx="38" ry="10"
-              fill="none"
-              stroke="#fff4d0"
-              strokeWidth="1"
-              clipPath="url(#diskClipFront)"
-              opacity="0.3"
-            />
+            <ellipse cx="100" cy="58" rx="48" ry="14" fill="none" stroke="url(#diskWarm)" strokeWidth="5" clipPath="url(#diskClipFront)" />
+            <ellipse cx="100" cy="58" rx="44" ry="12" fill="none" stroke="#ffe8a0" strokeWidth="1.5" clipPath="url(#diskClipFront)" opacity="0.6" />
+            <ellipse cx="100" cy="58" rx="38" ry="10" fill="none" stroke="#fff4d0" strokeWidth="1" clipPath="url(#diskClipFront)" opacity="0.3" />
           </g>
 
           {/* Orbiting particles being sucked in */}
@@ -208,12 +246,15 @@ export default function EnigmaLoader({ text = 'Loading...' }: { text?: string })
 
         {/* ═══ ENIGMA (pixel art) ═══ */}
         <g className={styles.sprite}>
-          <PixelSprite x={spriteX} y={122} />
+          <BodySprite x={spriteX} y={bodyY} />
+          <ArmSegments x={spriteX} y={bodyY} segments={LEFT_ARM} side="left" />
+          <ArmSegments x={spriteX} y={bodyY} segments={RIGHT_ARM} side="right" />
+          <WispLayer x={spriteX} y={wispY} wispData={WISPS} />
         </g>
 
         {/* Channelling energy lines from hands to black hole */}
-        <line className={styles.beam1} x1={spriteX + 1 * PX} y1={122 + 8 * PX} x2="72" y2="70" stroke="#c48bc4" strokeWidth="0.8" opacity="0.5" />
-        <line className={styles.beam2} x1={spriteX + 13 * PX} y1={122 + 8 * PX} x2="128" y2="70" stroke="#c48bc4" strokeWidth="0.8" opacity="0.5" />
+        <line className={styles.beam1} x1={spriteX + 0 * PX} y1={bodyY + 8 * PX} x2="72" y2="70" stroke="#c48bc4" strokeWidth="0.8" opacity="0.5" />
+        <line className={styles.beam2} x1={spriteX + 14 * PX} y1={bodyY + 8 * PX} x2="128" y2="70" stroke="#c48bc4" strokeWidth="0.8" opacity="0.5" />
       </svg>
       {text && <p className={styles.text}>{text}</p>}
     </div>

@@ -341,7 +341,7 @@ export default function Mockups() {
         <section className={styles.section}>
           <h3 className={styles.sectionTitle}>Loading Animation</h3>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginBottom: 'var(--space-md)' }}>
-            Pixel-art Enigma channelling Black Hole (Interstellar-inspired accretion disk) — site-wide loading indicator.
+            Pixel-art Enigma channelling Black Hole (Interstellar-inspired accretion disk) — waving arms + ethereal ghostly bottom.
           </p>
           <div style={{ display: 'flex', gap: 'var(--space-xl)', justifyContent: 'center', flexWrap: 'wrap' }}>
             <EnigmaLoader />

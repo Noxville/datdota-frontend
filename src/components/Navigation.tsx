@@ -78,6 +78,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Recent', to: '/matches' },
           { label: 'Finder', to: '/matches/finder?default=true' },
           { label: 'Durations', to: '/matches/durations?default=true' },
+          { label: 'Scorigami', to: '/matches/scorigami?default=true' },
         ],
       },
     ],

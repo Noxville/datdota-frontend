@@ -1,0 +1,137 @@
+.page {
+  animation: fadeUp 350ms ease both;
+}
+
+.header {
+  margin-bottom: var(--space-lg);
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xl) var(--space-lg);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+
+.defaultLink {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-primary-dim);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.defaultLink:hover {
+  background: var(--color-primary-dim);
+  color: var(--color-text);
+}
+
+.error {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-loss);
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.gridContainer {
+  position: relative;
+  overflow-x: auto;
+  margin-top: var(--space-lg);
+  display: flex;
+  justify-content: center;
+}
+
+.gridContainer svg {
+  display: block;
+}
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+  animation: tooltipIn 80ms ease-out both;
+}
+
+.tooltipScores {
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.tooltipCount {
+  color: var(--color-text-secondary);
+}
+
+.tooltipRadiant {
+  color: var(--color-radiant);
+}
+
+.tooltipDire {
+  color: var(--color-dire);
+}
+
+.tooltipFlipped {
+  transform: translate(-50%, 0);
+  margin-top: 12px;
+}
+
+@keyframes tooltipIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -100%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%) translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.25rem;
+  }
+
+  .gridContainer {
+    justify-content: flex-start;
+  }
+}
