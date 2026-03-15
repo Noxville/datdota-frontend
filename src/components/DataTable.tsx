@@ -288,6 +288,7 @@ interface VirtualRowProps {
   style: React.CSSProperties
   columnStats: Record<string, ColumnStats>
   groupStartIds: Set<string>
+  totalSize: number
   onCellEnter: (e: React.MouseEvent, colId: string, value: number) => void
   onCellLeave: () => void
   measureRef?: (node: HTMLElement | null) => void
@@ -299,13 +300,14 @@ const VirtualRow = memo(function VirtualRow({
   style,
   columnStats,
   groupStartIds,
+  totalSize,
   onCellEnter,
   onCellLeave,
   measureRef,
   dataIndex,
 }: VirtualRowProps) {
   return (
-    <div className={styles.tr} style={style} role="row" ref={measureRef} data-index={dataIndex}>
+    <div className={styles.tr} style={{ ...style, minWidth: totalSize }} role="row" ref={measureRef} data-index={dataIndex}>
       {row.getVisibleCells().map((cell) => {
         const meta = cell.column.columnDef.meta as ColMeta | undefined
         const isNumeric = meta?.numeric
@@ -318,9 +320,12 @@ const VirtualRow = memo(function VirtualRow({
         const heatColor = getCellHeatColor(colId, cellValue, columnStats)
         const hasStats = colId in columnStats
         const isGroupStart = groupStartIds.has(colId)
+        const size = cell.column.getSize()
         const cellStyle: React.CSSProperties = isGrow
-          ? { flex: 1, minWidth: cell.column.getSize(), color: heatColor }
-          : { width: cell.column.getSize(), color: heatColor }
+          ? { flex: 1, minWidth: size, color: heatColor }
+          : totalSize > 0
+            ? { width: `${(size / totalSize) * 100}%`, color: heatColor }
+            : { flex: `${size} 0 0px`, color: heatColor }
         return (
           <div
             key={cell.id}
@@ -424,6 +429,12 @@ export default function DataTable<T>({
 
   const hasGrowColumn = columns.some((c) => (c.meta as ColMeta | undefined)?.grow)
 
+  // Compute total column size for percentage-based widths
+  const totalSize = useMemo(() => {
+    const allLeaves = table.getAllLeafColumns()
+    return allLeaves.reduce((s, col) => s + col.getSize(), 0)
+  }, [table])
+
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
@@ -521,6 +532,7 @@ export default function DataTable<T>({
             if (hasGroupRow) {
               const leafHeaders = headerGroups[headerGroups.length - 1].headers
               const leafIdSet = new Set(leafHeaders.map((h) => h.id))
+              const totalSize = leafHeaders.reduce((s, lh) => s + lh.column.getSize(), 0)
 
               // Build spans for the group label row directly from row 0 headers
               // Each row-0 header is either a placeholder (standalone col) or a group header
@@ -529,18 +541,19 @@ export default function DataTable<T>({
               return (
                 <>
                   {/* Group label row */}
-                  <div className={styles.headerRow} role="row">
+                  <div className={styles.headerRow} role="row" style={{ minWidth: totalSize }}>
                     {row0.map((topHeader) => {
                       // Get only the TRUE leaf headers (those in the leaf row)
                       const trueLeaves = topHeader.getLeafHeaders().filter((lh) => leafIdSet.has(lh.id))
                       const width = trueLeaves.reduce((s, lh) => s + lh.column.getSize(), 0)
+                      const pct = `${(width / totalSize) * 100}%`
 
                       if (topHeader.isPlaceholder) {
                         return (
                           <div
                             key={topHeader.id}
                             className={styles.thGroupPlaceholder}
-                            style={{ width }}
+                            style={{ width: pct }}
                           />
                         )
                       }
@@ -548,7 +561,7 @@ export default function DataTable<T>({
                         <div
                           key={topHeader.id}
                           className={`${styles.thGroup} ${styles.groupDivider}`}
-                          style={{ width }}
+                          style={{ width: pct }}
                           role="columnheader"
                         >
                           {flexRender(topHeader.column.columnDef.header, topHeader.getContext())}
@@ -557,12 +570,13 @@ export default function DataTable<T>({
                     })}
                   </div>
                   {/* Leaf header row */}
-                  <div className={styles.headerRow} role="row">
+                  <div className={styles.headerRow} role="row" style={{ minWidth: totalSize }}>
                     {leafHeaders.map((header) => {
                       const canSort = header.column.getCanSort()
                       const sorted = header.column.getIsSorted()
                       const isNumeric = (header.column.columnDef.meta as ColMeta)?.numeric
                       const width = header.column.getSize()
+                      const pct = `${(width / totalSize) * 100}%`
                       const colId =
                         header.column.id ??
                         (header.column.columnDef as { accessorKey?: string }).accessorKey ??
@@ -574,7 +588,7 @@ export default function DataTable<T>({
                         <div
                           key={header.id}
                           className={`${styles.th} ${canSort ? styles.sortable : ''} ${sorted ? styles.sorted : ''} ${isNumeric ? styles.thRight : ''} ${isGroupStart ? styles.groupDivider : ''}`}
-                          style={{ width }}
+                          style={{ width: pct }}
                           onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                           role="columnheader"
                           onMouseEnter={tipLabel ? (e) => handleHeaderEnter(e, colId) : undefined}
@@ -594,7 +608,7 @@ export default function DataTable<T>({
             // No groups — single header row
             const leafRow = headerGroups[0]
             return (
-              <div className={styles.headerRow} role="row">
+              <div className={styles.headerRow} role="row" style={{ minWidth: totalSize }}>
                 {leafRow.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const sorted = header.column.getIsSorted()
@@ -609,7 +623,7 @@ export default function DataTable<T>({
                   const tipLabel = headerTooltips[colId]
                   const thStyle: React.CSSProperties = isGrow
                     ? { flex: 1, minWidth: width }
-                    : { width }
+                    : { width: `${(width / totalSize) * 100}%` }
 
                   return (
                     <div
@@ -646,6 +660,7 @@ export default function DataTable<T>({
                 row={row}
                 columnStats={columnStats}
                 groupStartIds={groupStartIds}
+                totalSize={totalSize}
                 onCellEnter={handleCellEnter}
                 onCellLeave={handleCellLeave}
                 measureRef={hasGrowColumn ? virtualizer.measureElement : undefined}
@@ -698,8 +713,20 @@ export default function DataTable<T>({
 
 /* ── Cell Renderers ───────────────────────────────────────── */
 
-export function NumericCell({ value, decimals = 0 }: { value: number | null; decimals?: number }) {
+export function NumericCell({ value, decimals = 0, compact = false }: { value: number | null; decimals?: number; compact?: boolean }) {
   if (value === null || value === undefined) return <span className={styles.muted}>—</span>
+  if (compact) {
+    const exact = value.toLocaleString(undefined, { maximumFractionDigits: decimals })
+    let display: string
+    if (Math.abs(value) >= 1_000_000) {
+      display = `${(value / 1_000_000).toFixed(1)}M`
+    } else if (Math.abs(value) >= 1_000) {
+      display = `${(value / 1_000).toFixed(1)}k`
+    } else {
+      display = value.toFixed(decimals)
+    }
+    return <span className={styles.numeric} title={exact}>{display}</span>
+  }
   return <span className={styles.numeric}>{value.toFixed(decimals)}</span>
 }
 
@@ -729,11 +756,11 @@ export function PlayerCell({
   nickname,
 }: {
   steamId: number
-  nickname: string
+  nickname: string | null | undefined
 }) {
   return (
     <a href={`/players/${steamId}`} className={styles.playerLink}>
-      {nickname}
+      {nickname || 'Unknown'}
     </a>
   )
 }

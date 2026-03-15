@@ -22,6 +22,10 @@ const FILTER_KEYS: (keyof FilterValues)[] = [
   'on-radiant',
   'on-dire',
   'threshold',
+  'team-a',
+  'team-b',
+  'heroes-a',
+  'heroes-b',
   'default',
 ]
 
@@ -103,7 +107,7 @@ export function useFilters(excludeDefaults?: (keyof FilterValues)[]) {
       if (searchParams.get('fc')) {
         params.set('fc', searchParams.get('fc')!)
       }
-      setSearchParams(params, { replace: true })
+      setSearchParams(params)
     },
     [setSearchParams, searchParams],
   )
@@ -121,7 +125,6 @@ export function useFilters(excludeDefaults?: (keyof FilterValues)[]) {
           }
           return next
         },
-        { replace: true },
       )
     },
     [setSearchParams],
@@ -136,7 +139,7 @@ export function useFilters(excludeDefaults?: (keyof FilterValues)[]) {
     if (searchParams.get('fc')) {
       params.set('fc', searchParams.get('fc')!)
     }
-    setSearchParams(params, { replace: true })
+    setSearchParams(params)
   }, [latestPatch, excludeDefaults, setSearchParams, searchParams])
 
   const clearFilters = useCallback(() => {
@@ -145,7 +148,7 @@ export function useFilters(excludeDefaults?: (keyof FilterValues)[]) {
     if (searchParams.get('fc')) {
       params.set('fc', searchParams.get('fc')!)
     }
-    setSearchParams(params, { replace: true })
+    setSearchParams(params)
   }, [setSearchParams, searchParams])
 
   // Filter-collapsed state: stored in URL as `fc=1` but never sent to API

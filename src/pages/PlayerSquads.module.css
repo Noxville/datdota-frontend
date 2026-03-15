@@ -1,0 +1,28 @@
+.toggleRow {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.toggleBtn {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.toggleBtn:hover {
+  border-color: var(--color-primary-dim);
+  color: var(--color-text);
+}
+
+.toggleActive {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}

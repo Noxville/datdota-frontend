@@ -26,13 +26,12 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       {
         items: [
-          { label: 'Performances', to: '/heroes/performances?default=true' },
-          { label: 'Elo Ratings', to: '/heroes/elo?default=true' },
+          { label: 'Average Performances', to: '/heroes/performances?default=true' },
+          { label: 'Tuples & Elo Ratings', to: '/heroes/elo?default=true' },
           { label: 'Head-to-Head', to: '/heroes/head-to-head?default=true' },
           { label: 'Elo by Phase', to: '/heroes/elo-by-phase?default=true' },
           { label: 'Frequent Players', to: '/heroes/frequent-players?default=true' },
           { label: 'Facets', to: '/facets/summary?default=true' },
-          { label: 'Talents', to: '/talents/distribution?default=true' },
         ],
       },
     ],
@@ -42,7 +41,7 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       {
         items: [
-          { label: 'Performances', to: '/players/performances?default=true' },
+          { label: 'Average Performances', to: '/players/performances?default=true' },
           { label: 'Single Performances', to: '/players/single-performances?default=true' },
           { label: 'Unique Heroes', to: '/players/unique-heroes?default=true' },
           { label: 'Squads', to: '/players/squads?default=true' },
@@ -59,8 +58,7 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       {
         items: [
-          { label: 'Performances', to: '/teams/performances?default=true' },
-          { label: 'Head-to-Head', to: '/teams/head-to-head?default=true' },
+          { label: 'Average Performances', to: '/teams/performances?default=true' },
           { label: 'Unique Heroes', to: '/teams/unique-heroes?default=true' },
           { label: 'Towers', to: '/teams/towers?default=true' },
           { label: 'Map Control', to: '/teams/map-control?default=true' },
@@ -89,8 +87,8 @@ const NAV_ITEMS: NavItem[] = [
       {
         heading: 'Combat',
         items: [
-          { label: 'Kills', to: '/events/kills?default=true' },
-          { label: 'Deaths', to: '/events/deaths?default=true' },
+          { label: 'Hero Kills', to: '/events/hero-kills?default=true' },
+          { label: 'Hero Deaths', to: '/events/hero-deaths?default=true' },
           { label: 'First Bloods', to: '/events/first-bloods?default=true' },
         ],
       },

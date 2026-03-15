@@ -260,9 +260,25 @@ function HeroSelect({
           .join(', ')
       : 'All heroes'
 
+  function remove(heroId: string) {
+    onChange(selected.filter((h) => h !== heroId).join(','))
+  }
+
   return (
     <div className={styles.filterGroup} ref={ref}>
       <label className={styles.label}>Heroes</label>
+      {selected.length > 0 && (
+        <div className={styles.tags}>
+          {selected.map((id) => (
+            <span key={id} className={styles.tag}>
+              {heroesById[id]?.name ?? id}
+              <button className={styles.tagRemove} onClick={() => remove(id)}>
+                &times;
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
       <button className={styles.selectBtn} onClick={() => setOpen(!open)}>
         <span className={styles.selectBtnText}>{displayText}</span>
         <span className={styles.caret}>&#9662;</span>

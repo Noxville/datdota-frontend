@@ -16,7 +16,9 @@ export function abilityImageUrl(abilityShortName: string): string {
 }
 
 export function itemImageUrl(itemShortName: string): string {
-  return `${CDN_BASE}/images/items/${itemShortName}.png`
+  // Strip "item_" prefix — CDN expects just the base name (e.g. "blink" not "item_blink")
+  const name = itemShortName.replace(/^item_/, '')
+  return `${CDN_BASE}/images/items/${name}.png`
 }
 
 export function leagueLogoUrl(leagueId: number, size: string = 'big'): string {
