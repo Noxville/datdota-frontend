@@ -158,7 +158,7 @@ export default function EventKills() {
         filters={filters}
         onApply={setFilters}
         onClear={clearFilters}
-        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier']}
+        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
       />

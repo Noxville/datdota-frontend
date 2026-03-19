@@ -29,7 +29,7 @@ function HeroIconCell({ heroId }: { heroId: number }) {
 }
 
 /** Strip HTML tags and convert %template% vars to styled spans */
-function formatTooltipText(raw: string): (string | JSX.Element)[] {
+function formatTooltipText(raw: string): (string | React.ReactElement)[] {
   // Strip HTML tags
   const stripped = raw.replace(/<[^>]+>/g, '')
   // Split on %...% template vars

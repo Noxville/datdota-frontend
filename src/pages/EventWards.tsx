@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
@@ -10,6 +10,7 @@ import EnigmaLoader from '../components/EnigmaLoader'
 import TimeDistributionChart from '../components/TimeDistributionChart'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
+import toggleStyles from './PlayerSquads.module.css'
 
 interface WardEvent {
   placer: { nickname: string; steamId: number; hero: number }
@@ -130,7 +131,40 @@ const columns: ColumnDef<WardEvent, unknown>[] = [
     accessorKey: 'faction',
     header: 'Faction',
     size: 80,
-    cell: ({ getValue }) => <span style={{ fontSize: '0.8rem' }}>{getValue() as string}</span>,
+    cell: ({ getValue }) => {
+      const val = getValue() as string
+      const isRadiant = val.toLowerCase().includes('radiant')
+      const isDire = val.toLowerCase().includes('dire')
+      return (
+        <span style={{ fontSize: '0.8rem', color: isRadiant ? '#2dd4bf' : isDire ? '#f87171' : undefined }}>
+          {isRadiant ? 'Radiant' : isDire ? 'Dire' : val}
+        </span>
+      )
+    },
+  },
+  {
+    id: 'x',
+    accessorKey: 'x',
+    header: 'X',
+    size: 60,
+    meta: { numeric: true },
+    cell: ({ getValue }) => (
+      <span style={{ fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums', color: 'var(--color-text-muted)' }}>
+        {(getValue() as number).toFixed(0)}
+      </span>
+    ),
+  },
+  {
+    id: 'y',
+    accessorKey: 'y',
+    header: 'Y',
+    size: 60,
+    meta: { numeric: true },
+    cell: ({ getValue }) => (
+      <span style={{ fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums', color: 'var(--color-text-muted)' }}>
+        {(getValue() as number).toFixed(0)}
+      </span>
+    ),
   },
   {
     id: 'campBlocked',
@@ -146,7 +180,33 @@ const columns: ColumnDef<WardEvent, unknown>[] = [
   },
 ]
 
+type ViewMode = 'table' | 'ward-map'
+
+function getInitialView(): ViewMode {
+  const hash = window.location.hash.replace('#', '')
+  if (hash === 'ward-map') return 'ward-map'
+  return 'table'
+}
+
 export default function EventWards() {
+  const [view, setView] = useState<ViewMode>(getInitialView)
+  const [showObs, setShowObs] = useState(true)
+  const [showSentry, setShowSentry] = useState(true)
+
+  useEffect(() => {
+    function onHashChange() {
+      const hash = window.location.hash.replace('#', '') as ViewMode
+      if (hash === 'ward-map' || hash === 'table') setView(hash)
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  function selectView(v: ViewMode) {
+    setView(v)
+    window.location.hash = `#${v}`
+  }
+
   const {
     filters,
     setFilters,
@@ -163,7 +223,20 @@ export default function EventWards() {
     apiParams,
   )
 
-  const rows = useMemo(() => data?.data ?? [], [data])
+  const allRows = useMemo(() => data?.data ?? [], [data])
+
+  const rows = useMemo(() => {
+    if (showObs && showSentry) return allRows
+    return allRows.filter((r) => {
+      const isObs = r.type.toLowerCase().includes('obs')
+      const isSentry = r.type.toLowerCase().includes('sentry')
+      if (showObs && isObs) return true
+      if (showSentry && isSentry) return true
+      if (!isObs && !isSentry) return showObs || showSentry // unknown types show if either is on
+      return false
+    })
+  }, [allRows, showObs, showSentry])
+
   const times = useMemo(() => rows.map((r) => r.timePlaced), [rows])
 
   return (
@@ -181,7 +254,7 @@ export default function EventWards() {
         onClear={clearFilters}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
-        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier']}
+        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
       />
 
       {!hasFilters && (
@@ -201,15 +274,73 @@ export default function EventWards() {
         </div>
       )}
 
-      {rows.length > 0 && (
+      {allRows.length > 0 && (
         <>
-          <TimeDistributionChart times={times} />
-          <DataTable
-            data={rows}
-            columns={columns}
-            defaultSorting={[{ id: 'matchId', desc: true }]}
-            searchableColumns={['placer']}
-          />
+          {/* View mode + ward type toggles */}
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 'var(--space-lg)', flexWrap: 'wrap' }}>
+            <div className={toggleStyles.toggleRow} style={{ marginBottom: 0 }}>
+              <button
+                className={`${toggleStyles.toggleBtn} ${view === 'table' ? toggleStyles.toggleActive : ''}`}
+                onClick={() => selectView('table')}
+              >
+                Table
+              </button>
+              <button
+                className={`${toggleStyles.toggleBtn} ${view === 'ward-map' ? toggleStyles.toggleActive : ''}`}
+                onClick={() => selectView('ward-map')}
+              >
+                Ward Map
+              </button>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={showObs}
+                  onChange={() => setShowObs(!showObs)}
+                  style={{ accentColor: 'var(--color-primary)' }}
+                />
+                Observers
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={showSentry}
+                  onChange={() => setShowSentry(!showSentry)}
+                  style={{ accentColor: 'var(--color-primary)' }}
+                />
+                Sentries
+              </label>
+            </div>
+          </div>
+
+          {view === 'table' && (
+            <>
+              <TimeDistributionChart times={times} />
+              <DataTable
+                data={rows}
+                columns={columns}
+                defaultSorting={[{ id: 'matchId', desc: true }]}
+                searchableColumns={['placer', 'counterer']}
+              />
+            </>
+          )}
+
+          {view === 'ward-map' && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 300,
+              border: '1px dashed var(--color-border)',
+              borderRadius: 8,
+              color: 'var(--color-text-muted)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.85rem',
+            }}>
+              Ward map visualization coming soon
+            </div>
+          )}
         </>
       )}
     </div>

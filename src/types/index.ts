@@ -76,7 +76,7 @@ export interface FrequentPlayerHero {
   hero: number
   games: number
   rank: number
-  players: { steamId: number; nickname: string }[]
+  players: { steamId: number; nickname: string; wins: number }[]
 }
 
 export interface FacetSummaryLine {
@@ -399,5 +399,29 @@ export interface FilterValues {
   'on-radiant'?: string
   'on-dire'?: string
   threshold?: string
+  items?: string
+  'item-1'?: string
+  'item-2'?: string
+  'item-3'?: string
+  'item-4'?: string
+  'item-5'?: string
+  'item-6'?: string
+  building_lane?: string
+  building_type?: string
+  building_tier?: string
+  winner?: string
+  'first-pick'?: string
+  picked?: string
+  banned?: string
+  'picked-1p'?: string
+  'picked-2p'?: string
+  'picked-3p'?: string
+  'banned-1p'?: string
+  'banned-2p'?: string
+  'banned-3p'?: string
+  frame_field?: string
+  time?: string
+  aggregate?: string
+  sort?: string
   default?: string
 }

@@ -26,16 +26,27 @@ function HeroIconCell({ heroId }: { heroId: number }) {
   )
 }
 
-function PlayersListCell({ players }: { players: { steamId: number; nickname: string }[] }) {
+function PlayersListCell({ players, games }: { players: { steamId: number; nickname: string; wins: number }[]; games: number | null }) {
   if (!players || players.length === 0) return <span style={{ color: 'var(--color-text-muted)' }}>—</span>
   return (
     <span style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 6px', alignItems: 'center' }}>
-      {players.map((p, i) => (
-        <span key={p.steamId}>
-          {i > 0 && <span style={{ color: 'var(--color-text-muted)', marginRight: 2 }}>,</span>}
-          <PlayerCell steamId={p.steamId} nickname={p.nickname} />
-        </span>
-      ))}
+      {players.map((p, i) => {
+        const wr = games && games > 0 ? ((p.wins / games) * 100).toFixed(1) : null
+        return (
+          <span key={p.steamId}>
+            {i > 0 && <span style={{ color: 'var(--color-text-muted)', marginRight: 2 }}>,</span>}
+            <PlayerCell steamId={p.steamId} nickname={p.nickname} />
+            {wr != null && (
+              <span
+                title={`${p.wins} wins`}
+                style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginLeft: 2 }}
+              >
+                ({wr}%)
+              </span>
+            )}
+          </span>
+        )
+      })}
     </span>
   )
 }
@@ -44,11 +55,11 @@ function PlayersListCell({ players }: { players: { steamId: number; nickname: st
 interface PivotedRow {
   hero: number
   rank1Games: number | null
-  rank1Players: { steamId: number; nickname: string }[]
+  rank1Players: { steamId: number; nickname: string; wins: number }[]
   rank2Games: number | null
-  rank2Players: { steamId: number; nickname: string }[]
+  rank2Players: { steamId: number; nickname: string; wins: number }[]
   rank3Games: number | null
-  rank3Players: { steamId: number; nickname: string }[]
+  rank3Players: { steamId: number; nickname: string; wins: number }[]
 }
 
 function pivotData(entries: FrequentPlayerHero[]): PivotedRow[] {
@@ -100,7 +111,8 @@ const columns: ColumnDef<PivotedRow, unknown>[] = [
         header: 'Player(s)',
         size: 150,
         enableSorting: false,
-        cell: ({ row }) => <PlayersListCell players={row.original.rank1Players} />,
+        meta: { grow: true },
+        cell: ({ row }) => <PlayersListCell players={row.original.rank1Players} games={row.original.rank1Games} />,
       },
     ],
   },
@@ -122,7 +134,8 @@ const columns: ColumnDef<PivotedRow, unknown>[] = [
         header: 'Player(s)',
         size: 150,
         enableSorting: false,
-        cell: ({ row }) => <PlayersListCell players={row.original.rank2Players} />,
+        meta: { grow: true },
+        cell: ({ row }) => <PlayersListCell players={row.original.rank2Players} games={row.original.rank2Games} />,
       },
     ],
   },
@@ -144,7 +157,8 @@ const columns: ColumnDef<PivotedRow, unknown>[] = [
         header: 'Player(s)',
         size: 150,
         enableSorting: false,
-        cell: ({ row }) => <PlayersListCell players={row.original.rank3Players} />,
+        meta: { grow: true },
+        cell: ({ row }) => <PlayersListCell players={row.original.rank3Players} games={row.original.rank3Games} />,
       },
     ],
   },

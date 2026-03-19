@@ -1,0 +1,281 @@
+.page {
+  animation: fadeUp 350ms ease both;
+}
+
+/* --- Header ------------------------------------------------ */
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.headerLogo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.headerLogoPlaceholder {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 2rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.headerInfo h1 {
+  font-size: 2.5rem;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.headerMeta {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.headerMeta a {
+  color: var(--color-accent-bright);
+  text-decoration: none;
+}
+
+.headerMeta a:hover {
+  color: var(--color-primary);
+}
+
+/* --- Stats cards ------------------------------------------- */
+.statCards {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xl);
+}
+
+.statCard {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  min-width: 120px;
+}
+
+.statCardLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.statCardValue {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Activity chart ---------------------------------------- */
+.chartSection {
+  margin-bottom: var(--space-xl);
+}
+
+.chartTitle {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.chartContainer {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  overflow-x: auto;
+}
+
+/* --- Two-column layout ------------------------------------- */
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+}
+
+/* --- Section ------------------------------------------------ */
+.section {
+  margin-bottom: var(--space-xl);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-dim);
+  margin-bottom: var(--space-md);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* --- Inline tables ----------------------------------------- */
+.miniTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+.miniTable th {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.miniTable th.right {
+  text-align: right;
+}
+
+.miniTable td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--color-text-secondary);
+}
+
+.miniTable td.right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.miniTable tr:hover td {
+  background: rgba(196, 139, 196, 0.04);
+}
+
+.miniTable a {
+  color: var(--color-accent-bright);
+  text-decoration: none;
+}
+
+.miniTable a:hover {
+  color: var(--color-primary);
+}
+
+.win {
+  color: var(--color-win);
+  font-weight: 600;
+}
+
+.loss {
+  color: var(--color-loss);
+  font-weight: 600;
+}
+
+.heroIcon {
+  height: 22px;
+  width: auto;
+}
+
+.teamLogo {
+  height: 18px;
+  width: auto;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* --- Ratings table ----------------------------------------- */
+.ratingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-md);
+}
+
+.ratingCard {
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.ratingType {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.ratingValue {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  color: var(--color-text);
+}
+
+.ratingPeriod {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* --- Mobile ----------------------------------------------- */
+@media (max-width: 768px) {
+  .headerRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .headerInfo h1 {
+    font-size: 1.75rem;
+  }
+
+  .headerLogo,
+  .headerLogoPlaceholder {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+  }
+
+  .columns {
+    grid-template-columns: 1fr;
+  }
+
+  .statCards {
+    flex-direction: column;
+  }
+
+  .statCard {
+    min-width: 0;
+  }
+}

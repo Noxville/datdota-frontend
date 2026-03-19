@@ -56,7 +56,7 @@ const columns: ColumnDef<HeroTupleLine, unknown>[] = [
     id: 'heroes',
     accessorFn: (row) => heroTupleNames(row.heroes),
     header: 'Heroes',
-    size: 200,
+    size: 80,
     enableSorting: false,
     cell: ({ row }) => <HeroTupleCell heroIds={row.original.heroes} />,
   },

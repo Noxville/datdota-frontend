@@ -1,26 +1,529 @@
-.home {
+.page {
+  animation: fadeUp 350ms ease both;
+}
+
+/* ── Main grid ─────────────────────────────────────────── */
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+/* ── Section titles ────────────────────────────────────── */
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-dim);
+  margin-bottom: var(--space-md);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionLink {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-accent-bright);
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.sectionLink:hover {
+  color: var(--color-primary);
+}
+
+/* ── Live games (inline in left column) ───────────────── */
+
+.liveBanner {
+  margin-bottom: var(--space-lg);
+}
+
+.liveBannerTitle {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-loss);
+  margin-bottom: var(--space-sm);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-loss);
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.livePager {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.liveCards {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.liveCard {
+  flex: 1;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  min-width: 0;
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.liveCard:hover {
+  border-color: var(--color-primary-dim);
+}
+
+.liveTeams {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.liveScore {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.liveLeague {
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.liveDuration {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Recent games ─────────────────────────────────────── */
+
+.recentGames {
   display: flex;
   flex-direction: column;
+  gap: 0;
+}
+
+.leagueGroupHeader {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  padding: 8px 6px 4px;
+}
+
+.leagueGroupHeader:first-child {
+  padding-top: 0;
+}
+
+.leagueGroupHeader:hover {
+  color: var(--color-accent-bright);
+}
+
+.recentCard {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 7px 8px;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background 150ms ease;
+}
+
+.recentCard:hover {
+  background: rgba(196, 139, 196, 0.04);
+}
+
+.recentTeam {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recentTeamRight {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.recentLogo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.recentName {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.72rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recentNameWin {
+  color: var(--color-primary);
+}
+
+.recentArrowLeft,
+.recentArrowRight {
+  font-size: 0.75rem;
+  line-height: 1;
+  text-align: center;
+  min-width: 14px;
+}
+
+.recentArrowLeft {
+  color: var(--color-win);
+}
+
+.recentArrowRight {
+  color: var(--color-loss);
+}
+
+.recentDuration {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  min-width: 32px;
+}
+
+.recentParsed {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  min-width: 14px;
+  opacity: 0.4;
+}
+
+.recentParsedYes {
+  color: var(--color-win);
+  opacity: 0.7;
+}
+
+.recentPager {
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  text-align: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
 }
 
-.home h1 {
-  font-size: 5rem;
-  letter-spacing: -2px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-bright));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: fadeUp 500ms ease both;
-}
-
-.tagline {
-  margin-top: var(--space-md);
-  font-size: 1.1rem;
+.pagerBtn {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
   color: var(--color-text-muted);
-  animation: fadeUp 500ms ease both;
-  animation-delay: 150ms;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.pagerBtn:hover:not(:disabled) {
+  border-color: var(--color-primary-dim);
+  color: var(--color-text-secondary);
+}
+
+.pagerBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pagerLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Top teams ─────────────────────────────────────────── */
+
+.teamsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.teamRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.teamRow:hover {
+  background: rgba(196, 139, 196, 0.04);
+}
+
+.teamRank {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.teamLogo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.teamName {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.75rem;
+  color: var(--color-text);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teamRating {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* ── Hero popularity (tiered rows) ────────────────────── */
+
+.heroTiers {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.heroRow {
+  display: flex;
+  gap: 3px;
+}
+
+.heroCell {
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: default;
+  flex: 1 1 0;
+  aspect-ratio: 1;
+  min-width: 0;
+}
+
+.heroCellImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.heroCellOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.heroCell:hover .heroCellOverlay {
+  opacity: 1;
+}
+
+.heroCellCount {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* ── Active leagues (2-column grid, bigger logos) ─────── */
+
+.leaguesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.leagueCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.leagueCard:hover {
+  border-color: var(--color-primary-dim);
+}
+
+.leagueLogo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.leagueInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.leagueName {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.68rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.leagueMeta {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Activity chart ────────────────────────────────────── */
+
+.chartSection {
+  margin-bottom: var(--space-xl);
+}
+
+.chartContainer {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  overflow-x: auto;
+  position: relative;
+}
+
+.chartTooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 50;
+  background: var(--color-bg-deep);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-text-secondary);
+  box-shadow: var(--shadow-md);
+  white-space: nowrap;
+}
+
+.chartTooltip strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* ── Counts bar (bottom) ──────────────────────────────── */
+
+.countsBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-lg);
+  margin-bottom: var(--space-lg);
+  padding: 10px 16px;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.countItem {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.countValue {
+  color: var(--color-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Mobile ────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .recentLogo {
+    width: 18px;
+    height: 18px;
+  }
+
+  .recentName {
+    font-size: 0.65rem;
+  }
+
+  .leaguesGrid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -41,10 +41,10 @@ function ItemsCell({ items }: { items: number[] }) {
     <span style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {items.filter((id) => id > 0).map((id, i) => {
         const item = itemsData[String(id)]
-        const rawName = item?.short_name as string | undefined
+        const rawName = item?.shortName as string | undefined
         const shortName = rawName?.replace(/^item_/, '')
         const src = shortName ? itemImageUrl(shortName) : undefined
-        const name = (item?.long_name as string) ?? `Item ${id}`
+        const name = (item?.longName as string) ?? `Item ${id}`
         return src ? (
           <img
             key={i}
@@ -214,11 +214,15 @@ const columns: ColumnDef<PlayerSinglePerformanceLine, unknown>[] = [
   },
   {
     id: 'endItems',
-    accessorKey: 'endItems',
+    accessorFn: (row) =>
+      (row.endItems ?? [])
+        .filter((id) => id > 0)
+        .map((id) => (itemsData[String(id)]?.longName as string) ?? `Item ${id}`)
+        .join(', '),
     header: 'Items',
     size: 280,
     enableSorting: false,
-    cell: ({ getValue }) => <ItemsCell items={getValue() as number[]} />,
+    cell: ({ row }) => <ItemsCell items={row.original.endItems} />,
   },
 ]
 

@@ -65,7 +65,7 @@ export default function ScenarioFirstWisdoms() {
         filters={filters}
         onApply={setFilters}
         onClear={clearFilters}
-        showFilters={['teams', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier']}
+        showFilters={['teams', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
       />

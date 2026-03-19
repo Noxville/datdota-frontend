@@ -79,7 +79,7 @@ const columns: ColumnDef<MegacreepComeback, unknown>[] = [
       return w.megacreepTime
     },
     header: "Winner Got Mega'd",
-    size: 110,
+    size: 125,
     meta: { numeric: true, tooltip: 'Time when the winner got megacreeped' },
     cell: ({ getValue }) => {
       const val = getValue() as number | null
@@ -108,7 +108,7 @@ const columns: ColumnDef<MegacreepComeback, unknown>[] = [
       return l.megacreepTime
     },
     header: "Loser Got Mega'd?",
-    size: 110,
+    size: 125,
     meta: { numeric: true, tooltip: 'Time when the loser got megacreeped (if at all)' },
     cell: ({ getValue }) => {
       const val = getValue() as number | null
@@ -118,20 +118,6 @@ const columns: ColumnDef<MegacreepComeback, unknown>[] = [
         </span>
       )
     },
-  },
-  {
-    id: 'tookBackMegas',
-    accessorFn: (row) => {
-      const l = row.radiantVictory ? row.dire : row.radiant
-      return l.megacreepTime != null
-    },
-    header: 'Took Back Megas?',
-    size: 100,
-    cell: ({ getValue }) => (
-      (getValue() as boolean)
-        ? <span style={{ color: '#2dd4bf', fontWeight: 600, fontSize: '0.8rem' }}>Yes</span>
-        : <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>No</span>
-    ),
   },
   {
     id: 'heldOutFor',
@@ -186,7 +172,7 @@ export default function ScenarioMegacreepComebacks() {
         filters={filters}
         onApply={setFilters}
         onClear={clearFilters}
-        showFilters={['patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier']}
+        showFilters={['patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
       />

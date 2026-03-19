@@ -143,7 +143,7 @@ export default function ItemNeutrals() {
         onClear={clearFilters}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
-        showFilters={['teams', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier']}
+        showFilters={['teams', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
       />
 
       {!hasFilters && (

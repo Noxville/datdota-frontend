@@ -5,9 +5,12 @@ import {
   useTeamAutocomplete,
   useLeagueAutocomplete,
   useSplitAutocomplete,
+  useItemAutocomplete,
 } from '../api/autocomplete'
 import { heroesById } from '../data/heroes'
+import { items as itemsData } from '../data/items'
 import { patches as staticPatches } from '../data/patches'
+import { itemImageUrl } from '../config'
 import HeroImage from './HeroImage'
 import {
   fetchPlayerNames,
@@ -24,6 +27,10 @@ interface FilterPanelProps {
   showFilters?: (keyof typeof FILTER_CONFIG)[]
   collapsed?: boolean
   onToggleCollapsed?: () => void
+  /** Extra controls rendered inside the expanded panel (before actions) */
+  renderExtra?: () => React.ReactNode
+  /** Extra summary chips shown in collapsed view */
+  extraChips?: { label: string; value: string }[]
 }
 
 const FILTER_CONFIG = {
@@ -41,6 +48,10 @@ const FILTER_CONFIG = {
   tier: true,
   'result-faction': true,
   threshold: true,
+  items: true,
+  'item-slots': true,
+  'building-filters': true,
+  'draft-filters': true,
 } as const
 
 function AutocompleteInput({
@@ -221,9 +232,11 @@ function PatchSelect({
 function HeroSelect({
   value,
   onChange,
+  label = 'Heroes',
 }: {
   value: string
   onChange: (v: string) => void
+  label?: string
 }) {
   const selected = value ? value.split(',').filter(Boolean) : []
   const [open, setOpen] = useState(false)
@@ -266,7 +279,7 @@ function HeroSelect({
 
   return (
     <div className={styles.filterGroup} ref={ref}>
-      <label className={styles.label}>Heroes</label>
+      <label className={styles.label}>{label}</label>
       {selected.length > 0 && (
         <div className={styles.tags}>
           {selected.map((id) => (
@@ -305,6 +318,92 @@ function HeroSelect({
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+function ItemSelect({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: string
+  onChange: (v: string) => void
+}) {
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const { data: results } = useItemAutocomplete(query)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const selectedItem = value ? itemsData[value] : null
+  const selectedName = selectedItem?.longName ?? (value || null)
+
+  function selectItem(id: string) {
+    onChange(id)
+    setQuery('')
+    setOpen(false)
+  }
+
+  function clear() {
+    onChange('')
+    setQuery('')
+  }
+
+  return (
+    <div className={styles.filterGroup} ref={ref}>
+      <label className={styles.label}>{label}</label>
+      <div className={styles.autocompleteWrap}>
+        {value && selectedName && (
+          <div className={styles.tags}>
+            <span className={styles.tag}>
+              {selectedItem && (
+                <img
+                  src={itemImageUrl(selectedItem.shortName)}
+                  alt=""
+                  style={{ width: 22, height: 16, objectFit: 'contain', borderRadius: 2 }}
+                />
+              )}
+              {selectedName}
+              <button className={styles.tagRemove} onClick={clear}>
+                &times;
+              </button>
+            </span>
+          </div>
+        )}
+        <input
+          className={styles.input}
+          placeholder={`Search ${label.toLowerCase()}...`}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setOpen(true)
+          }}
+          onFocus={() => query.length >= 2 && setOpen(true)}
+        />
+        {open && results && results.length > 0 && (
+          <div className={styles.dropdown}>
+            {results.map((r) => (
+              <button
+                key={r.item_id}
+                className={styles.dropdownItem}
+                onClick={() => selectItem(String(r.item_id))}
+              >
+                {r.name}
+                <span style={{ color: 'var(--color-text-muted)' }}> ({r.item_id})</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -446,6 +545,38 @@ function buildSummaryChips(
     chips.push({ label: 'Heroes', value: filters.heroes })
   }
 
+  if (filters.items) {
+    const item = itemsData[filters.items]
+    chips.push({ label: 'Item', value: item?.longName ?? filters.items })
+  }
+
+  // Item slots for progression
+  const slotItems: string[] = []
+  for (let n = 1; n <= 6; n++) {
+    const key = `item-${n}` as keyof FilterValues
+    const val = filters[key]
+    if (val) {
+      const item = itemsData[val]
+      slotItems.push(item?.longName ?? val)
+    }
+  }
+  if (slotItems.length > 0) {
+    chips.push({ label: 'Items', value: `__item-slots__` })
+  }
+
+  if (filters.building_type) chips.push({ label: 'Bldg Type', value: filters.building_type.split(',').join('/') })
+  if (filters.building_lane) chips.push({ label: 'Lane', value: filters.building_lane.split(',').join('/') })
+  if (filters.building_tier) chips.push({ label: 'Bldg Tier', value: filters.building_tier.split(',').join('/') })
+
+  if (filters.winner) chips.push({ label: 'Winner', value: filters.winner })
+  if (filters['first-pick']) chips.push({ label: '1st Pick', value: filters['first-pick'] })
+  if (filters.picked) chips.push({ label: 'Picked', value: `${filters.picked.split(',').length} heroes` })
+  if (filters.banned) chips.push({ label: 'Banned', value: `${filters.banned.split(',').length} heroes` })
+  const phaseKeys = ['picked-1p', 'picked-2p', 'picked-3p', 'banned-1p', 'banned-2p', 'banned-3p'] as const
+  for (const pk of phaseKeys) {
+    if (filters[pk]) chips.push({ label: pk, value: `${filters[pk]!.split(',').length} heroes` })
+  }
+
   return chips
 }
 
@@ -456,6 +587,8 @@ export default function FilterPanel({
   showFilters,
   collapsed,
   onToggleCollapsed,
+  renderExtra,
+  extraChips,
 }: FilterPanelProps) {
   const [draft, setDraft] = useState<FilterValues>({ ...filters })
   const allPatchNames = staticPatches.map((p) => p.name)
@@ -561,15 +694,20 @@ export default function FilterPanel({
     onApply(cleaned)
   }
 
+  // Items/item-slots are opt-in only (never shown by default)
+  const OPT_IN_ONLY: (keyof typeof FILTER_CONFIG)[] = ['items', 'item-slots', 'building-filters', 'draft-filters']
   const show = (key: keyof typeof FILTER_CONFIG) =>
-    !showFilters || showFilters.includes(key)
+    showFilters ? showFilters.includes(key) : !OPT_IN_ONLY.includes(key)
 
   const hasRow1 =
-    show('players') || show('teams') || show('heroes') || show('leagues') || show('splits') || show('patch')
+    show('players') || show('teams') || show('heroes') || show('leagues') || show('splits') || show('patch') || show('items') || show('item-slots')
   const hasRow2 =
     show('after') || show('before') || show('tier') || show('split-type') || show('duration') || show('result-faction') || show('threshold')
 
-  const chips = buildSummaryChips(filters, allPatchNames, entityNames)
+  const chips = [
+    ...buildSummaryChips(filters, allPatchNames, entityNames),
+    ...(extraChips ?? []),
+  ]
 
   // Tier + split-type merged toggle helpers
   const tiers = draft.tier ? draft.tier.split(',').filter(Boolean) : []
@@ -617,6 +755,24 @@ export default function FilterPanel({
                         {c.value.split(',').filter(Boolean).map((id) => (
                           <HeroImage key={id} heroId={id} variant="mini" size={24} />
                         ))}
+                      </span>
+                    ) : c.value === '__item-slots__' ? (
+                      <span className={styles.heroChipIcons}>
+                        {([1, 2, 3, 4, 5, 6] as const).map((n) => {
+                          const val = filters[`item-${n}` as keyof FilterValues]
+                          if (!val) return null
+                          const item = itemsData[val]
+                          if (!item) return null
+                          return (
+                            <img
+                              key={n}
+                              src={itemImageUrl(item.shortName)}
+                              alt={item.longName}
+                              title={`#${n}: ${item.longName}`}
+                              style={{ width: 28, height: 20, objectFit: 'contain', borderRadius: 2 }}
+                            />
+                          )
+                        })}
                       </span>
                     ) : (
                       <> {c.value}</>
@@ -703,6 +859,25 @@ export default function FilterPanel({
                       value={draft.patch ?? ''}
                       onChange={(v) => update('patch', v)}
                     />
+                  )}
+                  {show('items') && (
+                    <ItemSelect
+                      label="Item"
+                      value={draft.items ?? ''}
+                      onChange={(v) => update('items', v)}
+                    />
+                  )}
+                  {show('item-slots') && (
+                    <>
+                      {([1, 2, 3, 4, 5, 6] as const).map((n) => (
+                        <ItemSelect
+                          key={n}
+                          label={`Item #${n}`}
+                          value={draft[`item-${n}` as keyof FilterValues] ?? ''}
+                          onChange={(v) => update(`item-${n}` as keyof FilterValues, v)}
+                        />
+                      ))}
+                    </>
                   )}
                 </div>
               </div>
@@ -919,6 +1094,116 @@ export default function FilterPanel({
                 </div>
               </div>
             )}
+
+            {show('draft-filters') && (() => {
+              const winnerVal = draft.winner ?? ''
+              const firstPickVal = draft['first-pick'] ?? ''
+              return (
+                <div className={styles.section}>
+                  <div className={styles.sectionLabel}>Draft filters</div>
+                  <div className={styles.filterGroup}>
+                    <div className={styles.checkboxStack}>
+                      <div className={styles.checkboxLine}>
+                        <span className={styles.checkboxLineLabel}>Winner</span>
+                        {[{ id: '', label: 'Either' }, { id: 'radiant', label: 'Radiant' }, { id: 'dire', label: 'Dire' }].map((o) => (
+                          <label key={o.id} className={styles.checkbox}>
+                            <input type="radio" name="draft-winner" checked={winnerVal === o.id} onChange={() => update('winner', o.id)} />
+                            <span>{o.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <div className={styles.checkboxLine}>
+                        <span className={styles.checkboxLineLabel}>1st Pick</span>
+                        {[{ id: '', label: 'Either' }, { id: 'radiant', label: 'Radiant' }, { id: 'dire', label: 'Dire' }].map((o) => (
+                          <label key={o.id} className={styles.checkbox}>
+                            <input type="radio" name="draft-first-pick" checked={firstPickVal === o.id} onChange={() => update('first-pick', o.id)} />
+                            <span>{o.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                    {[
+                      { key: 'picked' as const, label: 'Picked (any)' },
+                      { key: 'picked-1p' as const, label: 'Picked P1' },
+                      { key: 'picked-2p' as const, label: 'Picked P2' },
+                      { key: 'picked-3p' as const, label: 'Picked P3' },
+                    ].map(({ key, label }) => (
+                      <HeroSelect
+                        key={key}
+                        label={label}
+                        value={draft[key] ?? ''}
+                        onChange={(v) => update(key, v)}
+                      />
+                    ))}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                    {[
+                      { key: 'banned' as const, label: 'Banned (any)' },
+                      { key: 'banned-1p' as const, label: 'Banned P1' },
+                      { key: 'banned-2p' as const, label: 'Banned P2' },
+                      { key: 'banned-3p' as const, label: 'Banned P3' },
+                    ].map(({ key, label }) => (
+                      <HeroSelect
+                        key={key}
+                        label={label}
+                        value={draft[key] ?? ''}
+                        onChange={(v) => update(key, v)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {show('building-filters') && (() => {
+              const bTypes = draft.building_type ? draft.building_type.split(',').filter(Boolean) : []
+              const bLanes = draft.building_lane ? draft.building_lane.split(',').filter(Boolean) : []
+              const bTiers = draft.building_tier ? draft.building_tier.split(',').filter(Boolean) : []
+              function toggleList(current: string[], id: string, key: keyof FilterValues) {
+                const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id]
+                update(key, next.join(','))
+              }
+              return (
+                <div className={styles.section}>
+                  <div className={styles.sectionLabel}>Building filters</div>
+                  <div className={styles.filterGroup}>
+                    <div className={styles.checkboxStack}>
+                      <div className={styles.checkboxLine}>
+                        <span className={styles.checkboxLineLabel}>Type</span>
+                        {[{ id: 'TOWER', label: 'Tower' }, { id: 'RAX', label: 'Barracks' }, { id: 'SHRINE', label: 'Shrine' }].map((o) => (
+                          <label key={o.id} className={styles.checkbox}>
+                            <input type="checkbox" checked={bTypes.includes(o.id)} onChange={() => toggleList(bTypes, o.id, 'building_type')} />
+                            <span>{o.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <div className={styles.checkboxLine}>
+                        <span className={styles.checkboxLineLabel}>Lane</span>
+                        {[{ id: 'TOP', label: 'Top' }, { id: 'MIDDLE', label: 'Mid' }, { id: 'BOTTOM', label: 'Bot' }, { id: 'OTHER', label: 'Other' }].map((o) => (
+                          <label key={o.id} className={styles.checkbox}>
+                            <input type="checkbox" checked={bLanes.includes(o.id)} onChange={() => toggleList(bLanes, o.id, 'building_lane')} />
+                            <span>{o.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <div className={styles.checkboxLine}>
+                        <span className={styles.checkboxLineLabel}>Tier</span>
+                        {[{ id: '1', label: '1' }, { id: '2', label: '2' }, { id: '3', label: '3' }, { id: '4', label: '4' }, { id: '-1', label: 'Other' }].map((o) => (
+                          <label key={o.id} className={styles.checkbox}>
+                            <input type="checkbox" checked={bTiers.includes(o.id)} onChange={() => toggleList(bTiers, o.id, 'building_tier')} />
+                            <span>{o.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {renderExtra?.()}
 
             <div className={styles.actions}>
               <button className={styles.applyBtn} onClick={handleApply}>

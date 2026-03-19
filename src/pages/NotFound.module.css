@@ -30,6 +30,22 @@
   margin-bottom: var(--space-lg);
 }
 
+.detail {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: var(--space-lg);
+  max-width: 500px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  text-align: left;
+}
+
 .homeLink {
   font-family: var(--font-body);
   font-size: 0.85rem;

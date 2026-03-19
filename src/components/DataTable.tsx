@@ -32,6 +32,19 @@ interface DataTableProps<T> {
   searchableColumns?: string[]
   rowHeight?: number
   stickyColumns?: number
+  highlightColumnId?: string
+  /** Render extra content below the column sparkline in cell tooltips */
+  renderTooltipExtra?: (row: T, colId: string, value: number) => React.ReactNode
+}
+
+/** Resolve a column's value for a given row, preferring accessorFn over accessorKey/id lookup */
+function resolveValue<T>(col: ColumnDef<T, unknown>, row: T): unknown {
+  const accessorFn = (col as { accessorFn?: (row: T) => unknown }).accessorFn
+  if (accessorFn) return accessorFn(row)
+  const accessorKey = (col as { accessorKey?: string }).accessorKey
+  if (accessorKey) return (row as Record<string, unknown>)[accessorKey]
+  const id = col.id ?? ''
+  return id ? (row as Record<string, unknown>)[id] : undefined
 }
 
 function downloadCsv<T>(data: T[], columns: ColumnDef<T, unknown>[], filename: string) {
@@ -45,8 +58,7 @@ function downloadCsv<T>(data: T[], columns: ColumnDef<T, unknown>[], filename: s
   const rows = data.map((row) =>
     columns
       .map((c) => {
-        const id = c.id ?? (c as { accessorKey?: string }).accessorKey ?? ''
-        const value = (row as Record<string, unknown>)[id]
+        const value = resolveValue(c, row)
         if (value === null || value === undefined) return ''
         const str = String(value)
         return `"${str.replace(/"/g, '""')}"`
@@ -72,8 +84,7 @@ async function copyToClipboard<T>(data: T[], columns: ColumnDef<T, unknown>[]) {
   const rows = data.map((row) =>
     columns
       .map((c) => {
-        const id = c.id ?? (c as { accessorKey?: string }).accessorKey ?? ''
-        const value = (row as Record<string, unknown>)[id]
+        const value = resolveValue(c, row)
         return value === null || value === undefined ? '' : String(value)
       })
       .join('\t'),
@@ -202,6 +213,7 @@ interface TooltipState {
   y: number
   colId: string
   value: number
+  rowIndex?: number
   headerOnly?: boolean
 }
 
@@ -288,8 +300,11 @@ interface VirtualRowProps {
   style: React.CSSProperties
   columnStats: Record<string, ColumnStats>
   groupStartIds: Set<string>
+  highlightColumnId?: string
   totalSize: number
-  onCellEnter: (e: React.MouseEvent, colId: string, value: number) => void
+  stickyOffsets?: Map<string, number>
+  lastStickyColId?: string
+  onCellEnter: (e: React.MouseEvent, colId: string, value: number, rowIndex: number) => void
   onCellLeave: () => void
   measureRef?: (node: HTMLElement | null) => void
   dataIndex?: number
@@ -300,7 +315,10 @@ const VirtualRow = memo(function VirtualRow({
   style,
   columnStats,
   groupStartIds,
+  highlightColumnId,
   totalSize,
+  stickyOffsets,
+  lastStickyColId,
   onCellEnter,
   onCellLeave,
   measureRef,
@@ -320,12 +338,27 @@ const VirtualRow = memo(function VirtualRow({
         const heatColor = getCellHeatColor(colId, cellValue, columnStats)
         const hasStats = colId in columnStats
         const isGroupStart = groupStartIds.has(colId)
+        const isHighlighted = highlightColumnId === colId
         const size = cell.column.getSize()
         const cellStyle: React.CSSProperties = isGrow
           ? { flex: 1, minWidth: size, color: heatColor }
           : totalSize > 0
             ? { width: `${(size / totalSize) * 100}%`, color: heatColor }
             : { flex: `${size} 0 0px`, color: heatColor }
+        if (isHighlighted) {
+          cellStyle.background = 'rgba(196, 139, 196, 0.12)'
+        }
+        const stickyLeft = stickyOffsets?.get(colId)
+        if (stickyLeft != null) {
+          cellStyle.position = 'sticky'
+          cellStyle.left = stickyLeft
+          cellStyle.zIndex = 2
+          cellStyle.background = cellStyle.background ?? 'var(--color-bg)'
+          if (colId === lastStickyColId) {
+            cellStyle.paddingRight = 12
+            cellStyle.borderRight = '1px solid var(--color-border)'
+          }
+        }
         return (
           <div
             key={cell.id}
@@ -334,7 +367,7 @@ const VirtualRow = memo(function VirtualRow({
             role="cell"
             onMouseEnter={
               hasStats && typeof cellValue === 'number'
-                ? (e) => onCellEnter(e, colId, cellValue)
+                ? (e) => onCellEnter(e, colId, cellValue, row.index)
                 : undefined
             }
             onMouseLeave={hasStats ? onCellLeave : undefined}
@@ -355,6 +388,9 @@ export default function DataTable<T>({
   defaultSorting = [],
   searchableColumns,
   rowHeight = 36,
+  stickyColumns = 0,
+  highlightColumnId,
+  renderTooltipExtra,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>(defaultSorting)
   const [globalFilter, setGlobalFilter] = useState('')
@@ -427,13 +463,40 @@ export default function DataTable<T>({
     return ids
   }, [table])
 
-  const hasGrowColumn = columns.some((c) => (c.meta as ColMeta | undefined)?.grow)
+  const hasGrowColumn = useMemo(() => {
+    function check(cols: ColumnDef<T, unknown>[]): boolean {
+      return cols.some((c) => (c.meta as ColMeta | undefined)?.grow || ('columns' in c && Array.isArray(c.columns) && check(c.columns as ColumnDef<T, unknown>[])))
+    }
+    return check(columns)
+  }, [columns])
 
   // Compute total column size for percentage-based widths
   const totalSize = useMemo(() => {
     const allLeaves = table.getAllLeafColumns()
     return allLeaves.reduce((s, col) => s + col.getSize(), 0)
   }, [table])
+
+  // Compute sticky column offsets (colId → left px) and track the last one
+  const stickyOffsets = useMemo(() => {
+    if (stickyColumns <= 0) return undefined
+    const map = new Map<string, number>()
+    const allLeaves = table.getAllLeafColumns()
+    let left = 0
+    const count = Math.min(stickyColumns, allLeaves.length)
+    for (let i = 0; i < count; i++) {
+      const col = allLeaves[i]
+      map.set(col.id, left)
+      left += col.getSize()
+    }
+    return map
+  }, [stickyColumns, table])
+
+  const lastStickyColId = useMemo(() => {
+    if (stickyColumns <= 0) return undefined
+    const allLeaves = table.getAllLeafColumns()
+    const idx = Math.min(stickyColumns, allLeaves.length) - 1
+    return idx >= 0 ? allLeaves[idx].id : undefined
+  }, [stickyColumns, table])
 
   const virtualizer = useVirtualizer({
     count: rows.length,
@@ -461,7 +524,7 @@ export default function DataTable<T>({
   }, [rows, columns])
 
   const handleCellEnter = useCallback(
-    (e: React.MouseEvent, colId: string, value: number) => {
+    (e: React.MouseEvent, colId: string, value: number, rowIndex: number) => {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
       const containerRect = containerRef.current?.getBoundingClientRect()
       if (!containerRect) return
@@ -470,6 +533,7 @@ export default function DataTable<T>({
         y: rect.top - containerRect.top,
         colId,
         value,
+        rowIndex,
       })
     },
     [],
@@ -495,6 +559,7 @@ export default function DataTable<T>({
 
   const tooltipStats = tooltip ? columnStats[tooltip.colId] : null
   const tooltipLabel = tooltip ? headerTooltips[tooltip.colId] ?? tooltipStats?.tooltip : null
+  const tooltipRow = tooltip?.rowIndex != null ? rows[tooltip.rowIndex]?.original : undefined
 
   return (
     <div className={styles.container} ref={containerRef}>
@@ -584,11 +649,24 @@ export default function DataTable<T>({
                       const tipLabel = headerTooltips[colId]
                       const isGroupStart = groupStartIds.has(colId)
 
+                      const stickyLeft = stickyOffsets?.get(colId)
+                      const thStyle: React.CSSProperties = { width: pct }
+                      if (stickyLeft != null) {
+                        thStyle.position = 'sticky'
+                        thStyle.left = stickyLeft
+                        thStyle.zIndex = 3
+                        thStyle.background = 'var(--color-bg)'
+                        if (colId === lastStickyColId) {
+                          thStyle.paddingRight = 12
+                          thStyle.borderRight = '1px solid var(--color-border)'
+                        }
+                      }
+
                       return (
                         <div
                           key={header.id}
                           className={`${styles.th} ${canSort ? styles.sortable : ''} ${sorted ? styles.sorted : ''} ${isNumeric ? styles.thRight : ''} ${isGroupStart ? styles.groupDivider : ''}`}
-                          style={{ width: pct }}
+                          style={thStyle}
                           onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                           role="columnheader"
                           onMouseEnter={tipLabel ? (e) => handleHeaderEnter(e, colId) : undefined}
@@ -624,6 +702,17 @@ export default function DataTable<T>({
                   const thStyle: React.CSSProperties = isGrow
                     ? { flex: 1, minWidth: width }
                     : { width: `${(width / totalSize) * 100}%` }
+                  const stickyLeft = stickyOffsets?.get(colId)
+                  if (stickyLeft != null) {
+                    thStyle.position = 'sticky'
+                    thStyle.left = stickyLeft
+                    thStyle.zIndex = 3
+                    thStyle.background = 'var(--color-bg)'
+                    if (colId === lastStickyColId) {
+                      thStyle.paddingRight = 12
+                      thStyle.borderRight = '1px solid var(--color-border)'
+                    }
+                  }
 
                   return (
                     <div
@@ -660,6 +749,9 @@ export default function DataTable<T>({
                 row={row}
                 columnStats={columnStats}
                 groupStartIds={groupStartIds}
+                stickyOffsets={stickyOffsets}
+                lastStickyColId={lastStickyColId}
+                highlightColumnId={highlightColumnId}
                 totalSize={totalSize}
                 onCellEnter={handleCellEnter}
                 onCellLeave={handleCellLeave}
@@ -703,6 +795,9 @@ export default function DataTable<T>({
                   max <strong>{tooltipStats.max.toFixed(2)}</strong>
                 </span>
               </div>
+              {renderTooltipExtra && tooltipRow && (
+                renderTooltipExtra(tooltipRow, tooltip.colId, tooltip.value)
+              )}
             </>
           )}
         </div>

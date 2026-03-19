@@ -72,8 +72,8 @@ async function updatePatches() {
 
 export interface PatchData {
   name: string
-  lower_bound: number
-  upper_bound: number
+  lowerBound: number
+  upperBound: number
 }
 
 /** All patches, newest first */

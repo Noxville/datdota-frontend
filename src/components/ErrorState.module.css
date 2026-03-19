@@ -29,6 +29,12 @@
   max-width: 400px;
 }
 
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
 .retry {
   all: unset;
   cursor: pointer;
@@ -44,4 +50,38 @@
 .retry:hover {
   background: var(--color-accent);
   color: var(--color-bg);
+}
+
+.toggleRaw {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.toggleRaw:hover {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+}
+
+.rawDetail {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  max-width: 600px;
+  max-height: 200px;
+  overflow: auto;
+  background: var(--color-bg-deep);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-all;
 }

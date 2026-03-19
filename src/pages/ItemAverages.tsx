@@ -147,7 +147,7 @@ export default function ItemAverages() {
         onClear={clearFilters}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
-        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier', 'threshold', 'result-faction']}
+        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier', 'threshold', 'result-faction']}
       />
 
       {!hasFilters && (

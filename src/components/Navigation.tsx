@@ -32,6 +32,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Elo by Phase', to: '/heroes/elo-by-phase?default=true' },
           { label: 'Frequent Players', to: '/heroes/frequent-players?default=true' },
           { label: 'Facets', to: '/facets/summary?default=true' },
+          { label: 'Ability Builds', to: '/abilities/builds?default=true' },
         ],
       },
     ],
@@ -79,6 +80,13 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Scorigami', to: '/matches/scorigami?default=true' },
         ],
       },
+      {
+        heading: 'Leagues',
+        items: [
+          { label: 'All Leagues', to: '/leagues' },
+          { label: 'LAN Event Pedigrees', to: '/leagues/pedigrees' },
+        ],
+      },
     ],
   },
   {
@@ -90,13 +98,13 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Hero Kills', to: '/events/hero-kills?default=true' },
           { label: 'Hero Deaths', to: '/events/hero-deaths?default=true' },
           { label: 'First Bloods', to: '/events/first-bloods?default=true' },
+          { label: 'Big Crits', to: '/events/crits?default=true' },
         ],
       },
       {
         heading: 'Vision',
         items: [
           { label: 'Wards Placed', to: '/events/wards?default=true' },
-          { label: 'Ward Map', to: '/events/ward-map?default=true' },
         ],
       },
       {
@@ -116,6 +124,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Megacreep Comebacks', to: '/scenarios/megacreep-comebacks?default=true' },
           { label: 'First Wisdoms', to: '/scenarios/first-wisdoms?default=true' },
           { label: 'Bounty Bazinga', to: '/scenarios/bounty-bazinga?default=true' },
+          { label: 'Game Loop', to: '/scenarios/gameloop?default=true' },
         ],
       },
     ],
@@ -142,10 +151,9 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Draft Positions', to: '/drafts/positions?default=true' },
           { label: 'Lanes', to: '/lanes/compositions?default=true' },
           { label: 'Factions', to: '/factions/overview?default=true' },
-          { label: 'Abilities', to: '/abilities/builds?default=true' },
           { label: 'Win Expectancy', to: '/win-expectancy' },
           { label: 'Frames', to: '/frames?default=true' },
-          { label: 'Regions', to: '/regions/performances?default=true' },
+          { label: 'Casters', to: '/casters?default=true' },
         ],
       },
     ],

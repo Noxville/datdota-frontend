@@ -24,6 +24,7 @@ function ItemIcon({ itemId }: { itemId: number }) {
   const item = itemsData[String(itemId)]
   const name = item?.longName ?? `Item ${itemId}`
   const [failed, setFailed] = useState(false)
+  const isRecipe = item && (item.shortName as string).includes('recipe')
 
   if (!item || failed) {
     return (
@@ -45,8 +46,11 @@ function ItemIcon({ itemId }: { itemId: number }) {
     <img
       src={itemImageUrl(item.shortName)}
       alt={name}
-      title={name}
-      style={{ width: 24, height: 18, objectFit: 'contain', borderRadius: 2 }}
+      title={name + (isRecipe ? ' (Recipe)' : '')}
+      style={{
+        width: 24, height: 18, objectFit: 'contain', borderRadius: 2,
+        ...(isRecipe ? { filter: 'grayscale(1) opacity(0.5)' } : {}),
+      }}
       loading="lazy"
       onError={() => setFailed(true)}
     />
@@ -174,7 +178,7 @@ export default function EventCouriers() {
         filters={filters}
         onApply={setFilters}
         onClear={clearFilters}
-        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier']}
+        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
       />

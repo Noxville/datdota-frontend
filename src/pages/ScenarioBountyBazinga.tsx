@@ -88,7 +88,7 @@ export default function ScenarioBountyBazinga() {
         filters={filters}
         onApply={setFilters}
         onClear={clearFilters}
-        showFilters={['patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier']}
+        showFilters={['patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
       />

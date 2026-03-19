@@ -21,12 +21,16 @@ function HeroIconCell({ heroId }: { heroId: number }) {
 function ItemIcon({ itemId }: { itemId: number }) {
   const item = itemsData[String(itemId)]
   if (!item) return null
+  const isRecipe = (item.shortName as string).includes('recipe')
   return (
     <img
       src={itemImageUrl(item.shortName)}
       alt={item.longName}
-      title={item.longName}
-      style={{ width: 28, height: 20, objectFit: 'contain', borderRadius: 2 }}
+      title={item.longName + (isRecipe ? ' (Recipe)' : '')}
+      style={{
+        width: 28, height: 20, objectFit: 'contain', borderRadius: 2,
+        ...(isRecipe ? { filter: 'grayscale(1) opacity(0.5)' } : {}),
+      }}
       loading="lazy"
     />
   )
@@ -117,6 +121,8 @@ export default function ItemProgression() {
   )
 
   const rows = useMemo(() => data?.data ?? [], [data])
+  const wins = useMemo(() => rows.filter((r) => r.victory).length, [rows])
+  const total = rows.length
 
   return (
     <div className={styles.page}>
@@ -133,7 +139,7 @@ export default function ItemProgression() {
         onClear={clearFilters}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
-        showFilters={['players', 'teams', 'heroes', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'tier', 'roles']}
+        showFilters={['players', 'teams', 'heroes', 'item-slots', 'roles', 'patch', 'after', 'before', 'duration', 'leagues', 'splits', 'split-type', 'tier']}
       />
 
       {!hasFilters && (
@@ -154,12 +160,37 @@ export default function ItemProgression() {
       )}
 
       {rows.length > 0 && (
-        <DataTable
-          data={rows}
-          columns={columns}
-          defaultSorting={[{ id: 'matchId', desc: true }]}
-          searchableColumns={['player']}
-        />
+        <>
+          <div style={{
+            display: 'flex',
+            gap: 32,
+            justifyContent: 'center',
+            padding: '10px 0 14px',
+            fontSize: '0.85rem',
+            fontFamily: 'var(--font-mono)',
+          }}>
+            <span>
+              <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Progressions:</span>{' '}
+              {total.toLocaleString()}
+            </span>
+            <span style={{ color: 'var(--color-text-muted)' }}>|</span>
+            <span>
+              <span style={{ color: '#2dd4bf', fontWeight: 600 }}>Wins:</span>{' '}
+              {wins.toLocaleString()}
+            </span>
+            <span style={{ color: 'var(--color-text-muted)' }}>|</span>
+            <span>
+              <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Win%:</span>{' '}
+              {(wins / total * 100).toFixed(1)}%
+            </span>
+          </div>
+          <DataTable
+            data={rows}
+            columns={columns}
+            defaultSorting={[{ id: 'matchId', desc: true }]}
+            searchableColumns={['player']}
+          />
+        </>
       )}
     </div>
   )
