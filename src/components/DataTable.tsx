@@ -31,6 +31,7 @@ interface DataTableProps<T> {
   defaultSorting?: SortingState
   searchableColumns?: string[]
   rowHeight?: number
+  maxHeight?: string
   stickyColumns?: number
   highlightColumnId?: string
   /** Render extra content below the column sparkline in cell tooltips */
@@ -388,6 +389,7 @@ export default function DataTable<T>({
   defaultSorting = [],
   searchableColumns,
   rowHeight = 36,
+  maxHeight,
   stickyColumns = 0,
   highlightColumnId,
   renderTooltipExtra,
@@ -586,7 +588,7 @@ export default function DataTable<T>({
       </div>
 
       {/* Table */}
-      <div className={styles.tableOuter} ref={parentRef}>
+      <div className={styles.tableOuter} ref={parentRef} style={maxHeight ? { maxHeight } : undefined}>
         {/* Header */}
         <div className={styles.thead} role="rowgroup">
           {(() => {

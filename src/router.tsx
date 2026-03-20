@@ -29,7 +29,9 @@ const router = createBrowserRouter([
       { path: '/heroes/elo', element: lz(() => import('./pages/HeroTuplesElo')) },
       { path: '/heroes/elo-by-phase', element: lz(() => import('./pages/HeroEloByPhase')) },
       { path: '/heroes/frequent-players', element: lz(() => import('./pages/HeroFrequentPlayers')) },
+      { path: '/heroes/head-to-head', element: lz(() => import('./pages/HeroHeadToHead')) },
       { path: '/facets/summary', element: lz(() => import('./pages/FacetSummary')) },
+      { path: '/abilities/builds', element: lz(() => import('./pages/AbilityBuilds')) },
 
       // Players
       { path: '/players/performances', element: lz(() => import('./pages/PlayerPerformances')) },
@@ -99,6 +101,7 @@ const router = createBrowserRouter([
 
       // Casters
       { path: '/casters', element: lz(() => import('./pages/Casters')) },
+      { path: '/casters/:id', element: lz(() => import('./pages/CasterShow')) },
 
       // Ratings
       { path: '/ratings', element: lz(() => import('./pages/Ratings')) },
@@ -115,6 +118,7 @@ const router = createBrowserRouter([
       // Leagues
       { path: '/leagues', element: lz(() => import('./pages/Leagues')) },
       { path: '/leagues/pedigrees', element: lz(() => import('./pages/LeaguePedigrees')) },
+      { path: '/leagues/:id', element: lz(() => import('./pages/LeagueShow')) },
 
       // About
       { path: '/about', element: lz(() => import('./pages/About')) },

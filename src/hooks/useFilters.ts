@@ -50,6 +50,8 @@ const FILTER_KEYS: (keyof FilterValues)[] = [
   'time',
   'aggregate',
   'sort',
+  'level-from',
+  'level-to',
   'default',
 ]
 

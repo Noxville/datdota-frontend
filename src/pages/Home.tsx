@@ -255,7 +255,7 @@ function RecentGames({ games }: { games: RecentGame[] }) {
       let group = map.get(key)
       if (!group) {
         const label = g.splitDerivedName ?? g.leagueName
-        const linkTo = g.splitId ? `/splits/${g.splitId}` : `/leagues/${g.leagueId}`
+        const linkTo = `/leagues/${g.leagueId}`
         group = { label, linkTo, games: [] }
         map.set(key, group)
         groups.push(group)

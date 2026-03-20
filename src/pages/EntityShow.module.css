@@ -117,11 +117,31 @@
   overflow-x: auto;
 }
 
+/* --- Wide logo (3:2 league banners) ----------------------- */
+.headerLogoWide {
+  width: 120px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  flex-shrink: 0;
+}
+
 /* --- Two-column layout ------------------------------------- */
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
+  align-items: start;
+}
+
+.columnsEqualHeight {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: stretch;
 }
 
 /* --- Section ------------------------------------------------ */
@@ -267,7 +287,13 @@
     font-size: 1.5rem;
   }
 
-  .columns {
+  .headerLogoWide {
+    width: 84px;
+    height: 56px;
+  }
+
+  .columns,
+  .columnsEqualHeight {
     grid-template-columns: 1fr;
   }
 

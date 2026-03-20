@@ -423,5 +423,7 @@ export interface FilterValues {
   time?: string
   aggregate?: string
   sort?: string
+  'level-from'?: string
+  'level-to'?: string
   default?: string
 }

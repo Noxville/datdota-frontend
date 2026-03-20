@@ -259,11 +259,13 @@ function Dropdown({
 
 export default function Navigation() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
   const location = useLocation()
 
   useEffect(() => {
     setOpenIndex(null)
+    setMobileOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
@@ -282,7 +284,15 @@ export default function Navigation() {
         datdota
       </Link>
 
-      <div className={styles.items}>
+      <button
+        className={styles.hamburger}
+        onClick={() => { setMobileOpen(!mobileOpen); setOpenIndex(null) }}
+        aria-label="Toggle menu"
+      >
+        {mobileOpen ? '\u2715' : '\u2630'}
+      </button>
+
+      <div className={`${styles.items} ${mobileOpen ? styles.itemsOpen : ''}`}>
         {NAV_ITEMS.map((item, i) => (
           <div key={item.label} className={styles.itemWrapper}>
             {item.to && !item.children ? (
