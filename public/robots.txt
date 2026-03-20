@@ -1,12 +1,13 @@
-User-agent: *
-Disallow: /
-
 User-agent: Googlebot
 Allow: /
-Disallow: /administrator/
-Disallow: /wp-admin/
+Disallow: /matches
 
 User-agent: Bingbot
 Allow: /
+Disallow: /matches
+
+User-agent: *
 Disallow: /administrator/
+Disallow: /real_funny/see_you_at/fuck_youjj/
 Disallow: /wp-admin/
+Disallow: /

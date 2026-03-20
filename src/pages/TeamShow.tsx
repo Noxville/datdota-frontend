@@ -291,7 +291,6 @@ function ActivityChart({ data }: { data: GameCount[] }) {
         d3.select(this).attr('opacity', 1)
         const container = containerRef.current
         if (!container) return
-        const containerRect = container.getBoundingClientRect()
         const barRect = (this as SVGRectElement).getBoundingClientRect()
         setTip({
           x: barRect.left + barRect.width / 2,
