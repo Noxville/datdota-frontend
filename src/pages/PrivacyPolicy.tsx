@@ -35,16 +35,28 @@ export default function PrivacyPolicy() {
             this Privacy Policy. No personal data is transmitted to our servers for this purpose.
           </li>
           <li>
-            <strong>Cloudflare analytics</strong> &mdash; we use Cloudflare, which may collect
-            anonymised, aggregated analytics data (page views, country of origin, browser type).
-            Cloudflare acts as a data processor on our behalf. See{' '}
+            <strong>Cloudflare</strong> &mdash; we use Cloudflare for CDN, DDoS protection, and
+            DNS, which may collect anonymised, aggregated analytics data (page views, country of
+            origin, browser type). Cloudflare acts as a data processor on our behalf. See{' '}
             <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">
               Cloudflare&rsquo;s Privacy Policy
             </a>.
           </li>
+          <li>
+            <strong>Google Analytics 4</strong> &mdash; we use Google Analytics (measurement
+            ID: G-HJJGSQZXKV) to understand how visitors use the site. Google Analytics uses
+            cookies and collects anonymised usage data including pages visited, session duration,
+            approximate location (country/city), browser type, and device category. This data is
+            processed by Google LLC, which acts as a data processor on our behalf. Data may be
+            transferred to the United States under Google&rsquo;s Data Processing Amendment and
+            Standard Contractual Clauses. See{' '}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+              Google&rsquo;s Privacy Policy
+            </a>.
+          </li>
         </ul>
         <p className={styles.text}>
-          We do <strong>not</strong> use cookies for tracking, advertising, or analytics.
+          We do <strong>not</strong> use cookies for advertising or cross-site tracking.
           We do <strong>not</strong> collect email addresses, names, or account information
           unless you contact us directly.
         </p>
@@ -74,6 +86,10 @@ export default function PrivacyPolicy() {
         </p>
         <ul className={styles.list}>
           <li>
+            <strong>Consent</strong> (Art.&nbsp;6(1)(a)) &mdash; analytics cookies (Google
+            Analytics) are set after you accept the Terms of Service and consent modal.
+          </li>
+          <li>
             <strong>Legitimate interest</strong> (Art.&nbsp;6(1)(f)) &mdash; server access logs for
             security and abuse prevention; processing of publicly available Dota&nbsp;2 match data
             for esports statistics.
@@ -90,6 +106,7 @@ export default function PrivacyPolicy() {
         <ul className={styles.list}>
           <li>Server access logs: up to 90 days</li>
           <li>Dota&nbsp;2 match data: retained indefinitely as part of the historical statistics archive</li>
+          <li>Google Analytics cookies: up to 2 years (managed by Google)</li>
           <li>Consent records: stored in your browser until you clear localStorage</li>
         </ul>
       </section>
@@ -105,6 +122,11 @@ export default function PrivacyPolicy() {
             <strong>Cloudflare, Inc.</strong> (CDN, DDoS protection, DNS) &mdash; data may be
             transferred to and processed in the United States under Cloudflare&rsquo;s Data
             Processing Addendum and Standard Contractual Clauses.
+          </li>
+          <li>
+            <strong>Google LLC</strong> (Google Analytics 4) &mdash; anonymised usage data may be
+            transferred to and processed in the United States under Google&rsquo;s Data Processing
+            Amendment and Standard Contractual Clauses.
           </li>
           <li>
             <strong>Hosting provider</strong> &mdash; our servers are located in the European Union.
