@@ -39,7 +39,7 @@ function prepareRows(data: RatingEntry[]): RatingsRow[] {
         entry.glicko2.rating !== null && entry.glicko2.ratingSevenDaysAgo !== null
           ? entry.glicko2.rating - entry.glicko2.ratingSevenDaysAgo
           : null,
-      glicko1LowerBound: glickoLB(entry.glicko.mu, entry.glicko.phi),
+      glicko1LowerBound: glickoLB(entry.glicko.mu, entry.glicko.sigma),
       glicko1Delta7d:
         entry.glicko.rating !== null && entry.glicko.ratingSevenDaysAgo !== null
           ? entry.glicko.rating - entry.glicko.ratingSevenDaysAgo
@@ -150,7 +150,7 @@ const columns: ColumnDef<RatingsRow, unknown>[] = [
         id: 'g1rating',
         header: 'Rating',
         size: 85,
-        meta: { numeric: true, heatmap: 'high-good', tooltip: 'Glicko 1 Lower Bound (μ − 2.5φ)' },
+        meta: { numeric: true, heatmap: 'high-good', tooltip: 'Glicko 1 Lower Bound (μ − 2.5·RD)' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
       }),
       ch.accessor((row) => row.glicko.mu, {
@@ -160,11 +160,11 @@ const columns: ColumnDef<RatingsRow, unknown>[] = [
         meta: { numeric: true, tooltip: 'Glicko 1 mean rating (μ)' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
       }),
-      ch.accessor((row) => row.glicko.phi, {
-        id: 'g1phi',
-        header: 'Phi',
+      ch.accessor((row) => row.glicko.sigma, {
+        id: 'g1rd',
+        header: 'RD',
         size: 65,
-        meta: { numeric: true, heatmap: 'high-bad', tooltip: 'Glicko 1 Uncertainty' },
+        meta: { numeric: true, heatmap: 'high-bad', tooltip: 'Rating Deviation (lower = more certain)' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} decimals={1} />,
       }),
       ch.accessor('glicko1Delta7d', {

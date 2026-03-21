@@ -4,6 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
+import { patches } from '../data/patches'
 import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
@@ -46,21 +47,26 @@ interface AggregateRow {
   gameCount: number
 }
 
+function patchFromMatchId(matchId: number): string {
+  for (const p of patches) {
+    const pd = p as unknown as { name: string; lowerBound: number; upperBound: number }
+    if (matchId >= pd.lowerBound && matchId <= pd.upperBound) return pd.name
+  }
+  return '—'
+}
+
 function HeroIconCell({ heroKey }: { heroKey: string }) {
-  // heroKey is the hero name string from the API (e.g. "Anti-Mage")
-  // Find hero by name
-  const entry = Object.values(heroesById).find((h) => h.name === heroKey)
-  const pic = entry?.picture
-  const src = pic ? heroImageUrl(pic) : undefined
-  if (!src) return <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>{heroKey}</span>
+  // heroKey may be a numeric ID (e.g. "1") or a name (e.g. "Anti-Mage")
+  const entry = heroesById[heroKey] ?? Object.values(heroesById).find((h) => h.name === heroKey)
+  const name = entry?.name ?? heroKey
+  const src = entry?.picture ? heroImageUrl(entry.picture) : undefined
   return (
-    <img
-      src={src}
-      alt={heroKey}
-      title={heroKey}
-      style={{ height: 22, width: 'auto' }}
-      loading="lazy"
-    />
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+      {src && (
+        <img src={src} alt={name} style={{ height: 22, width: 'auto' }} loading="lazy" />
+      )}
+      <span style={{ fontSize: '0.75rem' }}>{name}</span>
+    </span>
   )
 }
 
@@ -79,7 +85,7 @@ const recordColumns: ColumnDef<RecordRow, unknown>[] = [
     id: 'hero',
     accessorKey: 'heroKey',
     header: 'Hero',
-    size: 46,
+    size: 160,
     enableSorting: false,
     cell: ({ row }) => <HeroIconCell heroKey={row.original.heroKey} />,
   },
@@ -90,6 +96,15 @@ const recordColumns: ColumnDef<RecordRow, unknown>[] = [
     size: 80,
     meta: { numeric: true, heatmap: 'high-good', tooltip: 'Record Value' },
     cell: ({ getValue }) => <NumericCell value={getValue() as number} decimals={2} />,
+  },
+  {
+    id: 'patch',
+    accessorFn: (row) => patchFromMatchId(row.matchId),
+    header: 'Patch',
+    size: 70,
+    cell: ({ getValue }) => (
+      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{getValue() as string}</span>
+    ),
   },
   {
     id: 'matchId',

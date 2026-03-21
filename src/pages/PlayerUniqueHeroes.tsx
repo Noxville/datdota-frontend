@@ -55,7 +55,7 @@ function makeColumns(mode: HeroMode): ColumnDef<UniqueHeroLine, unknown>[] {
       id: 'nickname',
       accessorKey: 'nickname',
       header: 'Player',
-      size: 40,
+      size: 140,
       enableSorting: false,
       cell: ({ row }) => (
         <PlayerCell steamId={row.original.steamId} nickname={row.original.nickname} />

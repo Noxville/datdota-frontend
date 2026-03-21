@@ -1,0 +1,118 @@
+/* ── Symmetric ratings comparison table ────────────────── */
+
+.ratingsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-md) 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.ratingsTable th {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: bottom;
+}
+
+.rtTeamHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.rtTeamHeaderRight {
+  flex-direction: row;
+}
+
+.rtTeamLogo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.rtTeamLink {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--color-text);
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.rtTeamLink:hover {
+  color: var(--color-primary);
+}
+
+.rtTeamRecord {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.ratingsTable td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.rtTeamName {
+  width: 40%;
+  text-align: center;
+}
+
+.rtMethod {
+  width: 20%;
+  text-align: center;
+}
+
+.rtLabel {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.rtValueRow {
+  text-align: center;
+}
+
+.rtValueRow span {
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.rtValueRow span + span {
+  margin-left: var(--space-sm);
+}
+
+.rtHighlight {
+  color: var(--color-primary) !important;
+  font-weight: 600;
+}
+
+.rtProb {
+  font-size: 0.65rem !important;
+  color: var(--color-text-muted) !important;
+  font-weight: 400 !important;
+}
+
+/* ── Current-patch row accent ──────────────────────────── */
+
+.currentPatchRow {
+  background: rgba(196, 139, 196, 0.06);
+  border-left: 2px solid var(--color-primary-dim);
+}

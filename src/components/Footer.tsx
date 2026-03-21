@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import styles from './Footer.module.css'
 
 const SOCIAL_LINKS = [
@@ -62,6 +63,14 @@ export default function Footer() {
                 <SocialIcon type={link.icon} />
               </a>
             ))}
+          </div>
+
+          <div className={styles.legal}>
+            <Link to="/terms">Terms</Link>
+            <span className={styles.sep} />
+            <Link to="/privacy">Privacy</Link>
+            <span className={styles.sep} />
+            <Link to="/data-policy">Data Policy</Link>
           </div>
 
           <div className={styles.credits}>

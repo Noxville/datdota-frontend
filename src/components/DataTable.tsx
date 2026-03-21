@@ -36,6 +36,10 @@ interface DataTableProps<T> {
   highlightColumnId?: string
   /** Render extra content below the column sparkline in cell tooltips */
   renderTooltipExtra?: (row: T, colId: string, value: number) => React.ReactNode
+  /** Hide the toolbar (search, copy, CSV) */
+  hideToolbar?: boolean
+  /** Optional callback to add a class name to specific rows */
+  rowClassName?: (row: T) => string | undefined
 }
 
 /** Resolve a column's value for a given row, preferring accessorFn over accessorKey/id lookup */
@@ -309,6 +313,7 @@ interface VirtualRowProps {
   onCellLeave: () => void
   measureRef?: (node: HTMLElement | null) => void
   dataIndex?: number
+  extraClassName?: string
 }
 
 const VirtualRow = memo(function VirtualRow({
@@ -324,9 +329,10 @@ const VirtualRow = memo(function VirtualRow({
   onCellLeave,
   measureRef,
   dataIndex,
+  extraClassName,
 }: VirtualRowProps) {
   return (
-    <div className={styles.tr} style={{ ...style, minWidth: totalSize }} role="row" ref={measureRef} data-index={dataIndex}>
+    <div className={`${styles.tr}${extraClassName ? ` ${extraClassName}` : ''}`} style={{ ...style, minWidth: totalSize }} role="row" ref={measureRef} data-index={dataIndex}>
       {row.getVisibleCells().map((cell) => {
         const meta = cell.column.columnDef.meta as ColMeta | undefined
         const isNumeric = meta?.numeric
@@ -393,6 +399,8 @@ export default function DataTable<T>({
   stickyColumns = 0,
   highlightColumnId,
   renderTooltipExtra,
+  hideToolbar,
+  rowClassName,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>(defaultSorting)
   const [globalFilter, setGlobalFilter] = useState('')
@@ -566,26 +574,28 @@ export default function DataTable<T>({
   return (
     <div className={styles.container} ref={containerRef}>
       {/* Toolbar */}
-      <div className={styles.toolbar}>
-        <input
-          className={styles.search}
-          type="text"
-          placeholder="Search..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-        />
-        <div className={styles.toolbarRight}>
-          <span className={styles.rowCount}>
-            {rows.length.toLocaleString()} row{rows.length !== 1 ? 's' : ''}
-          </span>
-          <button className={styles.actionBtn} onClick={handleCopy}>
-            {copied ? 'Copied!' : 'Copy'}
-          </button>
-          <button className={styles.actionBtn} onClick={handleCsv}>
-            CSV
-          </button>
+      {!hideToolbar && (
+        <div className={styles.toolbar}>
+          <input
+            className={styles.search}
+            type="text"
+            placeholder="Search..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+          />
+          <div className={styles.toolbarRight}>
+            <span className={styles.rowCount}>
+              {rows.length.toLocaleString()} row{rows.length !== 1 ? 's' : ''}
+            </span>
+            <button className={styles.actionBtn} onClick={handleCopy}>
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+            <button className={styles.actionBtn} onClick={handleCsv}>
+              CSV
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Table */}
       <div className={styles.tableOuter} ref={parentRef} style={maxHeight ? { maxHeight } : undefined}>
@@ -759,6 +769,7 @@ export default function DataTable<T>({
                 onCellLeave={handleCellLeave}
                 measureRef={hasGrowColumn ? virtualizer.measureElement : undefined}
                 dataIndex={virtualRow.index}
+                extraClassName={rowClassName ? rowClassName(row.original) : undefined}
                 style={{
                   position: 'absolute',
                   top: 0,

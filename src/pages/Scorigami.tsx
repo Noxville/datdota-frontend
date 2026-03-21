@@ -102,6 +102,17 @@ function ScorigamiGrid({ entries }: { entries: ScorigamiEntry[] }) {
   return (
     <div className={styles.gridContainer} ref={containerRef}>
       <svg ref={svgRef} width={svgW} height={svgH}>
+        <defs>
+          <filter id="glow322" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feFlood floodColor="#2dd4bf" floodOpacity="0.9" result="color" />
+            <feComposite in="color" in2="blur" operator="in" result="colorBlur" />
+            <feMerge>
+              <feMergeNode in="colorBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
         {/* X axis label */}
         <text
           x={MARGIN.left + gridW / 2}
@@ -173,6 +184,7 @@ function ScorigamiGrid({ entries }: { entries: ScorigamiEntry[] }) {
             const x = MARGIN.left + radiantIdx * step
             const y = MARGIN.top + direIdx * step
             const fill = count > 0 ? colorScale(count) : '#1e1e38'
+            const isSpecial = (radiant === 3 && dire === 22) || (radiant === 22 && dire === 3)
             return (
               <rect
                 key={`${radiant}-${dire}`}
@@ -185,6 +197,7 @@ function ScorigamiGrid({ entries }: { entries: ScorigamiEntry[] }) {
                 fill={fill}
                 stroke={count > 0 ? 'rgba(196,139,196,0.15)' : 'rgba(255,255,255,0.03)'}
                 strokeWidth={0.5}
+                filter={isSpecial ? 'url(#glow322)' : undefined}
                 style={{ cursor: count > 0 ? 'pointer' : 'default' }}
                 onMouseEnter={(e) => handleMouseEnter(e, radiant, dire, count)}
                 onMouseLeave={handleMouseLeave}

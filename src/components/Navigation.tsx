@@ -60,6 +60,7 @@ const NAV_ITEMS: NavItem[] = [
       {
         items: [
           { label: 'Average Performances', to: '/teams/performances?default=true' },
+          { label: 'Head-to-Head', to: '/teams/head-to-head' },
           { label: 'Unique Heroes', to: '/teams/unique-heroes?default=true' },
           { label: 'Towers', to: '/teams/towers?default=true' },
           { label: 'Map Control', to: '/teams/map-control?default=true' },

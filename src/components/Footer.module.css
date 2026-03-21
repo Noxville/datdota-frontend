@@ -74,6 +74,22 @@
   vertical-align: middle;
 }
 
+.legal {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.legal a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.legal a:hover {
+  color: var(--color-primary);
+}
+
 @media (max-width: 640px) {
   .row {
     flex-direction: column;

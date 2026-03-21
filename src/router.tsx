@@ -46,6 +46,7 @@ const router = createBrowserRouter([
 
       // Teams
       { path: '/teams/performances', element: lz(() => import('./pages/TeamPerformances')) },
+      { path: '/teams/head-to-head', element: lz(() => import('./pages/TeamHeadToHead')) },
       { path: '/teams/unique-heroes', element: lz(() => import('./pages/TeamUniqueHeroes')) },
       { path: '/teams/towers', element: lz(() => import('./pages/TeamTowers')) },
       { path: '/teams/throws', element: lz(() => import('./pages/TeamThrows')) },
@@ -120,9 +121,11 @@ const router = createBrowserRouter([
       { path: '/leagues/pedigrees', element: lz(() => import('./pages/LeaguePedigrees')) },
       { path: '/leagues/:id', element: lz(() => import('./pages/LeagueShow')) },
 
-      // About
+      // About & Legal
       { path: '/about', element: lz(() => import('./pages/About')) },
       { path: '/terms', element: lz(() => import('./pages/Terms')) },
+      { path: '/privacy', element: lz(() => import('./pages/PrivacyPolicy')) },
+      { path: '/data-policy', element: lz(() => import('./pages/DataPolicy')) },
 
       // Cloudflare error pages
       { path: '/cf500', element: lz(() => import('./pages/CloudflareError').then(m => ({ default: m.Cf500 }))) },

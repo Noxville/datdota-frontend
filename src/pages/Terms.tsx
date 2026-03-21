@@ -116,19 +116,11 @@ export default function Terms() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Privacy Policy</h2>
-        <p className={styles.text}>
-          We are committed to protecting your privacy. We only collect personal information by lawful
-          and fair means and, where appropriate, with the knowledge or consent of the individual
-          concerned. We only retain personal information as long as necessary for the fulfilment of
-          the purposes for which it was collected. We protect personal information by reasonable
-          security safeguards against loss or theft, as well as unauthorised access, disclosure,
-          copying, use or modification.
-        </p>
-        <p className={styles.text}>
-          This policy is effective as of 1 January 2020 and may be updated from time to time at
-          datdota&rsquo;s discretion.
-        </p>
+        <h2 className={styles.heading}>Related Policies</h2>
+        <ul className={styles.list}>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/data-policy">Data Processing Policy</a></li>
+        </ul>
       </section>
 
       <section className={styles.section}>

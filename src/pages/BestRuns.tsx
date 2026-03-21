@@ -60,7 +60,7 @@ function toMatchfinderDate(iso: string, offsetSeconds: number): string {
 function matchfinderUrl(teamId: number, firstDate: string, lastDate: string): string {
   const after = toMatchfinderDate(firstDate, 7199)
   const before = toMatchfinderDate(lastDate, 7201)
-  return `https://datdota.com/matchfinder/classic?team-a=${teamId}&after=${after}&before=${before}&tier=1,2`
+  return `https://beta.datdota.com/matchfinder/classic?team-a=${teamId}&after=${after}&before=${before}&tier=1,2`
 }
 
 function buildColumns(windowSize: number) {
