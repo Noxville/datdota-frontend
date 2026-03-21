@@ -439,7 +439,7 @@ export default function HeroHeadToHead() {
         onClear={clearFilters}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
-        showFilters={['players', 'teams', 'patch', 'after', 'before', 'leagues', 'splits', 'tier', 'threshold']}
+        showFilters={['players', 'teams', 'patch', 'after', 'before', 'leagues', 'splits', 'tier', 'split-type', 'threshold']}
       />
 
       {!hasFilters && (

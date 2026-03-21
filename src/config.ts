@@ -33,3 +33,6 @@ export function teamLogoUrl(logoId: string | null): string {
 export function facetIconUrl(facetIcon: string): string {
   return `${CDN_BASE}/images/facets/${facetIcon}.png`
 }
+
+/** Bump this whenever the Terms of Service change materially — forces re-consent. */
+export const TOS_VERSION = 1

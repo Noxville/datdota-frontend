@@ -5,7 +5,6 @@ const SOCIAL_LINKS = [
   { label: 'Twitter', href: 'https://twitter.com/datdota', icon: 'twitter' },
   { label: 'Discord', href: 'https://discord.gg/datdota', icon: 'discord' },
   { label: 'GitHub', href: 'https://github.com/noxville/datdota-frontend', icon: 'github' },
-  { label: 'Ko-fi', href: 'https://ko-fi.com/datdota', icon: 'kofi' },
 ] as const
 
 function SocialIcon({ type }: { type: string }) {
@@ -64,6 +63,16 @@ export default function Footer() {
               </a>
             ))}
           </div>
+
+          <a
+            href="https://ko-fi.com/datdota"
+            target="_blank"
+            rel="noreferrer"
+            className={styles.kofiLink}
+          >
+            <SocialIcon type="kofi" />
+            Support us on Ko-fi
+          </a>
 
           <div className={styles.legal}>
             <Link to="/terms">Terms</Link>

@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
         <h2 className={styles.heading}>1. Controller</h2>
         <p className={styles.text}>
           The data controller for datdota.com (&ldquo;datdota&rdquo;, &ldquo;we&rdquo;,
-          &ldquo;us&rdquo;) is Ben Steenhuisen. You can contact us at{' '}
+          &ldquo;us&rdquo;) is Bernard Steenhuisen. You can contact us at{' '}
           <a href="mailto:bensteenhuisen+datdota@gmail.com">bensteenhuisen+datdota@gmail.com</a>.
         </p>
       </section>

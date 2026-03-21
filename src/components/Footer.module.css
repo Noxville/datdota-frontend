@@ -48,6 +48,30 @@
   color: var(--color-primary);
 }
 
+.kofiLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.kofiLink:hover {
+  color: #ff5e5b;
+  border-color: #ff5e5b;
+}
+
+.kofiLink svg {
+  color: #ff5e5b;
+}
+
 .credits {
   font-family: var(--font-body);
   font-size: 0.75rem;

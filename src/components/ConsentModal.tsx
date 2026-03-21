@@ -1,11 +1,12 @@
 import { lazy, Suspense, useState } from 'react'
+import { TOS_VERSION } from '../config'
 import styles from './ConsentModal.module.css'
 
-const CONSENT_KEY = 'datdota-consent-accepted'
+const CONSENT_KEY = 'datdota-consent-version'
 
 export function hasConsent(): boolean {
   try {
-    return localStorage.getItem(CONSENT_KEY) === '1'
+    return localStorage.getItem(CONSENT_KEY) === String(TOS_VERSION)
   } catch {
     return false
   }
@@ -13,7 +14,7 @@ export function hasConsent(): boolean {
 
 function setConsent(): void {
   try {
-    localStorage.setItem(CONSENT_KEY, '1')
+    localStorage.setItem(CONSENT_KEY, String(TOS_VERSION))
   } catch {
     // localStorage unavailable — allow the user through anyway
   }
@@ -28,9 +29,10 @@ type ViewingDoc = 'terms' | 'privacy' | 'data-policy' | null
 export default function ConsentModal({ onAccept }: { onAccept: () => void }) {
   const [termsChecked, setTermsChecked] = useState(false)
   const [privacyChecked, setPrivacyChecked] = useState(false)
+  const [ageChecked, setAgeChecked] = useState(false)
   const [viewing, setViewing] = useState<ViewingDoc>(null)
 
-  const canAccept = termsChecked && privacyChecked
+  const canAccept = termsChecked && privacyChecked && ageChecked
 
   function handleAccept() {
     if (!canAccept) return
@@ -103,6 +105,16 @@ export default function ConsentModal({ onAccept }: { onAccept: () => void }) {
               Data Processing Policy
             </a>
           </span>
+        </label>
+
+        <label className={styles.checkRow}>
+          <input
+            type="checkbox"
+            checked={ageChecked}
+            onChange={(e) => setAgeChecked(e.target.checked)}
+            className={styles.checkbox}
+          />
+          <span>I confirm that I am at least 16 years of age</span>
         </label>
 
         <button

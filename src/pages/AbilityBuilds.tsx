@@ -174,7 +174,7 @@ export default function AbilityBuilds() {
         onClear={clearFilters}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
-        showFilters={['heroes', 'players', 'teams', 'patch', 'after', 'before', 'leagues', 'splits', 'tier', 'threshold']}
+        showFilters={['heroes', 'players', 'teams', 'patch', 'after', 'before', 'leagues', 'splits', 'tier', 'split-type', 'threshold']}
         extraChips={[
           { label: 'Levels', value: `${levelFrom}–${levelTo}` },
         ]}
