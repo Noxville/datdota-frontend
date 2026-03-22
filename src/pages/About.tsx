@@ -46,6 +46,11 @@ const PEOPLE: Person[] = [
     role: 'Who give great feedback and suggestions on an ongoing basis',
     links: [{ type: 'x', href: 'https://x.com/StDevStats' }],
   },
+  {
+    name: 'Marry Mind',
+    role: 'Commissioned to draw 3 of the error pictures on the site',
+    links: [{ type: 'x', href: 'https://x.com/Marry_Mind_art' }],
+  },
 ]
 
 function LinkIcon({ type }: { type: 'x' | 'web' }) {
