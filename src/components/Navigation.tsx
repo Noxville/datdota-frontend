@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import styles from './Navigation.module.css'
 
@@ -262,6 +263,7 @@ export default function Navigation() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
 
   useEffect(() => {
@@ -271,7 +273,9 @@ export default function Navigation() {
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      if (navRef.current && !navRef.current.contains(target)
+        && (!mobileMenuRef.current || !mobileMenuRef.current.contains(target))) {
         setOpenIndex(null)
       }
     }
@@ -279,45 +283,58 @@ export default function Navigation() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const navItems = NAV_ITEMS.map((item, i) => (
+    <div key={item.label} className={styles.itemWrapper}>
+      {item.to && !item.children ? (
+        <Link to={item.to} className={`${styles.navLink} ${item.accent ? styles.navLinkAccent : ''}`}>
+          {item.label}
+        </Link>
+      ) : (
+        <button
+          className={`${styles.navLink} ${item.accent ? styles.navLinkAccent : ''} ${openIndex === i ? styles.active : ''}`}
+          onClick={() => setOpenIndex(openIndex === i ? null : i)}
+        >
+          {item.label}
+          <span className={styles.caret}>&#9662;</span>
+        </button>
+      )}
+      {item.children && openIndex === i && (
+        <Dropdown
+          groups={item.children}
+          onClose={() => setOpenIndex(null)}
+        />
+      )}
+    </div>
+  ))
+
   return (
-    <nav className={styles.nav} ref={navRef}>
-      <Link to="/" className={styles.logo}>
-        datdota
-      </Link>
+    <>
+      <nav className={styles.nav} ref={navRef}>
+        <Link to="/" className={styles.logo}>
+          datdota
+        </Link>
 
-      <button
-        className={styles.hamburger}
-        onClick={() => { setMobileOpen(!mobileOpen); setOpenIndex(null) }}
-        aria-label="Toggle menu"
-      >
-        {mobileOpen ? '\u2715' : '\u2630'}
-      </button>
+        <button
+          className={styles.hamburger}
+          onClick={() => { setMobileOpen(!mobileOpen); setOpenIndex(null) }}
+          aria-label="Toggle menu"
+        >
+          {mobileOpen ? '\u2715' : '\u2630'}
+        </button>
 
-      <div className={`${styles.items} ${mobileOpen ? styles.itemsOpen : ''}`}>
-        {NAV_ITEMS.map((item, i) => (
-          <div key={item.label} className={styles.itemWrapper}>
-            {item.to && !item.children ? (
-              <Link to={item.to} className={`${styles.navLink} ${item.accent ? styles.navLinkAccent : ''}`}>
-                {item.label}
-              </Link>
-            ) : (
-              <button
-                className={`${styles.navLink} ${item.accent ? styles.navLinkAccent : ''} ${openIndex === i ? styles.active : ''}`}
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-              >
-                {item.label}
-                <span className={styles.caret}>&#9662;</span>
-              </button>
-            )}
-            {item.children && openIndex === i && (
-              <Dropdown
-                groups={item.children}
-                onClose={() => setOpenIndex(null)}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    </nav>
+        {/* Desktop: inline nav items */}
+        <div className={styles.items}>
+          {navItems}
+        </div>
+      </nav>
+
+      {/* Mobile: portal so it's not contained by nav's backdrop-filter */}
+      {mobileOpen && createPortal(
+        <div className={styles.mobileMenu} ref={mobileMenuRef}>
+          {navItems}
+        </div>,
+        document.body,
+      )}
+    </>
   )
 }
