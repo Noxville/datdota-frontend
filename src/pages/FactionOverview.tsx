@@ -346,8 +346,8 @@ export default function FactionOverview() {
       return {
         faction: isRadiant ? 'Radiant' : 'Dire',
         firstPick: hasFirstPick,
-        shift: sign * ppa.shift,
-        percent: sign * ppa.percent,
+        shift: sign * (ppa.shift ?? 0),
+        percent: sign * (ppa.percent ?? 0),
         games: ppa.games,
         record: `${factionWins}-${factionLosses}`,
       }
@@ -359,8 +359,8 @@ export default function FactionOverview() {
     if (!data?.data?.patchAdvantage) return []
     return data.data.patchAdvantage.map((pa) => ({
       patch: pa.patchName ?? '?',
-      shift: pa.shift,
-      percent: pa.percent,
+      shift: pa.shift ?? 0,
+      percent: pa.percent ?? 0,
       games: pa.games,
     }))
   }, [data])
@@ -374,12 +374,12 @@ export default function FactionOverview() {
         teamName: pta.teamName ?? 'Unknown',
         teamId: pta.teamId ?? 0,
         patch: pta.patchName ?? '?',
-        shift: pta.shift,
-        percent: pta.percent,
+        shift: pta.shift ?? 0,
+        percent: pta.percent ?? 0,
         games: pta.games,
         wins: pta.wins ?? 0,
         rawWinPct,
-        droop: rawWinPct - 0.5 - pta.percent,
+        droop: rawWinPct - 0.5 - (pta.percent ?? 0),
       }
     })
   }, [data])

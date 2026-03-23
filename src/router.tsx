@@ -123,6 +123,7 @@ const router = createBrowserRouter([
 
       // About & Legal
       { path: '/about', element: lz(() => import('./pages/About')) },
+      { path: '/glossary', element: lz(() => import('./pages/Glossary')) },
       { path: '/terms', element: lz(() => import('./pages/Terms')) },
       { path: '/privacy', element: lz(() => import('./pages/PrivacyPolicy')) },
       { path: '/data-policy', element: lz(() => import('./pages/DataPolicy')) },

@@ -206,6 +206,7 @@ const NAV_ITEMS: NavItem[] = [
       {
         items: [
           { label: 'About Us', to: '/about' },
+          { label: 'Glossary', to: '/glossary' },
           { label: 'Support datdota', to: '/support', external: 'https://ko-fi.com/datdota' },
           { label: 'Terms of Service', to: '/terms' },
           { label: 'API Swagger', to: '/api', external: 'https://api.datdota.com/swagger' },

@@ -1,0 +1,63 @@
+.trigger {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted var(--color-text-muted);
+}
+
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  border-radius: 50%;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.55rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  vertical-align: super;
+  line-height: 1;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 9999;
+  width: 280px;
+  padding: 10px 12px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+
+.term {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.summary {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.link {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--color-accent-bright);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
