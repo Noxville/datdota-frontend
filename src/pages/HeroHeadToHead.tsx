@@ -263,7 +263,7 @@ function CrossTable({ data, metric, minGames, minInteractions, apiParams }: Cros
           continue
         }
 
-        const val = metric === 'elo' ? entry.shift : (entry.games > 0 ? entry.wins / entry.games : 0.5)
+        const val = metric === 'elo' ? (entry.shift ?? 0) : (entry.games > 0 ? entry.wins / entry.games : 0.5)
         const fill = colorScale(val)
 
         const cx = headerSize + j * cellSize
@@ -311,7 +311,7 @@ function CrossTable({ data, metric, minGames, minInteractions, apiParams }: Cros
             const delta = wr - 50
             label = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%'
           } else {
-            label = (entry.shift >= 0 ? '+' : '') + entry.shift.toFixed(1)
+            label = ((entry.shift ?? 0) >= 0 ? '+' : '') + (entry.shift ?? 0).toFixed(1)
           }
           svg.append('text')
             .attr('x', cx + (cellSize - 1) / 2)
@@ -366,8 +366,8 @@ function CrossTable({ data, metric, minGames, minInteractions, apiParams }: Cros
             Win rate: <span style={{ fontWeight: 600 }}>{(tip.games > 0 ? (tip.wins / tip.games * 100).toFixed(1) : '0')}%</span>
           </div>
           <div>
-            Elo shift: <span style={{ color: tip.shift >= 0 ? 'var(--color-win)' : 'var(--color-loss)', fontWeight: 600 }}>
-              {tip.shift >= 0 ? '+' : ''}{tip.shift.toFixed(2)}
+            Elo shift: <span style={{ color: (tip.shift ?? 0) >= 0 ? 'var(--color-win)' : 'var(--color-loss)', fontWeight: 600 }}>
+              {(tip.shift ?? 0) >= 0 ? '+' : ''}{(tip.shift ?? 0).toFixed(2)}
             </span>
           </div>
         </div>

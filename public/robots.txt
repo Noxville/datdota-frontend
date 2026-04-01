@@ -1,10 +1,18 @@
 User-agent: Googlebot
 Allow: /
 Disallow: /matches
+Disallow: /api/matches
+Disallow: /casters
+Disallow: /api/casters
+Crawl-delay: 10
 
 User-agent: Bingbot
 Allow: /
 Disallow: /matches
+Disallow: /api/matches
+Disallow: /casters
+Disallow: /api/casters
+Crawl-delay: 10
 
 User-agent: *
 Disallow: /administrator/

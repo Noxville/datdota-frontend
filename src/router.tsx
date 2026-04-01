@@ -32,6 +32,7 @@ const router = createBrowserRouter([
       { path: '/heroes/head-to-head', element: lz(() => import('./pages/HeroHeadToHead')) },
       { path: '/facets/summary', element: lz(() => import('./pages/FacetSummary')) },
       { path: '/abilities/builds', element: lz(() => import('./pages/AbilityBuilds')) },
+      { path: '/abilities/builds/matches', element: lz(() => import('./pages/AbilityBuildMatches')) },
 
       // Players
       { path: '/players/performances', element: lz(() => import('./pages/PlayerPerformances')) },

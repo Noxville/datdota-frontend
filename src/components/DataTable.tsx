@@ -52,8 +52,23 @@ function resolveValue<T>(col: ColumnDef<T, unknown>, row: T): unknown {
   return id ? (row as Record<string, unknown>)[id] : undefined
 }
 
+/** Flatten column groups (hierarchical headers) into leaf columns for export */
+function flattenColumns<T>(columns: ColumnDef<T, unknown>[]): ColumnDef<T, unknown>[] {
+  const result: ColumnDef<T, unknown>[] = []
+  for (const col of columns) {
+    const children = (col as { columns?: ColumnDef<T, unknown>[] }).columns
+    if (children && children.length > 0) {
+      result.push(...flattenColumns(children))
+    } else {
+      result.push(col)
+    }
+  }
+  return result
+}
+
 function downloadCsv<T>(data: T[], columns: ColumnDef<T, unknown>[], filename: string) {
-  const headers = columns
+  const leafCols = flattenColumns(columns)
+  const headers = leafCols
     .map((c) => {
       const header = typeof c.header === 'string' ? c.header : String(c.id ?? '')
       return `"${header.replace(/"/g, '""')}"`
@@ -61,7 +76,7 @@ function downloadCsv<T>(data: T[], columns: ColumnDef<T, unknown>[], filename: s
     .join(',')
 
   const rows = data.map((row) =>
-    columns
+    leafCols
       .map((c) => {
         const value = resolveValue(c, row)
         if (value === null || value === undefined) return ''
@@ -82,12 +97,13 @@ function downloadCsv<T>(data: T[], columns: ColumnDef<T, unknown>[], filename: s
 }
 
 async function copyToClipboard<T>(data: T[], columns: ColumnDef<T, unknown>[]) {
-  const headers = columns
+  const leafCols = flattenColumns(columns)
+  const headers = leafCols
     .map((c) => (typeof c.header === 'string' ? c.header : String(c.id ?? '')))
     .join('\t')
 
   const rows = data.map((row) =>
-    columns
+    leafCols
       .map((c) => {
         const value = resolveValue(c, row)
         return value === null || value === undefined ? '' : String(value)

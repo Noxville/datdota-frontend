@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
-import { abilityImageUrl } from '../config'
-import { abilities } from '../data/abilities'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import { AbilitySequenceCell, abilityName } from '../components/AbilityIcon'
 import styles from './PlayerPerformances.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -20,101 +19,78 @@ interface AbilityBuildLine {
 
 /* ── Helpers ────────────────────────────────────────────── */
 
-function abilityName(id: number): string {
-  const a = abilities[String(id)]
-  return a?.longName || a?.shortName || `Ability ${id}`
-}
-
-function abilityIcon(id: number): string | null {
-  const a = abilities[String(id)]
-  return a?.shortName ? abilityImageUrl(a.shortName) : null
-}
-
-function AbilitySequenceCell({ ids }: { ids: number[] }) {
-  return (
-    <span style={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-      {ids.map((id, i) => {
-        const src = abilityIcon(id)
-        const name = abilityName(id)
-        return (
-          <span key={i} title={`Lv ${i + 1}: ${name}`}>
-            {src ? (
-              <img
-                src={src}
-                alt={name}
-                style={{ height: 22, width: 22, borderRadius: 2 }}
-                loading="lazy"
-              />
-            ) : (
-              <span style={{
-                display: 'inline-block',
-                width: 22,
-                height: 22,
-                lineHeight: '22px',
-                textAlign: 'center',
-                fontSize: '0.5rem',
-                background: 'var(--color-bg-elevated)',
-                borderRadius: 2,
-                color: 'var(--color-text-muted)',
-              }}>
-                {id}
-              </span>
-            )}
-          </span>
-        )
-      })}
-    </span>
-  )
-}
-
 function abilitySequenceText(ids: number[]): string {
   return ids.map((id) => abilityName(id)).join(' > ')
 }
 
 /* ── Columns ───────────────────────────────────────────── */
 
-const columns: ColumnDef<AbilityBuildLine, unknown>[] = [
-  {
-    id: 'build',
-    accessorFn: (row) => abilitySequenceText(row.abilities),
-    header: 'Build Order',
-    size: 300,
-    enableSorting: false,
-    cell: ({ row }) => <AbilitySequenceCell ids={row.original.abilities} />,
-  },
-  {
-    id: 'games',
-    accessorKey: 'games',
-    header: 'Games',
-    size: 80,
-    meta: { numeric: true, heatmap: 'high-good' as const, tooltip: 'Total Games' },
-    cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
-  },
-  {
-    id: 'wins',
-    accessorKey: 'wins',
-    header: 'Wins',
-    size: 70,
-    meta: { numeric: true, tooltip: 'Wins' },
-    cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
-  },
-  {
-    id: 'losses',
-    accessorFn: (row) => row.games - row.wins,
-    header: 'Losses',
-    size: 70,
-    meta: { numeric: true, tooltip: 'Losses' },
-    cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
-  },
-  {
-    id: 'winrate',
-    accessorFn: (row) => (row.games > 0 ? row.wins / row.games : 0),
-    header: 'Win %',
-    size: 75,
-    meta: { numeric: true, heatmap: 'high-good' as const, tooltip: 'Win Rate' },
-    cell: ({ getValue }) => <PercentCell value={getValue() as number} />,
-  },
-]
+function buildColumns(apiParams: Record<string, string>): ColumnDef<AbilityBuildLine, unknown>[] {
+  /** Build a link to the matches drilldown, forwarding current filters */
+  function matchesHref(abilities: number[]): string {
+    const params = new URLSearchParams(apiParams)
+    params.set('abilities', abilities.join(','))
+    return `/abilities/builds/matches?${params.toString()}`
+  }
+
+  return [
+    {
+      id: 'build',
+      accessorFn: (row) => abilitySequenceText(row.abilities),
+      header: 'Build Order',
+      size: 300,
+      enableSorting: false,
+      cell: ({ row }) => <AbilitySequenceCell ids={row.original.abilities} />,
+    },
+    {
+      id: 'games',
+      accessorKey: 'games',
+      header: 'Games',
+      size: 80,
+      meta: { numeric: true, heatmap: 'high-good' as const, tooltip: 'Total Games' },
+      cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
+    },
+    {
+      id: 'wins',
+      accessorKey: 'wins',
+      header: 'Wins',
+      size: 70,
+      meta: { numeric: true, tooltip: 'Wins' },
+      cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
+    },
+    {
+      id: 'losses',
+      accessorFn: (row) => row.games - row.wins,
+      header: 'Losses',
+      size: 70,
+      meta: { numeric: true, tooltip: 'Losses' },
+      cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
+    },
+    {
+      id: 'winrate',
+      accessorFn: (row) => (row.games > 0 ? row.wins / row.games : 0),
+      header: 'Win %',
+      size: 75,
+      meta: { numeric: true, heatmap: 'high-good' as const, tooltip: 'Win Rate' },
+      cell: ({ getValue }) => <PercentCell value={getValue() as number} />,
+    },
+    {
+      id: 'matches',
+      accessorFn: () => '',
+      header: 'Matches',
+      size: 70,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Link
+          to={matchesHref(row.original.abilities)}
+          style={{ color: 'var(--color-accent-bright)', textDecoration: 'none', fontSize: '0.78rem' }}
+        >
+          View
+        </Link>
+      ),
+    },
+  ]
+}
 
 /* ── Label/input styles (matching Frames) ──────────────── */
 
@@ -158,6 +134,7 @@ export default function AbilityBuilds() {
   )
 
   const rows = useMemo(() => data?.data ?? [], [data?.data])
+  const columns = useMemo(() => buildColumns(apiParams), [apiParams])
 
   return (
     <div className={styles.page}>
