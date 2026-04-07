@@ -148,11 +148,25 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Meta',
     children: [
       {
+        heading: 'Drafts & Strategy',
         items: [
           { label: 'Drafts', to: '/drafts?default=true' },
           { label: 'Draft Positions', to: '/drafts/positions?default=true' },
-          { label: 'Lanes', to: '/lanes/compositions?default=true' },
+          { label: 'Lane Compositions', to: '/lanes/compositions?default=true' },
           { label: 'Factions', to: '/factions/overview?default=true' },
+        ],
+      },
+      {
+        heading: 'Laning',
+        items: [
+          { label: 'Player Laning', to: '/lanes/laning/players?default=true' },
+          { label: 'Team Laning', to: '/lanes/laning/teams?default=true' },
+          { label: 'Hero Laning', to: '/lanes/laning/heroes?default=true' },
+        ],
+      },
+      {
+        heading: 'Other',
+        items: [
           { label: 'Win Expectancy', to: '/win-expectancy' },
           { label: 'Frames', to: '/frames?default=true' },
           { label: 'Casters', to: '/casters?default=true' },

@@ -35,6 +35,22 @@
   margin: 0;
 }
 
+.sectionGroup {
+  margin-bottom: var(--space-xl);
+}
+
+.sectionHeading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-dim);
+  margin: 0 0 var(--space-md);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
 .entries {
   display: flex;
   flex-direction: column;

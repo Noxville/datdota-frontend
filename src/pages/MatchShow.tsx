@@ -6,6 +6,7 @@ import { heroImageUrl, itemImageUrl, abilityImageUrl, teamLogoUrl, leagueLogoUrl
 import { heroesById } from '../data/heroes'
 import { items as itemsData } from '../data/items'
 import { abilities as abilitiesData } from '../data/abilities'
+import { laneLabel as laneLbl, laneColor } from '../data/lanes'
 import { PlayerCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
@@ -116,6 +117,64 @@ interface MatchData {
   map_control?: { radiant: MapControlSide; dire: MapControlSide }
 }
 
+/* ── Laning types ──────────────────────────────────────── */
+
+interface LaningPlayer {
+  steamId: number
+  nickname: string
+  hero: number
+  role: string
+  metaLane: string | null
+  faction: 'RADIANT' | 'DIRE'
+  networth10: number
+  lastHits10: number
+  denies10: number
+  level10: number
+  kills10: number
+  deaths10: number
+  assists10: number
+  heroDamage10: number
+  heroDamageTaken10: number
+  buildingDamage10: number
+  lasthitsCreeps10: number
+  lasthitsJungle10: number
+  regenGoldSpent: number
+  timeInLanePct: number | null
+  networth5: number | null
+  lastHits5: number | null
+  level5: number | null
+  opponentSteamId: number | null
+  opponentHero: number | null
+  nwDiff: number | null
+  levelDiff: number | null
+  lhDiff: number | null
+  laneOutcome: 'EXCELLENT' | 'WON' | 'DRAWN' | 'LOST' | 'TERRIBLE' | null
+  benchmarkSampleSize: number | null
+  shrinkageB: number | null
+  nwAboveExpected: number | null
+  lhAboveExpected: number | null
+  hdAboveExpected: number | null
+}
+
+interface LaningFirstBlood {
+  time: number
+  killerSteamId: number
+  victimSteamId: number
+}
+
+interface LaningTowerDeath {
+  time: number
+  lane: string
+  tier: number
+  ownerFaction: 'RADIANT' | 'DIRE'
+}
+
+interface LaningData {
+  players: LaningPlayer[]
+  firstBlood: LaningFirstBlood | null
+  towerDeaths: LaningTowerDeath[]
+}
+
 /* ── Helpers ────────────────────────────────────────────── */
 
 function heroName(id: number): string {
@@ -142,8 +201,9 @@ function formatTime(ts: number): string {
 
 function fmtTime(seconds: number): string {
   if (seconds < 0) return 'pre'
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
+  const total = Math.floor(seconds)
+  const m = Math.floor(total / 60)
+  const s = total % 60
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
@@ -166,21 +226,15 @@ function abilityDisplayName(a: AbilityEvent): string {
   return `Ability ${a.ability_id}`
 }
 
-const LANE_SHORT: Record<string, string> = {
-  SAFE: 'Safe',
-  OFFLANE: 'Off',
-  MIDDLE: 'Mid',
-  JUNGLE: 'Jng',
-  ROAM: 'Roam',
-  INVADE: 'Inv',
+function scoreboardLaneLabel(info: LaneInfo | null): string {
+  if (!info) return ''
+  const key = info.metaLane ?? info.lane
+  return laneLbl(key)
 }
 
-function laneLabel(info: LaneInfo | null): string {
-  if (!info) return ''
-  const meta = info.metaLane ? LANE_SHORT[info.metaLane] ?? info.metaLane : null
-  const lane = LANE_SHORT[info.lane] ?? info.lane
-  if (meta && meta !== lane) return `${meta}`
-  return meta ?? lane
+function scoreboardLaneColor(info: LaneInfo | null): string | undefined {
+  if (!info) return undefined
+  return laneColor(info.metaLane ?? info.lane)
 }
 
 function laneTooltip(info: LaneInfo | null): string {
@@ -303,7 +357,7 @@ function Scoreboard({
                       <PlayerCell steamId={pp.player.steam32} nickname={pp.player.nickname} />
                     </td>
                     <td className={styles.tdLane} title={laneTooltip(li)}>
-                      {laneLabel(li)}
+                      <span style={{ color: scoreboardLaneColor(li) }}>{scoreboardLaneLabel(li)}</span>
                     </td>
                     <td className={styles.tdNum}>{perf.level}</td>
                     <td className={styles.tdNum}>{perf.kills}</td>
@@ -852,6 +906,417 @@ function MapControlChart({
   )
 }
 
+/* ── Lane Matchup Cards ────────────────────────────────── */
+
+const OUTCOME_COLORS: Record<string, string> = {
+  EXCELLENT: 'var(--color-win)',
+  WON: '#6dd490',
+  DRAWN: 'var(--color-text-muted)',
+  LOST: '#e88a8a',
+  TERRIBLE: 'var(--color-loss)',
+}
+
+const OUTCOME_BG: Record<string, string> = {
+  EXCELLENT: 'rgba(74, 222, 128, 0.15)',
+  WON: 'rgba(74, 222, 128, 0.08)',
+  DRAWN: 'rgba(255, 255, 255, 0.05)',
+  LOST: 'rgba(248, 113, 113, 0.08)',
+  TERRIBLE: 'rgba(248, 113, 113, 0.15)',
+}
+
+const META_LANE_ORDER = ['MID', 'SAFE', 'OFFLANE'] as const
+const META_LANE_LABELS: Record<string, string> = {
+  MID: 'Mid Lane',
+  SAFE: 'Safe Lane',
+  OFFLANE: 'Off Lane',
+}
+
+interface LaneMatchup {
+  lane: string
+  radiant: LaningPlayer
+  dire: LaningPlayer
+}
+
+function buildLaneMatchups(players: LaningPlayer[]): LaneMatchup[] {
+  const matchups: LaneMatchup[] = []
+  const cores = players.filter((p) => p.role === 'core' && p.metaLane)
+
+  for (const lane of META_LANE_ORDER) {
+    const rad = cores.find((p) => p.faction === 'RADIANT' && p.metaLane === lane)
+    const dire = cores.find((p) => p.faction === 'DIRE' && p.metaLane === lane)
+    if (rad && dire) {
+      matchups.push({ lane, radiant: rad, dire: dire })
+    }
+  }
+  return matchups
+}
+
+function LaneMatchupCard({ matchup }: { matchup: LaneMatchup }) {
+  const { radiant: rad, dire } = matchup
+  const radPic = heroPic(rad.hero)
+  const direPic = heroPic(dire.hero)
+  const radOutcome = rad.laneOutcome
+  const direOutcome = dire.laneOutcome
+
+  return (
+    <div className={styles.laneCard}>
+      <div className={styles.laneCardHeader}>
+        {META_LANE_LABELS[matchup.lane] ?? matchup.lane}
+      </div>
+      <div className={styles.laneCardBody}>
+        {/* Radiant hero */}
+        <div className={styles.laneHeroSide}>
+          {radPic && (
+            <img
+              src={heroImageUrl(radPic)}
+              alt={heroName(rad.hero)}
+              className={styles.laneHeroImg}
+            />
+          )}
+          <div className={styles.laneHeroInfo}>
+            <span className={styles.laneHeroName}>{heroName(rad.hero)}</span>
+            <span className={styles.lanePlayerName}>{rad.nickname}</span>
+          </div>
+        </div>
+
+        {/* Center: NW diff and outcome */}
+        <div className={styles.laneCenter}>
+          {rad.nwDiff != null && (
+            <span
+              className={styles.laneNwDiff}
+              style={{ color: rad.nwDiff > 0 ? 'var(--color-win)' : rad.nwDiff < 0 ? 'var(--color-loss)' : 'var(--color-text-muted)' }}
+            >
+              {rad.nwDiff > 0 ? '+' : ''}{rad.nwDiff.toLocaleString()} NW
+            </span>
+          )}
+          <div className={styles.laneOutcomes}>
+            {radOutcome && (
+              <span
+                className={styles.laneOutcomeBadge}
+                style={{
+                  color: OUTCOME_COLORS[radOutcome],
+                  background: OUTCOME_BG[radOutcome],
+                }}
+              >
+                {radOutcome}
+              </span>
+            )}
+            <span className={styles.laneVs}>vs</span>
+            {direOutcome && (
+              <span
+                className={styles.laneOutcomeBadge}
+                style={{
+                  color: OUTCOME_COLORS[direOutcome],
+                  background: OUTCOME_BG[direOutcome],
+                }}
+              >
+                {direOutcome}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Dire hero */}
+        <div className={`${styles.laneHeroSide} ${styles.laneHeroSideRight}`}>
+          <div className={`${styles.laneHeroInfo} ${styles.laneHeroInfoRight}`}>
+            <span className={styles.laneHeroName}>{heroName(dire.hero)}</span>
+            <span className={styles.lanePlayerName}>{dire.nickname}</span>
+          </div>
+          {direPic && (
+            <img
+              src={heroImageUrl(direPic)}
+              alt={heroName(dire.hero)}
+              className={styles.laneHeroImg}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Stat comparison bar */}
+      <div className={styles.laneStats}>
+        {([
+          { label: 'NW@10', tip: 'Net worth at 10 minutes', radVal: rad.networth10, direVal: dire.networth10 },
+          { label: 'LH@10', tip: 'Last hits at 10 minutes', radVal: rad.lastHits10, direVal: dire.lastHits10 },
+          { label: 'DN@10', tip: 'Denies at 10 minutes', radVal: rad.denies10, direVal: dire.denies10 },
+          { label: 'LVL@10', tip: 'Hero level at 10 minutes', radVal: rad.level10, direVal: dire.level10 },
+          { label: 'K/D/A@10', tip: 'Kills / Deaths / Assists at 10 minutes', radVal: null as number | null, direVal: null as number | null, radDisplay: `${rad.kills10}/${rad.deaths10}/${rad.assists10}`, direDisplay: `${dire.kills10}/${dire.deaths10}/${dire.assists10}` },
+          { label: 'HD@10', tip: 'Hero damage dealt at 10 minutes', radVal: rad.heroDamage10, direVal: dire.heroDamage10 },
+          { label: 'HDT@10', tip: 'Hero damage taken at 10 minutes', radVal: rad.heroDamageTaken10, direVal: dire.heroDamageTaken10, lowerIsBetter: true },
+          { label: 'Regen$', tip: 'Gold spent on consumables before 10 min', radVal: rad.regenGoldSpent, direVal: dire.regenGoldSpent, lowerIsBetter: true },
+        ] as const).map((s) => {
+          const radNum = s.radVal
+          const direNum = s.direVal
+          const hasComparison = radNum != null && direNum != null && radNum !== direNum
+          const diff = hasComparison ? Math.abs(radNum! - direNum!) : 0
+          const radWins = hasComparison
+            ? ('lowerIsBetter' in s && s.lowerIsBetter ? radNum! < direNum! : radNum! > direNum!)
+            : false
+          const direWins = hasComparison && !radWins
+
+          const radText = 'radDisplay' in s && s.radDisplay ? s.radDisplay : radNum != null ? radNum.toLocaleString() : ''
+          const direText = 'direDisplay' in s && s.direDisplay ? s.direDisplay : direNum != null ? direNum.toLocaleString() : ''
+
+          return (
+            <div key={s.label} className={styles.laneStatRow} title={s.tip}>
+              <span className={`${styles.laneStatVal} ${radWins ? styles.laneStatWin : ''}`}>
+                {radText}
+              </span>
+              <span className={styles.laneStatIndicator}>
+                {radWins && <><span className={styles.laneStatDiff}>+{diff.toLocaleString()}</span><span className={styles.laneStatArrow}>{'\u25C2'}</span></>}
+              </span>
+              <span className={styles.laneStatLabel}>{s.label}</span>
+              <span className={styles.laneStatIndicator}>
+                {direWins && <><span className={styles.laneStatArrow}>{'\u25B8'}</span><span className={styles.laneStatDiff}>+{diff.toLocaleString()}</span></>}
+              </span>
+              <span className={`${styles.laneStatVal} ${direWins ? styles.laneStatWin : ''}`}>
+                {direText}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/* ── Laning Section ────────────────────────────────────── */
+
+const TOWER_LANE_LABELS: Record<string, string> = {
+  RADIANT_TOP: 'Top',
+  RADIANT_MIDDLE: 'Mid',
+  RADIANT_BOTTOM: 'Bot',
+  DIRE_TOP: 'Top',
+  DIRE_MIDDLE: 'Mid',
+  DIRE_BOTTOM: 'Bot',
+}
+
+function laningTotals(sidePlayers: LaningPlayer[]) {
+  const sumNullable = (fn: (p: LaningPlayer) => number | null) => {
+    let total = 0
+    let any = false
+    for (const p of sidePlayers) {
+      const v = fn(p)
+      if (v != null) { total += v; any = true }
+    }
+    return any ? total : null
+  }
+  return {
+    networth10: sidePlayers.reduce((s, p) => s + p.networth10, 0),
+    lastHits10: sidePlayers.reduce((s, p) => s + p.lastHits10, 0),
+    denies10: sidePlayers.reduce((s, p) => s + p.denies10, 0),
+    kills10: sidePlayers.reduce((s, p) => s + p.kills10, 0),
+    deaths10: sidePlayers.reduce((s, p) => s + p.deaths10, 0),
+    heroDamage10: sidePlayers.reduce((s, p) => s + p.heroDamage10, 0),
+    regenGoldSpent: sidePlayers.reduce((s, p) => s + p.regenGoldSpent, 0),
+    nwAboveExpected: sumNullable((p) => p.nwAboveExpected),
+    lhAboveExpected: sumNullable((p) => p.lhAboveExpected),
+    hdAboveExpected: sumNullable((p) => p.hdAboveExpected),
+  }
+}
+
+const LANING_COLUMNS = [
+  { key: 'hero', label: 'Hero', tip: 'Hero played' },
+  { key: 'player', label: 'Player', tip: 'Player name' },
+  { key: 'role', label: 'Role', tip: 'Core or Support' },
+  { key: 'lane', label: 'Lane', tip: 'Assigned lane (meta-lane)' },
+  { key: 'nw5', label: 'NW@5', tip: 'Net worth at 5 minutes' },
+  { key: 'nw10', label: 'NW@10', tip: 'Net worth at 10 minutes' },
+  { key: 'lh10', label: 'LH@10', tip: 'Last hits at 10 minutes' },
+  { key: 'dn10', label: 'DN@10', tip: 'Denies at 10 minutes' },
+  { key: 'k10', label: 'K@10', tip: 'Kills at 10 minutes' },
+  { key: 'd10', label: 'D@10', tip: 'Deaths at 10 minutes' },
+  { key: 'hd10', label: 'HD@10', tip: 'Hero damage dealt at 10 minutes' },
+  { key: 'regen', label: 'Regen$', tip: 'Gold spent on consumables (tangos, salves, clarities, mangoes, faerie fires, bottles, blood grenades) before 10 min' },
+  { key: 'tilPct', label: 'TiL%', tip: 'Time in Lane — percentage of the first 10 minutes spent in the assigned lane' },
+  { key: 'nwVsAvg', label: 'NW vs Avg', tip: 'Net worth at 10 min vs this hero\'s patch benchmark average (James-Stein shrinkage blended). Cores only.' },
+  { key: 'lhVsAvg', label: 'LH vs Avg', tip: 'Last hits at 10 min vs this hero\'s patch benchmark average (James-Stein shrinkage blended). Cores only.' },
+  { key: 'hdVsAvg', label: 'HD vs Avg', tip: 'Hero damage at 10 min vs this hero\'s patch benchmark average (James-Stein shrinkage blended). Cores only.' },
+] as const
+
+function LaningSection({
+  laning,
+  matchPlayers,
+}: {
+  laning: LaningData
+  matchPlayers: Map<number, { nickname: string }>
+}) {
+  const { players, firstBlood, towerDeaths } = laning
+  if (players.length === 0) return null
+
+  const matchups = buildLaneMatchups(players)
+  const radiantPlayers = players.filter((p) => p.faction === 'RADIANT')
+  const direPlayers = players.filter((p) => p.faction === 'DIRE')
+
+  const playerNick = (steamId: number) =>
+    matchPlayers.get(steamId)?.nickname ?? players.find((p) => p.steamId === steamId)?.nickname ?? `${steamId}`
+
+  const playerHero = (steamId: number) => {
+    const p = players.find((pl) => pl.steamId === steamId)
+    return p ? heroName(p.hero) : ''
+  }
+
+  return (
+    <div className={styles.section}>
+      <div className={styles.sectionTitle}>Laning Phase</div>
+
+      {/* First blood + tower events */}
+      {(firstBlood || towerDeaths.length > 0) && (
+        <div className={styles.laningEvents}>
+          {firstBlood && (
+            <div className={styles.laningEvent}>
+              <span className={styles.laningEventIcon}>First Blood</span>
+              <span className={styles.laningEventTime}>{fmtTime(firstBlood.time)}</span>
+              <span className={styles.laningEventDetail}>
+                {playerNick(firstBlood.killerSteamId)} ({playerHero(firstBlood.killerSteamId)}) killed {playerNick(firstBlood.victimSteamId)} ({playerHero(firstBlood.victimSteamId)})
+              </span>
+            </div>
+          )}
+          {towerDeaths.map((t, i) => (
+            <div key={i} className={styles.laningEvent}>
+              <span className={styles.laningEventIcon}>Tower Destroyed</span>
+              <span className={styles.laningEventTime}>{fmtTime(t.time)}</span>
+              <span className={styles.laningEventDetail}>
+                {t.ownerFaction === 'RADIANT' ? 'Radiant' : 'Dire'} {TOWER_LANE_LABELS[t.lane] ?? t.lane} Tier {t.tier} tower fell
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Lane matchup cards */}
+      {matchups.length > 0 && (
+        <div className={styles.laneMatchups}>
+          {matchups.map((m) => (
+            <LaneMatchupCard key={m.lane} matchup={m} />
+          ))}
+        </div>
+      )}
+
+      {/* Full player laning stats tables */}
+      {[
+        { label: 'Radiant' as const, players: radiantPlayers },
+        { label: 'Dire' as const, players: direPlayers },
+      ].map(({ label, players: sidePlayers }) => {
+        const totals = laningTotals(sidePlayers)
+        return (
+          <div key={label} className={styles.laningTableWrap}>
+            <div className={`${styles.laningTableLabel} ${label === 'Radiant' ? styles.radiantLabel : styles.direLabel}`}>
+              {label} Laning Stats
+            </div>
+            <div className={styles.scoreboardWrap}>
+              <table className={styles.scoreboard}>
+                <thead>
+                  <tr>
+                    {LANING_COLUMNS.map((col) => (
+                      <th
+                        key={col.key}
+                        className={
+                          col.key === 'hero' ? styles.thHero
+                          : col.key === 'player' ? undefined
+                          : col.key === 'role' ? styles.thLane
+                          : col.key === 'lane' ? styles.thLane
+                          : styles.thNum
+                        }
+                        title={col.tip}
+                      >
+                        {col.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sidePlayers.map((p) => {
+                    const pic = heroPic(p.hero)
+                    return (
+                      <tr key={p.steamId}>
+                        <td className={styles.tdHero}>
+                          {pic ? (
+                            <img
+                              src={heroImageUrl(pic)}
+                              alt={heroName(p.hero)}
+                              title={heroName(p.hero)}
+                              className={styles.heroImg}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span className={styles.heroFallback}>{heroName(p.hero)}</span>
+                          )}
+                        </td>
+                        <td className={styles.tdPlayer}>
+                          <PlayerCell steamId={p.steamId} nickname={p.nickname} />
+                        </td>
+                        <td className={styles.tdLane}>
+                          <span className={p.role === 'core' ? styles.roleCore : styles.roleSup}>
+                            {p.role === 'core' ? 'Core' : 'Sup'}
+                          </span>
+                        </td>
+                        <td className={styles.tdLane}>
+                          <span style={{ color: laneColor(p.metaLane) }}>
+                            {p.metaLane ? laneLbl(p.metaLane) : ''}
+                          </span>
+                        </td>
+                        <td className={styles.tdNum}>{p.networth5 != null ? compactNum(p.networth5) : '–'}</td>
+                        <td className={styles.tdNum}>{compactNum(p.networth10)}</td>
+                        <td className={styles.tdNum}>{p.lastHits10}</td>
+                        <td className={styles.tdNum}>{p.denies10}</td>
+                        <td className={styles.tdNum}>{p.kills10}</td>
+                        <td className={styles.tdNum}>{p.deaths10}</td>
+                        <td className={styles.tdNum}>{compactNum(p.heroDamage10)}</td>
+                        <td className={styles.tdNum}>{p.regenGoldSpent}</td>
+                        <td className={styles.tdNum}>{p.timeInLanePct != null ? `${Math.round(p.timeInLanePct)}%` : '–'}</td>
+                        {[
+                          { val: p.nwAboveExpected, tip: 'Net worth vs hero benchmark' },
+                          { val: p.lhAboveExpected, tip: 'Last hits vs hero benchmark' },
+                          { val: p.hdAboveExpected, tip: 'Hero damage vs hero benchmark' },
+                        ].map((b, i) => (
+                          <td key={i} className={styles.tdNum}>
+                            {b.val != null ? (
+                              <span
+                                className={styles.benchmarkVal}
+                                title={`${b.tip}: ${b.val > 0 ? '+' : ''}${Math.round(b.val)}${p.benchmarkSampleSize != null ? ` (n=${p.benchmarkSampleSize})` : ''}`}
+                                style={{ color: b.val > 0 ? 'var(--color-win)' : b.val < 0 ? 'var(--color-loss)' : undefined }}
+                              >
+                                {b.val > 0 ? '+' : ''}{Math.round(b.val)}
+                              </span>
+                            ) : '–'}
+                          </td>
+                        ))}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className={styles.totalsRow}>
+                    <td colSpan={4} className={styles.totalsLabel}>Total</td>
+                    <td className={styles.tdNum}></td>
+                    <td className={styles.tdNum}>{compactNum(totals.networth10)}</td>
+                    <td className={styles.tdNum}>{totals.lastHits10}</td>
+                    <td className={styles.tdNum}>{totals.denies10}</td>
+                    <td className={styles.tdNum}>{totals.kills10}</td>
+                    <td className={styles.tdNum}>{totals.deaths10}</td>
+                    <td className={styles.tdNum}>{compactNum(totals.heroDamage10)}</td>
+                    <td className={styles.tdNum}>{totals.regenGoldSpent}</td>
+                    <td className={styles.tdNum}></td>
+                    {[totals.nwAboveExpected, totals.lhAboveExpected, totals.hdAboveExpected].map((v, i) => (
+                      <td key={i} className={styles.tdNum}>
+                        {v != null ? (
+                          <span style={{ color: v > 0 ? 'var(--color-win)' : v < 0 ? 'var(--color-loss)' : undefined }}>
+                            {v > 0 ? '+' : ''}{Math.round(v)}
+                          </span>
+                        ) : ''}
+                      </td>
+                    ))}
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 /* ── Page component ─────────────────────────────────────── */
 
 export default function MatchShow() {
@@ -861,6 +1326,11 @@ export default function MatchShow() {
   const { data, isLoading, error, refetch } = useApiQuery<{ data: MatchData }>(
     id ? `/api/matches/${id}` : null,
   )
+
+  const { data: laningRaw } = useApiQuery<{ data: LaningData }>(
+    id ? `/api/lanes/laning/player/${id}` : null,
+  )
+  const laning = laningRaw?.data
 
   const match = data?.data
 
@@ -995,6 +1465,17 @@ export default function MatchShow() {
         showItems={items}
         showAbilities={abilities}
       />
+
+      {/* Laning Phase */}
+      {laning && laning.players.length > 0 && (
+        <LaningSection
+          laning={laning}
+          matchPlayers={new Map([
+            ...match.radiant.player_performances.map((pp) => [pp.player.steam32, { nickname: pp.player.nickname }] as const),
+            ...match.dire.player_performances.map((pp) => [pp.player.steam32, { nickname: pp.player.nickname }] as const),
+          ])}
+        />
+      )}
 
       {/* Map Control & Networth chart */}
       <MapControlChart frames={match.frames} mapControl={match.map_control} />

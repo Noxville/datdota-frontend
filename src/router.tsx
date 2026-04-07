@@ -95,6 +95,11 @@ const router = createBrowserRouter([
       { path: '/drafts', element: lz(() => import('./pages/Drafts')) },
       { path: '/drafts/positions', element: lz(() => import('./pages/DraftPositions')) },
 
+      // Meta — Laning
+      { path: '/lanes/laning/players', element: lz(() => import('./pages/LaningPlayers')) },
+      { path: '/lanes/laning/teams', element: lz(() => import('./pages/LaningTeams')) },
+      { path: '/lanes/laning/heroes', element: lz(() => import('./pages/LaningHeroes')) },
+
       // Meta
       { path: '/lanes/compositions', element: lz(() => import('./pages/LaneCompositions')) },
       { path: '/factions/overview', element: lz(() => import('./pages/FactionOverview')) },

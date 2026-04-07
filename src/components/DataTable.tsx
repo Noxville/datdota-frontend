@@ -854,12 +854,12 @@ export function NumericCell({ value, decimals = 0, compact = false }: { value: n
   return <span className={styles.numeric}>{value.toFixed(decimals)}</span>
 }
 
-export function PercentCell({ value }: { value: number | null }) {
+export function PercentCell({ value, decimals = 2 }: { value: number | null; decimals?: number }) {
   if (value === null || value === undefined) return <span className={styles.muted}>—</span>
   const pct = value * 100
   return (
     <span className={styles.numeric}>
-      {pct.toFixed(2)}%
+      {pct.toFixed(decimals)}%
     </span>
   )
 }

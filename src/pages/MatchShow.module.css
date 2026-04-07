@@ -419,6 +419,288 @@
   gap: 4px 12px;
 }
 
+/* ── Laning Section ──────────────────────────────────── */
+
+.laningEvents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.laningEvent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+}
+
+.laningEventIcon {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-primary);
+  background: rgba(196, 139, 196, 0.12);
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.laningEventTime {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.laningEventDetail {
+  color: var(--color-text-secondary);
+}
+
+/* Lane matchup cards */
+
+.laneMatchups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.laneCard {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.laneCardHeader {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-dim);
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.laneCardBody {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  gap: var(--space-sm);
+}
+
+.laneHeroSide {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.laneHeroSideRight {
+  justify-content: flex-end;
+}
+
+.laneHeroImg {
+  height: 36px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.laneHeroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.laneHeroInfoRight {
+  text-align: right;
+}
+
+.laneHeroName {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lanePlayerName {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.laneCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.laneNwDiff {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.laneOutcomes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.laneOutcomeBadge {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.laneVs {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+.laneStats {
+  border-top: 1px solid var(--color-border);
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.laneStatRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto 1fr;
+  align-items: center;
+  gap: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.laneStatLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 0 2px;
+}
+
+.laneStatVal {
+  font-variant-numeric: tabular-nums;
+}
+
+.laneStatVal:first-child {
+  text-align: left;
+}
+
+.laneStatVal:last-child {
+  text-align: right;
+}
+
+.laneStatWin {
+  color: var(--color-win);
+}
+
+.laneStatIndicator {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 48px;
+  font-size: 0.6rem;
+}
+
+/* left indicator: push content to the right edge */
+.laneStatIndicator:nth-child(2) {
+  justify-content: flex-end;
+  padding-right: 3px;
+}
+
+/* right indicator: push content to the left edge */
+.laneStatIndicator:nth-child(4) {
+  justify-content: flex-start;
+  padding-left: 3px;
+}
+
+.laneStatDiff {
+  color: var(--color-win);
+  opacity: 0.7;
+}
+
+.laneStatArrow {
+  color: var(--color-win);
+  line-height: 1;
+}
+
+/* Laning stats table */
+
+.laningTableWrap {
+  margin-bottom: var(--space-md);
+}
+
+.laningTableLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-sm);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.benchmarkVal {
+  cursor: help;
+}
+
+.roleCore {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #e8a838;
+}
+
+.roleSup {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-accent);
+}
+
 /* ── Mobile ───────────────────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -473,5 +755,26 @@
 
   .tdNum {
     font-size: 0.75rem;
+  }
+
+  .laneMatchups {
+    grid-template-columns: 1fr;
+  }
+
+  .laneCardBody {
+    padding: 10px;
+    gap: 4px;
+  }
+
+  .laneHeroImg {
+    height: 28px;
+  }
+
+  .laneHeroName {
+    font-size: 0.7rem;
+  }
+
+  .laneNwDiff {
+    font-size: 0.72rem;
   }
 }

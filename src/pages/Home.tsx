@@ -5,6 +5,7 @@ import * as d3 from 'd3'
 import { apiFetch } from '../api/client'
 import { heroesById } from '../data/heroes'
 import { heroImageUrl, teamLogoUrl, leagueLogoUrl } from '../config'
+import { TeamLogo } from '../components/DataTable'
 import styles from './Home.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -283,7 +284,7 @@ function RecentGames({ games }: { games: RecentGame[] }) {
               return (
                 <Link key={g.matchId} to={`/matches/${g.matchId}`} className={styles.recentCard}>
                   <div className={styles.recentTeam}>
-                    <img src={teamLogoUrl(radLogo)} alt="" className={styles.recentLogo} loading="lazy" />
+                    <TeamLogo logoUrl={teamLogoUrl(radLogo)} name={radName} className={styles.recentLogo} />
                     <span className={`${styles.recentName} ${radWon ? styles.recentNameWin : ''}`}>{radName}</span>
                   </div>
                   <span className={radWon ? styles.recentArrowLeft : styles.recentArrowRight}>
@@ -291,7 +292,7 @@ function RecentGames({ games }: { games: RecentGame[] }) {
                   </span>
                   <div className={`${styles.recentTeam} ${styles.recentTeamRight}`}>
                     <span className={`${styles.recentName} ${!radWon ? styles.recentNameWin : ''}`}>{direName}</span>
-                    <img src={teamLogoUrl(direLogo)} alt="" className={styles.recentLogo} loading="lazy" />
+                    <TeamLogo logoUrl={teamLogoUrl(direLogo)} name={direName} className={styles.recentLogo} />
                   </div>
                   <span className={styles.recentDuration}>{formatDuration(g.duration)}</span>
                   <span
@@ -331,7 +332,7 @@ function TopTeams({ teams }: { teams: TopTeam[] }) {
         {top16.map((t, i) => (
           <Link key={t.valveId} to={`/teams/${t.valveId}`} className={styles.teamRow}>
             <span className={styles.teamRank}>{i + 1}</span>
-            <img src={teamLogoUrl(t.logoId)} alt="" className={styles.teamLogo} loading="lazy" />
+            <TeamLogo logoUrl={teamLogoUrl(t.logoId)} name={t.name} className={styles.teamLogo} />
             <span className={styles.teamName}>{t.name}</span>
             <span className={styles.teamRating}>{Math.round(t.rating)}</span>
           </Link>

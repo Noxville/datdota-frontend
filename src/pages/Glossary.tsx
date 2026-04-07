@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import glossary from '../data/glossary'
 import styles from './Glossary.module.css'
@@ -15,6 +15,21 @@ export default function Glossary() {
     }
   }, [hash])
 
+  const sections = useMemo(() => {
+    const grouped: { section: string; entries: typeof glossary }[] = []
+    const seen = new Map<string, typeof glossary>()
+    for (const entry of glossary) {
+      const sec = entry.section ?? 'General'
+      if (!seen.has(sec)) {
+        const entries: typeof glossary = []
+        seen.set(sec, entries)
+        grouped.push({ section: sec, entries })
+      }
+      seen.get(sec)!.push(entry)
+    }
+    return grouped
+  }, [])
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -24,20 +39,25 @@ export default function Glossary() {
         </p>
       </div>
 
-      <div className={styles.entries}>
-        {glossary.map((entry) => (
-          <div key={entry.id} id={entry.id} className={styles.entry}>
-            <h2 className={styles.term}>
-              <a href={`#${entry.id}`} className={styles.anchor}>#</a>
-              {entry.term}
-            </h2>
-            <p className={styles.summary}>{entry.summary}</p>
-            {entry.detail && (
-              <p className={styles.detail}>{entry.detail}</p>
-            )}
+      {sections.map((group) => (
+        <div key={group.section} className={styles.sectionGroup}>
+          <h2 className={styles.sectionHeading}>{group.section}</h2>
+          <div className={styles.entries}>
+            {group.entries.map((entry) => (
+              <div key={entry.id} id={entry.id} className={styles.entry}>
+                <h3 className={styles.term}>
+                  <a href={`#${entry.id}`} className={styles.anchor}>#</a>
+                  {entry.term}
+                </h3>
+                <p className={styles.summary}>{entry.summary}</p>
+                {entry.detail && (
+                  <p className={styles.detail}>{entry.detail}</p>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   )
 }

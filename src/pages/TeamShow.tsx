@@ -257,13 +257,15 @@ function ActivityChart({ data }: { data: GameCount[] }) {
     svg.selectAll('*').remove()
 
     const margin = { top: 8, right: 8, bottom: 24, left: 30 }
-    const width = Math.max(data.length * 8, 400)
+    // 24px per bar slot (bar + gap) — chart is only as wide as the data needs
+    const barSlot = 24
+    const width = margin.left + margin.right + data.length * barSlot
     const height = 100
 
     const x = d3.scaleBand()
       .domain(data.map((d) => `${d.year}-${d.month}`))
       .range([margin.left, width - margin.right])
-      .padding(0.2)
+      .padding(0.35)
 
     const y = d3.scaleLinear()
       .domain([0, d3.max(data, (d) => d.count) ?? 1])
@@ -271,8 +273,9 @@ function ActivityChart({ data }: { data: GameCount[] }) {
       .range([height - margin.bottom, margin.top])
 
     svg.attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('preserveAspectRatio', 'none')
-      .style('width', '100%')
+      .attr('preserveAspectRatio', 'xMinYMin meet')
+      .style('width', `${width}px`)
+      .style('max-width', '100%')
       .style('height', '100px')
 
     svg.selectAll('rect.bar')
