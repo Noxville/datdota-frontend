@@ -320,11 +320,11 @@ function HeroSelect({
   }
 
   const displayText =
-    selected.length > 0
-      ? selected
-          .map((id) => heroesById[id]?.name ?? id)
-          .join(', ')
-      : 'All heroes'
+    selected.length === 0
+      ? 'All heroes'
+      : selected.length <= 3
+        ? selected.map((id) => heroesById[id]?.name ?? id).join(', ')
+        : `${selected.length} heroes selected`
 
   function remove(heroId: string) {
     onChange(selected.filter((h) => h !== heroId).join(','))
@@ -359,6 +359,14 @@ function HeroSelect({
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
             />
+          </div>
+          <div className={styles.dropdownActions}>
+            <button className={styles.dropdownActionBtn} onClick={() => onChange(heroList.map((h) => h.id).join(','))}>
+              Select all
+            </button>
+            <button className={styles.dropdownActionBtn} onClick={() => onChange('')}>
+              Deselect all
+            </button>
           </div>
           {filtered.map((h) => (
             <button

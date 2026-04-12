@@ -13,30 +13,42 @@ import type { PlayerRecordsResponse, PlayerRecordTuple, PlayerRecordAggregateTup
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
 
-const RECORD_SECTIONS: { key: string; title: string; aggregate?: boolean }[] = [
-  { key: 'kills', title: 'Most Kills' },
-  { key: 'gpm', title: 'Highest GPM' },
-  { key: 'last_hits', title: 'Most Last Hits' },
-  { key: 'assists', title: 'Most Assists' },
-  { key: 'xpm', title: 'Highest XPM' },
-  { key: 'deaths', title: 'Most Deaths' },
-  { key: 'denies', title: 'Most Denies' },
-  { key: 'gold', title: 'Most Gold' },
-  { key: 'hero_damage', title: 'Most Hero Damage' },
-  { key: 'tower_damage', title: 'Most Tower Damage' },
-  { key: 'hero_healing', title: 'Most Hero Healing' },
+/* ── Record definitions ────────────────────────────────── */
+
+interface RecordSection {
+  key: string
+  title: string
+  /** If set, this record has a paired per-minute variant shown side-by-side */
+  perMinKey?: string
+  /** Standalone aggregate-only record (no single-match variant) */
+  aggregate?: boolean
+}
+
+const RECORD_SECTIONS: RecordSection[] = [
+  { key: 'kills', title: 'Kills', perMinKey: 'kills_per_min' },
+  { key: 'assists', title: 'Assists', perMinKey: 'assists_per_min' },
+  { key: 'deaths', title: 'Deaths', perMinKey: 'deaths_per_min' },
+  { key: 'last_hits', title: 'Last Hits', perMinKey: 'last_hits_per_min' },
+  { key: 'hero_damage', title: 'Hero Damage', perMinKey: 'hero_damage_per_min' },
+  { key: 'tower_damage', title: 'Tower Damage', perMinKey: 'tower_damage_per_min' },
+  { key: 'hero_healing', title: 'Hero Healing', perMinKey: 'hero_healing_per_min' },
+  { key: 'gpm', title: 'GPM' },
+  { key: 'xpm', title: 'XPM' },
+  { key: 'denies', title: 'Denies' },
+  { key: 'gold', title: 'Gold' },
+  { key: 'networth', title: 'Net Worth' },
   { key: 'ka_0_death', title: 'K+A (0 Deaths)' },
   { key: 'kda_1_death', title: 'KDA (1+ Deaths)' },
-  { key: 'kills_per_min', title: 'Kills Per Minute', aggregate: true },
-  { key: 'assists_per_min', title: 'Assists Per Minute', aggregate: true },
-  { key: 'deaths_per_min', title: 'Deaths Per Minute', aggregate: true },
 ]
+
+/* ── Row types ──────────────────────────────────────────── */
 
 interface RecordRow {
   steamId: string
   nickname: string
   value: number
   heroKey: string
+  heroName: string
   matchId: number
 }
 
@@ -47,6 +59,13 @@ interface AggregateRow {
   gameCount: number
 }
 
+/* ── Helpers ────────────────────────────────────────────── */
+
+function resolveHero(heroKey: string) {
+  const entry = heroesById[heroKey] ?? Object.values(heroesById).find((h) => h.name === heroKey)
+  return { name: entry?.name ?? heroKey, picture: entry?.picture }
+}
+
 function patchFromMatchId(matchId: number): string {
   for (const p of patches) {
     const pd = p as unknown as { name: string; lowerBound: number; upperBound: number }
@@ -55,20 +74,7 @@ function patchFromMatchId(matchId: number): string {
   return '—'
 }
 
-function HeroIconCell({ heroKey }: { heroKey: string }) {
-  // heroKey may be a numeric ID (e.g. "1") or a name (e.g. "Anti-Mage")
-  const entry = heroesById[heroKey] ?? Object.values(heroesById).find((h) => h.name === heroKey)
-  const name = entry?.name ?? heroKey
-  const src = entry?.picture ? heroImageUrl(entry.picture) : undefined
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-      {src && (
-        <img src={src} alt={name} style={{ height: 22, width: 'auto' }} loading="lazy" />
-      )}
-      <span style={{ fontSize: '0.75rem' }}>{name}</span>
-    </span>
-  )
-}
+/* ── Columns ────────────────────────────────────────────── */
 
 const recordColumns: ColumnDef<RecordRow, unknown>[] = [
   {
@@ -83,11 +89,19 @@ const recordColumns: ColumnDef<RecordRow, unknown>[] = [
   },
   {
     id: 'hero',
-    accessorKey: 'heroKey',
+    accessorFn: (row) => row.heroName,
     header: 'Hero',
-    size: 160,
+    size: 36,
     enableSorting: false,
-    cell: ({ row }) => <HeroIconCell heroKey={row.original.heroKey} />,
+    cell: ({ row }) => {
+      const { name, picture } = resolveHero(row.original.heroKey)
+      const src = picture ? heroImageUrl(picture) : undefined
+      return src ? (
+        <img src={src} alt={name} title={name} style={{ height: 22, width: 'auto' }} loading="lazy" />
+      ) : (
+        <span title={name} style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>{name}</span>
+      )
+    },
   },
   {
     id: 'value',
@@ -136,9 +150,9 @@ const aggregateColumns: ColumnDef<AggregateRow, unknown>[] = [
   {
     id: 'value',
     accessorKey: 'value',
-    header: 'Average',
+    header: 'Per Min',
     size: 80,
-    meta: { numeric: true, heatmap: 'high-good', tooltip: 'Average per game' },
+    meta: { numeric: true, heatmap: 'high-good', tooltip: 'Average per minute' },
     cell: ({ getValue }) => <NumericCell value={getValue() as number} decimals={2} />,
   },
   {
@@ -151,11 +165,15 @@ const aggregateColumns: ColumnDef<AggregateRow, unknown>[] = [
   },
 ]
 
+/* ── Hash state ─────────────────────────────────────────── */
+
 function getInitialKey(): string {
   const hash = window.location.hash.replace('#', '')
   if (RECORD_SECTIONS.some((s) => s.key === hash)) return hash
   return RECORD_SECTIONS[0].key
 }
+
+/* ── Page ───────────────────────────────────────────────── */
 
 export default function PlayerRecords() {
   const [selectedKey, setSelectedKey] = useState(getInitialKey)
@@ -176,14 +194,8 @@ export default function PlayerRecords() {
   }, [])
 
   const {
-    filters,
-    setFilters,
-    clearFilters,
-    applyDefaults,
-    apiParams,
-    hasFilters,
-    filtersCollapsed,
-    setFiltersCollapsed,
+    filters, setFilters, clearFilters, applyDefaults,
+    apiParams, hasFilters, filtersCollapsed, setFiltersCollapsed,
   } = useFilters()
 
   const { data, isLoading, error, refetch } = useApiQuery<{ data: PlayerRecordsResponse }>(
@@ -198,12 +210,13 @@ export default function PlayerRecords() {
     const tuples = (records[section.key] ?? []) as PlayerRecordTuple[]
     return tuples.map(([steamId, nickname, value, heroKey, matchId]) => ({
       steamId, nickname, value, heroKey, matchId,
+      heroName: resolveHero(heroKey).name,
     }))
   }, [records, section])
 
-  const aggregateRows: AggregateRow[] = useMemo(() => {
-    if (!records || !section.aggregate) return []
-    const tuples = (records[section.key] ?? []) as PlayerRecordAggregateTuple[]
+  const perMinRows: AggregateRow[] = useMemo(() => {
+    if (!records || !section.perMinKey) return []
+    const tuples = (records[section.perMinKey] ?? []) as PlayerRecordAggregateTuple[]
     return tuples.map(([steamId, nickname, value, gameCount]) => ({
       steamId, nickname, value, gameCount,
     }))
@@ -214,7 +227,7 @@ export default function PlayerRecords() {
       <div className={styles.header}>
         <h1>Player Records</h1>
         <p className={styles.subtitle}>
-          All-time single-match records and career averages in tier 1–2 matches
+          All-time single-match records and career per-minute averages in tier 1–2 matches
         </p>
       </div>
 
@@ -259,16 +272,58 @@ export default function PlayerRecords() {
             ))}
           </div>
 
-          {section.aggregate ? (
-            aggregateRows.length > 0 && (
-              <DataTable
-                data={aggregateRows}
-                columns={aggregateColumns}
-                defaultSorting={[{ id: 'value', desc: true }]}
-                searchableColumns={['nickname']}
-              />
-            )
+          {section.perMinKey ? (
+            /* Paired: single-match table + per-minute table side by side */
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', alignItems: 'start' }}>
+              <div>
+                <div style={{
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 'var(--font-weight-bold)' as unknown as number,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  color: 'var(--color-primary-dim)',
+                  marginBottom: 'var(--space-sm)',
+                  paddingBottom: 4,
+                  borderBottom: '1px solid var(--color-border)',
+                }}>
+                  Most in a Match
+                </div>
+                {recordRows.length > 0 && (
+                  <DataTable
+                    data={recordRows}
+                    columns={recordColumns}
+                    defaultSorting={[{ id: 'value', desc: true }]}
+                    searchableColumns={['nickname', 'hero']}
+                  />
+                )}
+              </div>
+              <div>
+                <div style={{
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 'var(--font-weight-bold)' as unknown as number,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  color: 'var(--color-primary-dim)',
+                  marginBottom: 'var(--space-sm)',
+                  paddingBottom: 4,
+                  borderBottom: '1px solid var(--color-border)',
+                }}>
+                  Highest Per Minute
+                </div>
+                {perMinRows.length > 0 && (
+                  <DataTable
+                    data={perMinRows}
+                    columns={aggregateColumns}
+                    defaultSorting={[{ id: 'value', desc: true }]}
+                    searchableColumns={['nickname']}
+                  />
+                )}
+              </div>
+            </div>
           ) : (
+            /* Single table only */
             recordRows.length > 0 && (
               <DataTable
                 data={recordRows}

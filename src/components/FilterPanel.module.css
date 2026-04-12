@@ -294,6 +294,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  max-height: 72px;
+  overflow-y: auto;
 }
 
 .tag {
