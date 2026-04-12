@@ -92,6 +92,7 @@
 
 .headerRow {
   display: flex;
+  background: var(--color-bg-elevated);
 }
 
 .th {

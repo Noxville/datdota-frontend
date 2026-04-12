@@ -95,6 +95,10 @@ const router = createBrowserRouter([
       { path: '/drafts', element: lz(() => import('./pages/Drafts')) },
       { path: '/drafts/positions', element: lz(() => import('./pages/DraftPositions')) },
 
+      // Meta — Teamfights
+      { path: '/teamfights/players', element: lz(() => import('./pages/TeamfightPlayers')) },
+      { path: '/teamfights/teams', element: lz(() => import('./pages/TeamfightTeams')) },
+
       // Meta — Laning
       { path: '/lanes/laning/players', element: lz(() => import('./pages/LaningPlayers')) },
       { path: '/lanes/laning/teams', element: lz(() => import('./pages/LaningTeams')) },
@@ -104,6 +108,7 @@ const router = createBrowserRouter([
       { path: '/lanes/compositions', element: lz(() => import('./pages/LaneCompositions')) },
       { path: '/factions/overview', element: lz(() => import('./pages/FactionOverview')) },
       { path: '/win-expectancy', element: lz(() => import('./pages/WinExpectancy')) },
+      { path: '/win-expectancy/:patch', element: lz(() => import('./pages/WinExpectancy')) },
       { path: '/frames', element: lz(() => import('./pages/Frames')) },
 
       // Casters

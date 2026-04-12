@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import * as d3 from 'd3'
 import { useApiQuery } from '../api/queries'
 import { patches as staticPatches } from '../data/patches'
@@ -36,7 +37,7 @@ function parseHash(): { feature: Feature; mode: SmoothMode } {
 
 function updateHash(feature: Feature, mode: SmoothMode) {
   const frag = `${feature},${mode}`
-  window.history.replaceState(null, '', `#${frag}`)
+  window.history.replaceState(null, '', `${window.location.pathname}#${frag}`)
 }
 
 /**
@@ -188,14 +189,32 @@ function smoothGrid(values: Float64Array, nx: number, ny: number): Float64Array 
 
 export default function WinExpectancy() {
   const initial = parseHash()
-  const [patch, setPatch] = useState(() => staticPatches[0]?.name ?? '')
+  const { patch: patchParam } = useParams<{ patch?: string }>()
+  const navigate = useNavigate()
+
+  const latestPatch = staticPatches[0]?.name ?? ''
+  const patch = patchParam && staticPatches.some((p) => p.name === patchParam)
+    ? patchParam
+    : latestPatch
+
   const [feature, setFeature] = useState<Feature>(initial.feature)
   const [mode, setMode] = useState<SmoothMode>(initial.mode)
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
 
-  // Sync to hash on change
+  const setPatch = useCallback((next: string) => {
+    navigate(`/win-expectancy/${next}${window.location.hash}`, { replace: true })
+  }, [navigate])
+
+  // If the URL has no patch (or an unknown one), redirect to the latest patch
+  useEffect(() => {
+    if (!patchParam || !staticPatches.some((p) => p.name === patchParam)) {
+      navigate(`/win-expectancy/${latestPatch}${window.location.hash}`, { replace: true })
+    }
+  }, [patchParam, latestPatch, navigate])
+
+  // Sync feature/mode to hash on change
   useEffect(() => { updateHash(feature, mode) }, [feature, mode])
 
   const scale = feature === 'kills' ? 1 : 1000
@@ -207,7 +226,24 @@ export default function WinExpectancy() {
     { patch },
   )
 
-  // Compute raw grid of win probabilities
+  // Compute raw grid of win probabilities.
+  //
+  // The API data is one row per (match, minute), shaped as {time, diff, count}
+  // where diff = winner_feature - loser_feature at that minute, rounded to the
+  // nearest `scale`. Each match contributes exactly one row per minute.
+  //
+  // At each grid cell we want the density "probability of winning GIVEN an
+  // advantage of approximately X" — not the cumulative "probability of winning
+  // given an advantage of at LEAST X". We therefore use exact bin matching
+  // against the rounded adv value.
+  //
+  //   greater(adv, t) = count of matches where diff ==  +adv at time t  (winning with +adv lead)
+  //   less(adv, t)    = count of matches where diff ==  -adv at time t  (winning with -adv lead = losing team had +adv)
+  //   P(win | adv, t) = greater / (greater + less)
+  //
+  // To reduce noise for heavy-tailed advantages we pool nearby bins (±1 scale)
+  // into the same bucket. A 1k lead at minute 25 now reflects only matches that
+  // had roughly a 1k lead at minute 25 — not matches with 10k leads.
   const rawGrid = useMemo(() => {
     if (!data?.data) return null
 
@@ -222,12 +258,18 @@ export default function WinExpectancy() {
     const ny = advStepCount
     const values = new Float64Array(nx * ny)
 
+    // Pool bins ±BIN_HALFWIDTH around the target advantage.
+    // 0 = exact bin only; 1 = ±1 scale; 2 = ±2 scale, etc.
+    // For gold/xp (scale=1000) this gives a ±1k window; for kills (scale=1) ±1.
+    const BIN_HALFWIDTH = 1
+
     for (let yi = 0; yi < ny; yi++) {
       const adv = (yi / (ny - 1)) * advMax
       for (let xi = 0; xi < nx; xi++) {
         const time = xi + 1
 
         if (adv === 0) {
+          // 0 advantage ↔ tied game ↔ by symmetry, 50%
           values[yi * nx + xi] = 0.5
           continue
         }
@@ -238,9 +280,11 @@ export default function WinExpectancy() {
 
         if (timeData) {
           const advRounded = Math.round(adv / scale) * scale
-          for (const [diff, count] of timeData) {
-            if (diff >= advRounded) greater += count
-            if (diff <= -advRounded) less += count
+          for (let k = -BIN_HALFWIDTH; k <= BIN_HALFWIDTH; k++) {
+            const posBin = advRounded + k * scale
+            const negBin = -advRounded + k * scale
+            greater += timeData.get(posBin) ?? 0
+            less += timeData.get(negBin) ?? 0
           }
         }
 
@@ -248,6 +292,7 @@ export default function WinExpectancy() {
         if (greater + less > 0) {
           prob = greater / (greater + less)
         } else {
+          // Empty bucket fallback — heuristic for extreme advantages with no data
           if (time < 15) {
             prob = (time * scale * 0.3) < adv ? 1 : 0.5
           } else {

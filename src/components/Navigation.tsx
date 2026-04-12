@@ -157,6 +157,13 @@ const NAV_ITEMS: NavItem[] = [
         ],
       },
       {
+        heading: 'Teamfights',
+        items: [
+          { label: 'By Player', to: '/teamfights/players?default=true' },
+          { label: 'By Team', to: '/teamfights/teams?default=true' },
+        ],
+      },
+      {
         heading: 'Laning',
         items: [
           { label: 'Player Laning', to: '/lanes/laning/players?default=true' },

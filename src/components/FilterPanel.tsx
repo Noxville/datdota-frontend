@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import type { FilterValues } from '../types'
 import {
   usePlayerAutocomplete,
@@ -19,6 +19,59 @@ import {
   fetchSplitNames,
 } from '../api/entityInfo'
 import styles from './FilterPanel.module.css'
+
+/** Date input that displays dd/MM/yyyy but stores yyyy-MM-dd internally. */
+function DateInput({
+  value,
+  onChange,
+  className,
+}: {
+  value: string  // yyyy-MM-dd or ''
+  onChange: (isoValue: string) => void
+  className?: string
+}) {
+  // Convert yyyy-MM-dd → dd/MM/yyyy for display
+  const toDisplay = (iso: string) => {
+    if (!iso) return ''
+    const [y, m, d] = iso.split('-')
+    return y && m && d ? `${d}/${m}/${y}` : iso
+  }
+
+  // Convert dd/MM/yyyy → yyyy-MM-dd for storage
+  const toIso = (display: string) => {
+    const match = display.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+    if (!match) return ''
+    return `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`
+  }
+
+  const [text, setText] = useState(toDisplay(value))
+
+  // Sync from external value changes
+  useEffect(() => {
+    setText(toDisplay(value))
+  }, [value])
+
+  const commit = useCallback(() => {
+    const iso = toIso(text)
+    if (iso) {
+      onChange(iso)
+    } else if (text === '') {
+      onChange('')
+    }
+  }, [text, onChange])
+
+  return (
+    <input
+      className={className}
+      type="text"
+      placeholder="dd/mm/yyyy"
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === 'Enter') commit() }}
+    />
+  )
+}
 
 interface FilterPanelProps {
   filters: FilterValues
@@ -892,18 +945,16 @@ export default function FilterPanel({
                     <div className={styles.filterGroup}>
                       <label className={styles.label}>Date Range</label>
                       <div className={styles.dateRow}>
-                        <input
+                        <DateInput
                           className={styles.input}
-                          type="date"
                           value={draft.after ?? ''}
-                          onChange={(e) => update('after', e.target.value)}
+                          onChange={(v) => update('after', v)}
                         />
                         <span className={styles.dateSep}>to</span>
-                        <input
+                        <DateInput
                           className={styles.input}
-                          type="date"
                           value={draft.before ?? ''}
-                          onChange={(e) => update('before', e.target.value)}
+                          onChange={(v) => update('before', v)}
                         />
                       </div>
                     </div>

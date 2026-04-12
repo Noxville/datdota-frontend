@@ -625,7 +625,6 @@ export default function DataTable<T>({
             if (hasGroupRow) {
               const leafHeaders = headerGroups[headerGroups.length - 1].headers
               const leafIdSet = new Set(leafHeaders.map((h) => h.id))
-              const totalSize = leafHeaders.reduce((s, lh) => s + lh.column.getSize(), 0)
 
               // Build spans for the group label row directly from row 0 headers
               // Each row-0 header is either a placeholder (standalone col) or a group header
