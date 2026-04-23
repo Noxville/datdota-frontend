@@ -154,6 +154,43 @@ export interface TeamComebackLine {
   comebacks15k: number
 }
 
+export interface TeamIdentityLine {
+  team: { name: string; valveId: number; tag: string | null; logoId: string | null }
+  numGames: number
+  playersPerKill: number | null
+
+  firstBloodCount: number | null
+  firstBloodRate: number | null
+
+  gamesWithRoshBy30: number | null
+  roshBy30Rate: number | null
+
+  obsAt20: number | null
+  sentriesAt20: number | null
+
+  smokes0to10: number | null
+  smokes10to20: number | null
+  smokes20to30: number | null
+
+  kills0to10: number | null
+  kills10to20: number | null
+  kills20to30: number | null
+
+  buildingDamageAt10: number | null
+  buildingDamageAt20: number | null
+
+  stunsPerGame: number | null
+  campsStackedPerGame: number | null
+  tormentorsPerGame: number | null
+  watchersPerGame: number | null
+  jungleLhShare: number | null
+
+  nwDiffAt10: number | null
+
+  itemPurchases: Record<string, number>
+  itemAvg: Record<string, number>
+}
+
 export interface RatingEntry {
   teamName: string
   valveId: number

@@ -53,6 +53,7 @@ const router = createBrowserRouter([
       { path: '/teams/throws', element: lz(() => import('./pages/TeamThrows')) },
       { path: '/teams/comebacks', element: lz(() => import('./pages/TeamComebacks')) },
       { path: '/teams/map-control', element: lz(() => import('./pages/TeamMapControl')) },
+      { path: '/teams/identity', element: lz(() => import('./pages/TeamIdentity')) },
       { path: '/teams/:id', element: lz(() => import('./pages/TeamShow')) },
 
       // Matches

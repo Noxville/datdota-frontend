@@ -65,6 +65,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Unique Heroes', to: '/teams/unique-heroes?default=true' },
           { label: 'Towers', to: '/teams/towers?default=true' },
           { label: 'Map Control', to: '/teams/map-control?default=true' },
+          { label: 'Identity', to: '/teams/identity?default=true' },
           { label: 'Throws', to: '/teams/throws?default=true' },
           { label: 'Comebacks', to: '/teams/comebacks?default=true' },
         ],

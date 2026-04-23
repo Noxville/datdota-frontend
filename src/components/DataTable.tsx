@@ -640,12 +640,28 @@ export default function DataTable<T>({
                       const width = trueLeaves.reduce((s, lh) => s + lh.column.getSize(), 0)
                       const pct = `${(width / totalSize) * 100}%`
 
+                      // If every true leaf under this group is sticky, the group cell should
+                      // stick too — otherwise the deeper headers slide under the sticky leaves.
+                      const allLeavesSticky = trueLeaves.length > 0 && trueLeaves.every((lh) => stickyOffsets?.get(lh.column.id) != null)
+                      const stickyLeft = allLeavesSticky ? stickyOffsets?.get(trueLeaves[0].column.id) : undefined
+                      const lastLeafId = trueLeaves[trueLeaves.length - 1]?.column.id
+                      const groupStyle: React.CSSProperties = { width: pct }
+                      if (stickyLeft != null) {
+                        groupStyle.position = 'sticky'
+                        groupStyle.left = stickyLeft
+                        groupStyle.zIndex = 3
+                        groupStyle.background = 'var(--color-bg)'
+                        if (lastLeafId === lastStickyColId) {
+                          groupStyle.borderRight = '1px solid var(--color-border)'
+                        }
+                      }
+
                       if (topHeader.isPlaceholder) {
                         return (
                           <div
                             key={topHeader.id}
                             className={styles.thGroupPlaceholder}
-                            style={{ width: pct }}
+                            style={groupStyle}
                           />
                         )
                       }
@@ -653,7 +669,7 @@ export default function DataTable<T>({
                         <div
                           key={topHeader.id}
                           className={`${styles.thGroup} ${styles.groupDivider}`}
-                          style={{ width: pct }}
+                          style={groupStyle}
                           role="columnheader"
                         >
                           {flexRender(topHeader.column.columnDef.header, topHeader.getContext())}
