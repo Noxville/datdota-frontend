@@ -9,6 +9,8 @@ export interface GlossaryEntry {
   summary: string
   /** Optional longer explanation shown on the glossary page */
   detail?: string
+  /** Optional bullet list rendered after the detail */
+  bullets?: string[]
 }
 
 const glossary: GlossaryEntry[] = [
@@ -156,6 +158,24 @@ const glossary: GlossaryEntry[] = [
     term: 'First Blood Rate',
     section: 'Laning',
     summary: 'Percentage of games where this team drew first blood.',
+  },
+
+  // ── Leagues ──
+  {
+    id: 'splits',
+    term: 'What are splits?',
+    section: 'Leagues',
+    summary: 'Sub-segments of a league (online qualifiers, LAN main event, post-event qualifiers) — datdota uses these in place of a flat LAN/online flag.',
+    detail:
+      'Leagues on datdota don\'t have a single LAN/online flag — instead each league is broken into one or more "splits". Three split types are configured (all optional): online, LAN, and post-event. Available via /api/splits and the standard splits filter.',
+    bullets: [
+      '(online) — typical regular online events.',
+      '(online, LAN) — online qualifiers feeding a LAN main event; extremely common.',
+      '(online, LAN, post-event) — rarer, usually historical qualifier formats or a misconfiguration that gets fixed.',
+      '(LAN) — very rare; only when qualifiers are on a separate ticket or for invitationals.',
+      '(LAN, post-event) — very rare; e.g. WESG and a few events that didn\'t apply for a follow-up qualifier ticket.',
+      '(post-event) alone — should never happen.',
+    ],
   },
 
   // ── Benchmarks ──

@@ -12,9 +12,12 @@ import styles from './PlayerPerformances.module.css'
 const ITEMS: { key: string; label: string; shortName: string }[] = [
   { key: 'blink', label: 'Blink', shortName: 'item_blink' },
   { key: 'bkb', label: 'BKB', shortName: 'item_black_king_bar' },
+  { key: 'force', label: 'Force', shortName: 'item_force_staff' },
+  { key: 'glimmer', label: 'Glimmer', shortName: 'item_glimmer_cape' },
   { key: 'pipe', label: 'Pipe', shortName: 'item_pipe' },
   { key: 'crimson', label: 'Crimson', shortName: 'item_crimson_guard' },
   { key: 'lotus', label: 'Lotus', shortName: 'item_lotus_orb' },
+  { key: 'midas', label: 'Midas', shortName: 'item_hand_of_midas' },
   { key: 'travels', label: 'Travels', shortName: 'item_travel_boots' },
 ]
 
@@ -75,7 +78,7 @@ const columns: ColumnDef<TeamIdentityLine, unknown>[] = [
     id: 'numGames',
     accessorKey: 'numGames',
     header: 'Games',
-    size: 68,
+    size: 71,
     meta: { numeric: true, heatmap: 'high-good', tooltip: 'Total Games' },
     cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
   },
