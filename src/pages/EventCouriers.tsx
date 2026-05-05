@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import TimeDistributionChart from '../components/TimeDistributionChart'
 import { heroesById } from '../data/heroes'
 import { items as itemsData } from '../data/items'
@@ -167,6 +168,7 @@ export default function EventCouriers() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Courier Events — Pro Dota 2 Stats" description="Courier kills and movement events in pro Dota 2." />
       <div className={styles.header}>
         <h1>Courier Kills</h1>
         <p className={styles.subtitle}>

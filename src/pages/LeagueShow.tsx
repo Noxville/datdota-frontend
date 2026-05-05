@@ -6,6 +6,7 @@ import { leagueLogoUrl } from '../config'
 import DataTable, { NumericCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './EntityShow.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -324,6 +325,10 @@ export default function LeagueShow() {
 
   return (
     <div className={styles.page}>
+      <PageMeta
+        title={`${info.name} — Pro Dota 2 Tournament Stats`}
+        description={`Match results, hero pick & ban data, and team performance for the ${info.name} Dota 2 tournament. ${m.total} matches.`}
+      />
       {/* Header */}
       <div className={styles.headerRow}>
         <img

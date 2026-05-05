@@ -1,8 +1,10 @@
+import PageMeta from '../components/PageMeta'
 import styles from './Terms.module.css'
 
 export default function DataPolicy() {
   return (
     <div className={styles.page}>
+      <PageMeta title="Data Policy" description="datdota's data sourcing methodology, parsing pipeline and statistics policies." />
       <h1 className={styles.title}>Data Processing Policy</h1>
       <p className={styles.text}>
         <em>Effective date: 20 March 2026 &mdash; Last updated: 20 March 2026</em>

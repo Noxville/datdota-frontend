@@ -11,6 +11,7 @@ import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
 import styles from './EntityShow.module.css'
 import filterStyles from '../components/FilterPanel.module.css'
+import PageMeta from '../components/PageMeta'
 import h2hStyles from './TeamHeadToHead.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -500,6 +501,7 @@ export default function TeamHeadToHead() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Head-to-Head — Pro Dota 2" description="Pro Dota 2 team head-to-head records — series and game-level stats." />
       <div className={styles.header}>
         <div>
           <h1 className={styles.entityName} style={{ fontSize: '1.8rem' }}>Team Head-to-Head</h1>

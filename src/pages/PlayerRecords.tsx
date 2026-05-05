@@ -9,6 +9,7 @@ import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import type { PlayerRecordsResponse, PlayerRecordTuple, PlayerRecordAggregateTuple } from '../types'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
@@ -224,6 +225,7 @@ export default function PlayerRecords() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player Records — Pro Dota 2 All-Time" description="All-time pro Dota 2 player records — most kills, longest win streak, highest GPM and more." />
       <div className={styles.header}>
         <h1>Player Records</h1>
         <p className={styles.subtitle}>

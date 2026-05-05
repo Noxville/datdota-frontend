@@ -5,6 +5,7 @@ import { teamLogoUrl } from '../config'
 import { TeamLogo } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import type { RatingEntry } from '../types'
 import styles from './RatingsRegions.module.css'
 
@@ -132,6 +133,7 @@ export default function RatingsRegions() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Regional Ratings — Pro Dota 2" description="Regional pro Dota 2 ratings — Europe, China, SEA, North America and South America." />
       <div className={styles.header}>
         <div>
           <h1>Regional Ratings</h1>

@@ -4,6 +4,7 @@ import { useApiQuery } from '../api/queries'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import LeagueLogo from '../components/LeagueLogo'
+import PageMeta from '../components/PageMeta'
 import type { MatchListEntry } from '../types'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
@@ -185,6 +186,7 @@ export default function MatchList() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Match List — Pro Dota 2" description="Pro Dota 2 match list with live and recent results across all tournaments." noindex />
       <div className={styles.header}>
         <h1>Recent Matches</h1>
         <p className={styles.subtitle}>

@@ -7,6 +7,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { HeroPerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -264,6 +265,7 @@ export default function HeroPerformances() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Hero Performances — Pro Dota 2 Win Rates" description="Win rates, pick & ban rates and KDA averages for every Dota 2 hero in pro matches." />
       <div className={styles.header}>
         <h1>Hero Performances</h1>
         <p className={styles.subtitle}>

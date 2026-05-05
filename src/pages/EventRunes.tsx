@@ -8,6 +8,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
 
@@ -418,6 +419,7 @@ export default function EventRunes() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Rune Stats — Pro Dota 2" description="Rune pickups and effectiveness in pro Dota 2 — Bounty, Power, Wisdom and Water." />
       <div className={styles.header}>
         <h1>Rune Pickups</h1>
         <p className={styles.subtitle}>

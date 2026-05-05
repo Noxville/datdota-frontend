@@ -4,6 +4,7 @@ import { useApiQuery } from '../api/queries'
 import DataTable, { NumericCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -134,6 +135,7 @@ export default function LeaguePedigrees() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="League Pedigrees — Pro Dota 2" description="Tournament pedigrees in pro Dota 2 — winners, runners-up and finishers across events." />
       <div className={styles.header}>
         <h1>LAN Event Pedigrees</h1>
         <p className={styles.subtitle}>

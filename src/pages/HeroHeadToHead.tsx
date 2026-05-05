@@ -9,6 +9,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell, DeltaCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
 
@@ -426,6 +427,7 @@ export default function HeroHeadToHead() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Hero Head-to-Head — Pro Dota 2" description="Hero vs hero matchup win rates and pick frequencies in pro Dota 2." />
       <div className={styles.header}>
         <h1>Hero Head-to-Head</h1>
         <p className={styles.subtitle}>

@@ -8,6 +8,7 @@ import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
 import TimeDistributionChart from '../components/TimeDistributionChart'
+import PageMeta from '../components/PageMeta'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
@@ -241,6 +242,7 @@ export default function EventWards() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Ward Placement — Pro Dota 2 Stats" description="Observer and sentry ward placement heat maps in pro Dota 2." />
       <div className={styles.header}>
         <h1>Wards Placed</h1>
         <p className={styles.subtitle}>

@@ -15,6 +15,7 @@ import type { MatchFinderEntry, MatchFinderResponse } from '../types'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
 import filterStyles from '../components/FilterPanel.module.css'
+import PageMeta from '../components/PageMeta'
 
 function patchFromMatchId(matchId: number): string {
   for (const p of patches) {
@@ -411,6 +412,7 @@ export default function MatchFinder() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Match Finder — Pro Dota 2" description="Search pro Dota 2 matches by team, player, hero, league or patch." />
       <div className={styles.header}>
         <h1>Match Finder</h1>
         <p className={styles.subtitle}>

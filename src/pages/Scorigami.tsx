@@ -4,6 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import styles from './Scorigami.module.css'
 
 interface ScorigamiEntry {
@@ -248,6 +249,7 @@ export default function Scorigami() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Scorigami — Pro Dota 2" description="Dota 2 Scorigami — every unique kill scoreline ever achieved in pro matches." />
       <div className={styles.header}>
         <h1>Scorigami</h1>
         <p className={styles.subtitle}>

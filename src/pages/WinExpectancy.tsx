@@ -4,6 +4,7 @@ import * as d3 from 'd3'
 import { useApiQuery } from '../api/queries'
 import { patches as staticPatches } from '../data/patches'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 interface TimeDiffCount {
@@ -554,6 +555,7 @@ export default function WinExpectancy() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Win Expectancy — Pro Dota 2" description="Win expectancy curves for pro Dota 2 — gold lead and game state vs win probability." />
       <div className={styles.header}>
         <h1>Win Expectancy</h1>
         <p className={styles.subtitle}>

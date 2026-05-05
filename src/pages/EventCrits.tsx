@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import { heroesById } from '../data/heroes'
 import { heroImageUrl } from '../config'
 import { fmtTime } from '../utils/format'
@@ -142,6 +143,7 @@ export default function EventCrits() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Critical Strikes — Pro Dota 2 Stats" description="Critical strike events in pro Dota 2 matches." />
       <div className={styles.header}>
         <h1>Big Crits</h1>
         <p className={styles.subtitle}>

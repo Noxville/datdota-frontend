@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -692,6 +693,7 @@ export default function ScenarioGameloop() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Game Loop Scenarios — Pro Dota 2" description="Pro Dota 2 game loop scenarios — common game flows and their outcomes." />
       <div className={styles.header}>
         <h1>Game Loop</h1>
         <p className={styles.subtitle}>

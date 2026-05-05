@@ -6,6 +6,7 @@ import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
 import TimeDistributionChart from '../components/TimeDistributionChart'
+import PageMeta from '../components/PageMeta'
 import { heroesById } from '../data/heroes'
 import { heroImageUrl } from '../config'
 import { fmtTime } from '../utils/format'
@@ -147,6 +148,7 @@ export default function EventKills() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Hero Kills — Pro Dota 2 Stats" description="Hero kill events in pro Dota 2 — by location, time and player." />
       <div className={styles.header}>
         <h1>Hero Kills</h1>
         <p className={styles.subtitle}>

@@ -1,4 +1,5 @@
 import { useRouteError, isRouteErrorResponse, Link } from 'react-router-dom'
+import PageMeta from '../components/PageMeta'
 import styles from './NotFound.module.css'
 
 export default function RouteError() {
@@ -23,6 +24,7 @@ export default function RouteError() {
 
   return (
     <div className={styles.container}>
+      <PageMeta title={title} description={message} noindex />
       <img
         src="https://cdn.datdota.com/images/errors/sad1.png"
         alt="Error"

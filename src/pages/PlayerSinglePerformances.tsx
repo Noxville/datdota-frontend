@@ -8,6 +8,7 @@ import { items as itemsData } from '../data/items'
 import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { PlayerSinglePerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -247,6 +248,7 @@ export default function PlayerSinglePerformances() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Best Single-Game Performances — Pro Dota 2" description="Best individual game performances by pro Dota 2 players — record KDA, kills, GPM and more." />
       <div className={styles.header}>
         <h1>Single Performances</h1>
         <p className={styles.subtitle}>

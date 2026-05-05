@@ -7,6 +7,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import TimeDistributionChart from '../components/TimeDistributionChart'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
@@ -147,6 +148,7 @@ export default function EventAegis() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Aegis of the Immortal — Pro Dota 2 Stats" description="Aegis of the Immortal pickups in pro Dota 2 — usage, deny rate and outcomes." />
       <div className={styles.header}>
         <h1>Aegis Events</h1>
         <p className={styles.subtitle}>

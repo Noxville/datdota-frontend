@@ -7,6 +7,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './TeamStreaks.module.css'
 
 interface Streak {
@@ -187,6 +188,7 @@ export default function PlayerHeroStreaks() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player Hero Streaks — Pro Dota 2" description="Pro Dota 2 player streaks on individual heroes — win/loss runs by player and hero." />
       <div className={styles.header}>
         <h1>{isBest ? 'Best' : 'Worst'} Player-Hero Streaks</h1>
         <p className={styles.subtitle}>

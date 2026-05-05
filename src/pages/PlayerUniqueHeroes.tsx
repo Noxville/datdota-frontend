@@ -7,6 +7,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { UniqueHeroLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
@@ -123,6 +124,7 @@ export default function PlayerUniqueHeroes() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Unique Heroes by Player — Pro Dota 2" description="Hero pool and unique hero counts for pro Dota 2 players." />
       <div className={styles.header}>
         <h1>Unique Heroes</h1>
         <p className={styles.subtitle}>

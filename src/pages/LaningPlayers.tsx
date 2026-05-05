@@ -6,6 +6,7 @@ import { useLaneToggles, LANE_KEYS } from '../hooks/useLaneToggles'
 import DataTable, { NumericCell, PercentCell, DeltaCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import { LANES, laneLabel, laneColor } from '../data/lanes'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
@@ -231,6 +232,7 @@ export default function LaningPlayers() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Laning Stats by Player — Pro Dota 2" description="Laning phase performance for pro Dota 2 players — last hits, denies and lane wins." />
       <div className={styles.header}>
         <h1>Player Laning</h1>
         <p className={styles.subtitle}>

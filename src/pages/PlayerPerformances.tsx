@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { PlayerPerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -177,6 +178,7 @@ export default function PlayerPerformances() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player Performances — Pro Dota 2 Stats" description="Pro Dota 2 player rankings, KDA, GPM, XPM and win rates by hero, position and patch." />
       <div className={styles.header}>
         <h1>Player Performances</h1>
         <p className={styles.subtitle}>

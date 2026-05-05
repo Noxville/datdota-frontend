@@ -6,6 +6,7 @@ import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, TeamCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './TeamStreaks.module.css'
 
 interface Streak {
@@ -153,6 +154,7 @@ export default function TeamStreaks() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Streaks — Pro Dota 2" description="Pro Dota 2 team win and loss streaks — longest active and all-time streaks." />
       <div className={styles.header}>
         <h1>{isBest ? 'Best' : 'Worst'} Team Streaks</h1>
         <p className={styles.subtitle}>

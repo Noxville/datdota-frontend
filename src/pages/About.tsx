@@ -1,3 +1,4 @@
+import PageMeta from '../components/PageMeta'
 import styles from './About.module.css'
 
 interface PersonLink {
@@ -72,6 +73,10 @@ function LinkIcon({ type }: { type: 'x' | 'web' }) {
 export default function About() {
   return (
     <div className={styles.page}>
+      <PageMeta
+        title="About datdota"
+        description="datdota is a professional Dota 2 statistics site, founded in 2013 by Martin Decoud and maintained by Ben 'Noxville' Steenhuisen since June 2016."
+      />
       <h1 className={styles.title}>About datdota</h1>
 
       <section className={styles.section}>

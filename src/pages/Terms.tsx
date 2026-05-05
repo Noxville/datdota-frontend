@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import styles from './Terms.module.css'
+import PageMeta from '../components/PageMeta'
 
 export default function Terms() {
   return (
     <div className={styles.page}>
+      <PageMeta title="Terms of Service" description="Terms of service for datdota.com." />
       <h1 className={styles.title}>Terms of Service</h1>
       <p className={styles.text}>
         <em>Version 1 &mdash; Effective date: 21 March 2026</em>

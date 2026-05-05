@@ -6,6 +6,7 @@ import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, DeltaCell, TeamCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import type { RatingEntry } from '../types'
 import styles from './Ratings.module.css'
 
@@ -253,6 +254,7 @@ export default function Ratings() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Glicko-2 Ratings — Pro Dota 2" description="Pro Dota 2 team Glicko-2 rating ladder — current and historical rankings." />
       <div className={styles.header}>
         <div>
           <h1>Team Ratings</h1>

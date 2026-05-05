@@ -1,5 +1,6 @@
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './Mockups.module.css'
 
 const SAMPLE_HEROES = [
@@ -48,6 +49,7 @@ function WinrateBar({ value }: { value: number }) {
 export default function Mockups() {
   return (
     <>
+      <PageMeta title="datdota Styleguide" description="datdota design system styleguide and mockup playground." noindex />
       <div
         className={styles.mockups}
         style={
@@ -387,7 +389,191 @@ export default function Mockups() {
             </svg>
           </div>
         </section>
+
+        {/* Open Graph card */}
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Open Graph Image</h3>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginBottom: 'var(--space-md)' }}>
+            1200×630 default share card for Slack, Discord, Twitter, iMessage. Right-click the element and choose <strong>"Capture node screenshot"</strong> in DevTools (Chrome / Edge — Inspect → ⋮ menu → Capture node screenshot). Save the result to <code style={{ background: 'var(--color-bg-elevated)', padding: '2px 6px', borderRadius: 3, fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>public/og-default.png</code>.
+          </p>
+          <div style={{ overflow: 'hidden', borderRadius: 12, border: '1px solid var(--color-border)', display: 'inline-block', maxWidth: '100%' }}>
+            <div style={{ width: 600, height: 315, transform: 'scale(0.5)', transformOrigin: 'top left' }}>
+              <OgCard />
+            </div>
+          </div>
+          <details style={{ marginTop: 'var(--space-md)' }}>
+            <summary style={{ cursor: 'pointer', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Show at full 1200×630 (for capture)</summary>
+            <div id="og-card-full" style={{ marginTop: 'var(--space-md)', border: '1px solid var(--color-border)', display: 'inline-block' }}>
+              <OgCard />
+            </div>
+          </details>
+        </section>
       </div>
     </>
+  )
+}
+
+function OgCard() {
+  return (
+    <div
+      style={{
+        width: 1200,
+        height: 630,
+        background: 'radial-gradient(ellipse at top left, #1a1030 0%, #0a0a12 55%, #07070f 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        color: '#e8e6f0',
+      }}
+    >
+      {/* Subtle grid lines */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage:
+            'linear-gradient(to right, rgba(196,139,196,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(196,139,196,0.05) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+        }}
+      />
+
+      {/* Glowing primary blob */}
+      <div
+        style={{
+          position: 'absolute',
+          right: -120,
+          top: -120,
+          width: 520,
+          height: 520,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(196,139,196,0.28) 0%, rgba(196,139,196,0) 70%)',
+          filter: 'blur(20px)',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          left: -80,
+          bottom: -160,
+          width: 480,
+          height: 480,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(45,212,191,0.18) 0%, rgba(45,212,191,0) 70%)',
+          filter: 'blur(20px)',
+        }}
+      />
+
+      {/* δ glyph (large, decorative) */}
+      <svg
+        width="180"
+        height="180"
+        viewBox="0 0 64 64"
+        style={{ position: 'absolute', top: 60, right: 80, opacity: 0.85 }}
+      >
+        <path
+          d="M32 14 C24 14, 17 24, 17 34 C17 44, 23 52, 32 52 C41 52, 47 44, 47 34 C47 24, 40 14, 32 14 Z M32 22 C37 22, 40 28, 40 34 C40 40, 37 44, 32 44 C27 44, 24 40, 24 34 C24 28, 27 22, 32 22 Z"
+          fill="#c48bc4"
+          fillRule="evenodd"
+        />
+        <path
+          d="M36 16 C33 12, 30 10, 34 7 C38 4, 44 6, 46 10"
+          fill="none"
+          stroke="#c48bc4"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      {/* Wordmark */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 80,
+          top: 200,
+          fontSize: 168,
+          fontWeight: 800,
+          letterSpacing: '-0.04em',
+          lineHeight: 1,
+          color: '#f3f0fa',
+        }}
+      >
+        datdota
+      </div>
+
+      {/* Accent underline */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 84,
+          top: 384,
+          width: 110,
+          height: 6,
+          borderRadius: 3,
+          background: 'linear-gradient(to right, #c48bc4, #2dd4bf)',
+        }}
+      />
+
+      {/* Tagline */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 84,
+          top: 412,
+          fontFamily: "'Fira Code', monospace",
+          fontWeight: 300,
+          fontSize: 32,
+          letterSpacing: '0.02em',
+          color: '#c8c4d8',
+        }}
+      >
+        Professional Dota 2 Statistics
+      </div>
+
+      {/* Bottom stat strip */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 84,
+          right: 84,
+          bottom: 70,
+          display: 'flex',
+          gap: 60,
+          fontFamily: "'Fira Code', monospace",
+          fontWeight: 300,
+        }}
+      >
+        {[
+          { value: '12K+', label: 'pro matches' },
+          { value: '800+', label: 'teams' },
+          { value: '5K+', label: 'leagues' },
+          { value: '13yrs', label: 'tracking' },
+        ].map((s) => (
+          <div key={s.label} style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ color: '#c48bc4', fontSize: 36, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.02em' }}>
+              {s.value}
+            </span>
+            <span style={{ color: '#8a849c', fontSize: 16, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+              {s.label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* URL footer */}
+      <div
+        style={{
+          position: 'absolute',
+          right: 84,
+          bottom: 70,
+          fontFamily: "'Fira Code', monospace",
+          fontWeight: 400,
+          fontSize: 18,
+          color: '#6e6b80',
+          letterSpacing: '0.04em',
+        }}
+      >
+        datdota.com
+      </div>
+    </div>
   )
 }

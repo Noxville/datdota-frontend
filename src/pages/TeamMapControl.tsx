@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { TeamMapControlTeam, TeamMapControlMatch, TeamMapControlResponse } from '../types'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
@@ -181,6 +182,7 @@ export default function TeamMapControl() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Map Control — Pro Dota 2" description="Pro Dota 2 team map control, ward placement and warding effectiveness." />
       <div className={styles.header}>
         <h1>Map Control</h1>
         <p className={styles.subtitle}>

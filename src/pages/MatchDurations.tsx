@@ -6,6 +6,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { DurationMatch, DurationResponse } from '../types'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
@@ -421,6 +422,7 @@ export default function MatchDurations() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Match Durations — Pro Dota 2" description="Pro Dota 2 match duration distributions by patch, league and tier." />
       <div className={styles.header}>
         <h1>Match Durations</h1>
         <p className={styles.subtitle}>

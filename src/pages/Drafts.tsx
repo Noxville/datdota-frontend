@@ -7,6 +7,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 interface DraftLine {
@@ -279,6 +280,7 @@ export default function Drafts() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Draft Analysis — Pro Dota 2" description="Pro Dota 2 draft analysis — pick & ban order and captain's mode tendencies." />
       <div className={styles.header}>
         <h1>Drafts Summary</h1>
         <p className={styles.subtitle}>

@@ -7,6 +7,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, DeltaCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { HeroEloByPhaseResponse, HeroEloByPhaseLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -164,6 +165,7 @@ export default function HeroEloByPhase() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Hero Elo by Phase — Pro Dota 2" description="Dota 2 hero Elo ratings broken down by laning, mid-game and late-game phases." />
       <div className={styles.header}>
         <h1>Elo by Phase</h1>
         <p className={styles.subtitle}>

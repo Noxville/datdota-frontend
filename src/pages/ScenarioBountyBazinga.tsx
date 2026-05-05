@@ -3,6 +3,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 interface RuneDistRow {
@@ -77,6 +78,7 @@ export default function ScenarioBountyBazinga() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Bounty Rune Scenarios — Pro Dota 2" description="Bounty rune bazinga scenarios in pro Dota 2 matches." />
       <div className={styles.header}>
         <h1>Bounty Bazinga</h1>
         <p className={styles.subtitle}>

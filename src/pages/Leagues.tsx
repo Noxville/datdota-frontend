@@ -5,6 +5,7 @@ import { leagueLogoUrl } from '../config'
 import DataTable, { NumericCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -163,6 +164,7 @@ export default function Leagues() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Pro Dota 2 Tournaments & Leagues" description="Pro Dota 2 tournaments and leagues — DPC, Major, Minor and qualifier results." />
       <div className={styles.header}>
         <h1>Leagues</h1>
         <p className={styles.subtitle}>

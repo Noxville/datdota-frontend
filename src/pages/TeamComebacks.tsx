@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { TeamComebackLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -96,6 +97,7 @@ export default function TeamComebacks() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Comebacks — Pro Dota 2" description="Pro Dota 2 comebacks — biggest gold deficits overcome by pro teams." />
       <div className={styles.header}>
         <h1>Team Comebacks</h1>
         <p className={styles.subtitle}>

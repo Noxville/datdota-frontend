@@ -7,6 +7,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import type { FrequentPlayerHero } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -188,6 +189,7 @@ export default function HeroFrequentPlayers() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Top Players Per Hero — Pro Dota 2" description="Top pro Dota 2 players on every hero — most-picked players and their win rates." />
       <div className={styles.header}>
         <h1>Frequent Players</h1>
         <p className={styles.subtitle}>

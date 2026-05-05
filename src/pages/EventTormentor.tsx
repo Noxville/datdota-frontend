@@ -8,6 +8,7 @@ import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
 import TimeDistributionChart from '../components/TimeDistributionChart'
+import PageMeta from '../components/PageMeta'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
 
@@ -101,6 +102,7 @@ export default function EventTormentor() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Tormentor Stats — Pro Dota 2" description="Tormentor kills and Shard distribution in pro Dota 2." />
       <div className={styles.header}>
         <h1>Tormentor Kills</h1>
         <p className={styles.subtitle}>

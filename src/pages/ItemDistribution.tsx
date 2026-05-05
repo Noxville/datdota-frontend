@@ -6,6 +6,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import { heroesById } from '../data/heroes'
 import { heroImageUrl } from '../config'
 import { fmtTime } from '../utils/format'
@@ -402,6 +403,7 @@ export default function ItemDistribution() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Item Distribution — Pro Dota 2" description="Item pickup rates by hero and pro Dota 2 player." />
       <div className={styles.header}>
         <h1>Item Timings</h1>
         <p className={styles.subtitle}>
