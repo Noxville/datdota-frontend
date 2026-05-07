@@ -2,8 +2,9 @@ import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import DataTable, { NumericCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -134,6 +135,7 @@ export default function LeaguePedigrees() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="League Pedigrees — Pro Dota 2" description="Tournament pedigrees in pro Dota 2 — winners, runners-up and finishers across events." />
       <div className={styles.header}>
         <h1>LAN Event Pedigrees</h1>
         <p className={styles.subtitle}>
@@ -141,7 +143,7 @@ export default function LeaguePedigrees() {
         </p>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading pedigrees..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading pedigrees..." />}
 
       {error && (
         <ErrorState

@@ -6,7 +6,8 @@ import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell, DeltaCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import type { HeroTupleLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
@@ -157,6 +158,7 @@ export default function HeroTuplesElo() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Hero Synergy & Combos — Pro Dota 2" description="Hero combinations and synergy ratings — pairs and trios with the strongest pro Dota 2 win rates." />
       <div className={styles.header}>
         <h1>Hero Tuples & Elo</h1>
         <p className={styles.subtitle}>
@@ -195,7 +197,7 @@ export default function HeroTuplesElo() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching hero tuples..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching hero tuples..." />}
 
       {error && (
         <div className={styles.error}>

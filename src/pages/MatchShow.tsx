@@ -11,6 +11,7 @@ import { PlayerCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
 import GlossaryTooltip from '../components/GlossaryTooltip'
+import PageMeta from '../components/PageMeta'
 import styles from './MatchShow.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -1354,6 +1355,11 @@ export default function MatchShow() {
 
   return (
     <div className={styles.page}>
+      <PageMeta
+        title={`${match.radiant.team.name} vs ${match.dire.team.name} (${radiantScore}-${direScore}) — Match ${match.match_id}`}
+        description={`${match.radiant.team.name} vs ${match.dire.team.name} — Dota 2 pro match details, draft, item builds, networth advantage and player performances.`}
+        noindex
+      />
       {/* Match header */}
       <div className={styles.matchHeader}>
         {/* Radiant side */}

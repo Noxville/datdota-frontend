@@ -7,8 +7,9 @@ import { heroesById } from '../data/heroes'
 import { frames as framesStatic } from '../data/frames'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 /* ── Static lookups ─────────────────────────────────────── */
@@ -492,6 +493,7 @@ export default function Frames() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Match Frames — Pro Dota 2 Per-Second Data" description="Per-second frame data for pro Dota 2 matches — gold, XP, networth and map control." />
       <div className={styles.header}>
         <h1>Frames</h1>
         <p className={styles.subtitle}>
@@ -574,7 +576,7 @@ export default function Frames() {
         </div>
       )}
 
-      {isLoading && hasFilters && <EnigmaLoader text="Fetching frame data..." />}
+      {isLoading && hasFilters && <TableSkeleton columns={columns} rows={10} loaderText="Fetching frame data..." />}
 
       {error && hasFilters && (
         <ErrorState

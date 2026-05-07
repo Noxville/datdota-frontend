@@ -8,6 +8,8 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, TeamCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
+import { buildPerson, buildBreadcrumbs } from '../lib/seo'
 import styles from './EntityShow.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -526,6 +528,23 @@ export default function PlayerShow() {
 
   return (
     <div className={styles.page}>
+      <PageMeta
+        title={`${player.nickname} — Pro Dota 2 Player Stats`}
+        description={`Match history, hero pool, signature heroes and team stints for pro Dota 2 player ${player.nickname}. ${player.totalGames.toLocaleString()} tracked games.`}
+        type="profile"
+        jsonLd={[
+          buildPerson({
+            steamId: player.steamId,
+            nickname: player.nickname,
+            currentTeam: player.currentTeam ? { name: player.currentTeam.name } : null,
+          }),
+          buildBreadcrumbs([
+            { name: 'Home', path: '/' },
+            { name: 'Players', path: '/players/performances' },
+            { name: player.nickname },
+          ]),
+        ]}
+      />
       {/* Header */}
       <div className={styles.headerRow}>
         <div className={styles.headerInfo}>

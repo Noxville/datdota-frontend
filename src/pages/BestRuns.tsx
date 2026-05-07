@@ -3,8 +3,9 @@ import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, TeamCell, PercentCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './BestRuns.module.css'
 
 interface TeamRun {
@@ -180,6 +181,7 @@ export default function BestRuns() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Best Tournament Runs — Pro Dota 2" description="Best pro Dota 2 tournament runs — biggest underdog stories and longest playoff runs." />
       <div className={styles.header}>
         <h1>Best Runs</h1>
         <p className={styles.subtitle}>
@@ -199,7 +201,7 @@ export default function BestRuns() {
         ))}
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading best runs..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading best runs..." />}
 
       {error && (
         <ErrorState

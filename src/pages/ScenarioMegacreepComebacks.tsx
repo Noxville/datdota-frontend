@@ -4,8 +4,9 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import LeagueLogo from '../components/LeagueLogo'
+import PageMeta from '../components/PageMeta'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
 
@@ -161,6 +162,7 @@ export default function ScenarioMegacreepComebacks() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Mega Creep Comebacks — Pro Dota 2" description="Mega creep comebacks in pro Dota 2 — games won after losing megas." />
       <div className={styles.header}>
         <h1>Megacreep Comebacks</h1>
         <p className={styles.subtitle}>
@@ -186,7 +188,7 @@ export default function ScenarioMegacreepComebacks() {
         </div>
       )}
 
-      {isLoading && hasFilters && <EnigmaLoader text="Fetching megacreep comebacks..." />}
+      {isLoading && hasFilters && <TableSkeleton columns={columns} rows={10} loaderText="Fetching megacreep comebacks..." />}
 
       {error && hasFilters && (
         <div className={styles.error}>

@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell, TeamCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import { itemImageUrl, teamLogoUrl } from '../config'
 import type { TeamIdentityLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -307,6 +308,7 @@ export default function TeamIdentity() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Identity & Playstyle — Pro Dota 2" description="Pro Dota 2 team playstyle and identity — early-game vs late-game tendencies." />
       <div className={styles.header}>
         <h1>Team Identity</h1>
         <p className={styles.subtitle}>
@@ -332,7 +334,7 @@ export default function TeamIdentity() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching team identity..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching team identity..." />}
 
       {error && (
         <div className={styles.error}>

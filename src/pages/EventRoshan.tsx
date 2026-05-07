@@ -8,6 +8,7 @@ import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
 import TimeDistributionChart from '../components/TimeDistributionChart'
+import PageMeta from '../components/PageMeta'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
 
@@ -112,6 +113,7 @@ export default function EventRoshan() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Roshan Stats — Pro Dota 2" description="Roshan kill timing, frequency and Aegis distribution in pro Dota 2." />
       <div className={styles.header}>
         <h1>Roshan Kills</h1>
         <p className={styles.subtitle}>

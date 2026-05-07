@@ -5,7 +5,8 @@ import { useFilters } from '../hooks/useFilters'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, PercentCell, DeltaCell, TeamCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -201,6 +202,7 @@ export default function LaningTeams() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Laning Stats by Team — Pro Dota 2" description="Laning phase performance for pro Dota 2 teams." />
       <div className={styles.header}>
         <h1>Team Laning</h1>
         <p className={styles.subtitle}>
@@ -226,7 +228,7 @@ export default function LaningTeams() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching team laning data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching team laning data..." />}
 
       {error && (
         <div className={styles.error}>

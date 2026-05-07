@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell, TeamCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import { teamLogoUrl } from '../config'
 import type { TeamPerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -174,6 +175,7 @@ export default function TeamPerformances() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Performances — Pro Dota 2 Stats" description="Pro Dota 2 team rankings, win rates and tournament results." />
       <div className={styles.header}>
         <h1>Team Performances</h1>
         <p className={styles.subtitle}>
@@ -199,7 +201,7 @@ export default function TeamPerformances() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching team data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching team data..." />}
 
       {error && (
         <div className={styles.error}>

@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import type { TeamThrowLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -96,6 +97,7 @@ export default function TeamThrows() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Throws — Pro Dota 2" description="Pro Dota 2 teams ranked by gold lead lost — biggest leads thrown." />
       <div className={styles.header}>
         <h1>Team Throws</h1>
         <p className={styles.subtitle}>
@@ -121,7 +123,7 @@ export default function TeamThrows() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching throw data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching throw data..." />}
 
       {error && (
         <div className={styles.error}>

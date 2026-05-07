@@ -5,8 +5,9 @@ import { useApiQuery } from '../api/queries'
 import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './TeamStreaks.module.css'
 
 interface Streak {
@@ -187,6 +188,7 @@ export default function PlayerHeroStreaks() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player Hero Streaks — Pro Dota 2" description="Pro Dota 2 player streaks on individual heroes — win/loss runs by player and hero." />
       <div className={styles.header}>
         <h1>{isBest ? 'Best' : 'Worst'} Player-Hero Streaks</h1>
         <p className={styles.subtitle}>
@@ -211,7 +213,7 @@ export default function PlayerHeroStreaks() {
         </a>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading streaks..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading streaks..." />}
 
       {error && (
         <ErrorState

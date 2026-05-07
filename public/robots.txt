@@ -4,7 +4,6 @@ Disallow: /matches
 Disallow: /api/matches
 Disallow: /casters
 Disallow: /api/casters
-Crawl-delay: 10
 
 User-agent: Bingbot
 Allow: /
@@ -15,7 +14,12 @@ Disallow: /api/casters
 Crawl-delay: 10
 
 User-agent: *
+Allow: /
+Disallow: /matches
+Disallow: /api/matches
+Disallow: /casters
+Disallow: /api/casters
 Disallow: /administrator/
-Disallow: /real_funny/see_you_at/fuck_youjj/
 Disallow: /wp-admin/
-Disallow: /
+
+Sitemap: https://datdota.com/sitemap.xml

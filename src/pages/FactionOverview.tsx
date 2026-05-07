@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 interface PatchTeamFA {
@@ -388,6 +389,7 @@ export default function FactionOverview() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Radiant vs Dire — Pro Dota 2 Stats" description="Radiant vs Dire win rates, durations and side advantages in pro Dota 2." />
       <div className={styles.header}>
         <h1>Faction Summary</h1>
         <p className={styles.subtitle}>

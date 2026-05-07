@@ -6,7 +6,8 @@ import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import type { PlayerHeroComboLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -201,6 +202,7 @@ export default function PlayerHeroCombos() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player + Hero Combos — Pro Dota 2" description="Pro Dota 2 player + hero combinations — best win rates per player on each hero." />
       <div className={styles.header}>
         <h1>Player Hero Combos</h1>
         <p className={styles.subtitle}>
@@ -225,7 +227,7 @@ export default function PlayerHeroCombos() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching hero combo data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching hero combo data..." />}
 
       {error && (
         <div className={styles.error}>

@@ -1,3 +1,4 @@
+import PageMeta from '../components/PageMeta'
 import styles from './About.module.css'
 
 interface PersonLink {
@@ -72,6 +73,10 @@ function LinkIcon({ type }: { type: 'x' | 'web' }) {
 export default function About() {
   return (
     <div className={styles.page}>
+      <PageMeta
+        title="About datdota — Pro Dota 2 Statistics"
+        description="datdota is a professional Dota 2 statistics site, founded in 2013."
+      />
       <h1 className={styles.title}>About datdota</h1>
 
       <section className={styles.section}>
@@ -81,7 +86,7 @@ export default function About() {
           when Noxville took over the running of the site and relaunched it towards the middle of
           2017. The site was originally a PHP frontend with a MySQL backend, using smoke and clarity
           (and some R scripts) to keep the parsing going. In its latest incarnation it runs on Grails
-          with Postgres, using clarity2 for parsing.
+          with Postgres, using clarity for parsing; and a Python stack for advanced data processing.
         </p>
       </section>
 

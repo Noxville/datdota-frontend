@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 interface CasterLine {
@@ -91,6 +92,7 @@ export default function Casters() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Dota 2 Casters" description="Pro Dota 2 casters and shoutcasters — match coverage and broadcasting stats." />
       <div className={styles.header}>
         <h1>Caster Aggregates</h1>
         <p className={styles.subtitle}>
@@ -116,7 +118,7 @@ export default function Casters() {
         </div>
       )}
 
-      {isLoading && hasFilters && <EnigmaLoader text="Fetching caster data..." />}
+      {isLoading && hasFilters && <TableSkeleton columns={columns} rows={10} loaderText="Fetching caster data..." />}
 
       {error && hasFilters && (
         <div className={styles.error}>

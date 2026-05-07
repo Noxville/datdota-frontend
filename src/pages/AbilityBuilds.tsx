@@ -5,7 +5,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import { AbilitySequenceCell, abilityName } from '../components/AbilityIcon'
 import styles from './PlayerPerformances.module.css'
 
@@ -138,6 +139,7 @@ export default function AbilityBuilds() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Ability Builds — Pro Dota 2 Skill Orders" description="Skill build paths and talent choices for every Dota 2 hero in pro matches." />
       <div className={styles.header}>
         <h1>Ability Builds</h1>
         <p className={styles.subtitle}>
@@ -198,7 +200,7 @@ export default function AbilityBuilds() {
         </div>
       )}
 
-      {hasFilters && isLoading && <EnigmaLoader text="Crunching ability builds..." />}
+      {hasFilters && isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Crunching ability builds..." />}
 
       {hasFilters && error && (
         <div className={styles.error}>

@@ -4,6 +4,78 @@
    Typography TBD in mockup phase (placeholders below).
    ========================================================== */
 
+/* --- Self-hosted fonts (cdn.datdota.com) ----------------- */
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/fira-code-v27-latin-300.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/fira-code-v27-latin-regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/fira-code-v27-latin-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/fira-code-v27-latin-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/fira-code-v27-latin-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/plus-jakarta-sans-v12-latin-regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/plus-jakarta-sans-v12-latin-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/plus-jakarta-sans-v12-latin-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/plus-jakarta-sans-v12-latin-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('https://cdn.datdota.com/fonts/plus-jakarta-sans-v12-latin-800.woff2') format('woff2');
+}
+
 /* --- Reset ------------------------------------------------ */
 *,
 *::before,
@@ -71,7 +143,7 @@ html {
   /* Typography — Plus Jakarta Sans 800 + Fira Code 300 */
   --font-display: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Fira Code', monospace;
-  --font-weight-thin: 200;
+  --font-weight-thin: 300;
   --font-weight-bold: 800;
 
   /* Shadows */

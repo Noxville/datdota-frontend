@@ -5,8 +5,9 @@ import { useApiQuery } from '../api/queries'
 import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './TriviaAward.module.css'
 
 /* ── Award definitions ──────────────────────────────────── */
@@ -283,13 +284,14 @@ export default function TriviaAward() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Dota 2 Trivia Awards" description="Pro Dota 2 trivia awards — Akke, Maelk and CTY." />
       <div className={styles.header}>
         <h1>{meta.title}</h1>
         <p className={styles.subtitle}>{meta.subtitle}</p>
         <p className={styles.description}>{meta.description}</p>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading award data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading award data..." />}
 
       {error && (
         <ErrorState

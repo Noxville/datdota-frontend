@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import type { SquadPerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 import squadStyles from './PlayerSquads.module.css'
@@ -119,6 +120,7 @@ export default function PlayerSquads() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player Squads — Pro Dota 2" description="Pro Dota 2 player rosters — find players who have played together on the same team." />
       <div className={styles.header}>
         <h1>Squads</h1>
         <p className={styles.subtitle}>
@@ -157,7 +159,7 @@ export default function PlayerSquads() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching squad data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching squad data..." />}
 
       {error && (
         <div className={styles.error}>

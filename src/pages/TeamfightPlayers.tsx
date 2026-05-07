@@ -5,7 +5,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, DeltaCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
 
@@ -332,6 +333,7 @@ export default function TeamfightPlayers() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Teamfight Stats by Player — Pro Dota 2" description="Teamfight participation and impact for pro Dota 2 players." />
       <div className={styles.header}>
         <h1>Player Teamfights</h1>
         <p className={styles.subtitle}>
@@ -374,7 +376,7 @@ export default function TeamfightPlayers() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching teamfight data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching teamfight data..." />}
 
       {error && (
         <div className={styles.error}>

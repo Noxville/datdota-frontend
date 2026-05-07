@@ -2,8 +2,9 @@ import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import type { Rivalry } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -110,6 +111,7 @@ export default function PlayerRivalries() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player Rivalries — Pro Dota 2" description="Head-to-head records between pro Dota 2 players." />
       <div className={styles.header}>
         <h1>Player Rivalries</h1>
         <p className={styles.subtitle}>
@@ -117,7 +119,7 @@ export default function PlayerRivalries() {
         </p>
       </div>
 
-      {isLoading && <EnigmaLoader text="Fetching rivalry data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching rivalry data..." />}
 
       {error && (
         <ErrorState

@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import { heroesById } from '../data/heroes'
 import { heroImageUrl, itemImageUrl } from '../config'
 import { items as itemsData } from '../data/items'
@@ -126,6 +127,7 @@ export default function ItemProgression() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Item Progression — Pro Dota 2" description="Item build orders and timing for pro Dota 2 heroes." />
       <div className={styles.header}>
         <h1>Item Progression</h1>
         <p className={styles.subtitle}>
@@ -151,7 +153,7 @@ export default function ItemProgression() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching item progression data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching item progression data..." />}
 
       {error && (
         <div className={styles.error}>

@@ -8,7 +8,8 @@ import { heroesById } from '../data/heroes'
 import { tooltipsAndFacets } from '../data/tooltips-and-facets'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import type { FacetSummaryLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -170,6 +171,7 @@ export default function FacetSummary() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Hero Facet Stats — Pro Dota 2" description="Dota 2 hero facet pick rates and win rates in pro matches." />
       <div className={styles.header}>
         <h1>Facet Summary</h1>
         <p className={styles.subtitle}>
@@ -194,7 +196,7 @@ export default function FacetSummary() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching facet data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching facet data..." />}
 
       {error && (
         <div className={styles.error}>

@@ -5,7 +5,8 @@ import { useFilters } from '../hooks/useFilters'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, PercentCell, PlayerCell, TeamCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import type { PlayerTeamComboLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -138,6 +139,7 @@ export default function PlayerTeamCombos() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Player + Team Combos — Pro Dota 2" description="Pro Dota 2 player results across multiple teams." />
       <div className={styles.header}>
         <h1>Player Team Combos</h1>
         <p className={styles.subtitle}>
@@ -162,7 +164,7 @@ export default function PlayerTeamCombos() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching team combo data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching team combo data..." />}
 
       {error && (
         <div className={styles.error}>

@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import DataTable, { PlayerCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import { AbilitySequenceCell, abilityName } from '../components/AbilityIcon'
 import styles from './PlayerPerformances.module.css'
 
@@ -100,6 +101,7 @@ export default function AbilityBuildMatches() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Ability Build Matches" description="Match list filtered by Dota 2 hero ability build." />
       <div className={styles.header}>
         <h1>Ability Build Matches</h1>
         {queryAbilities.length > 0 && (
@@ -115,7 +117,7 @@ export default function AbilityBuildMatches() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Loading matches..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading matches..." />}
 
       {error && (
         <div className={styles.error}>

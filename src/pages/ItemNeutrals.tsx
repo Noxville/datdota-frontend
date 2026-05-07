@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import { itemImageUrl } from '../config'
 import { items as itemsData } from '../data/items'
 import { fmtTime } from '../utils/format'
@@ -204,6 +205,7 @@ export default function ItemNeutrals() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Neutral Items — Pro Dota 2" description="Neutral item pickups and win rates in pro Dota 2." />
       <div className={styles.header}>
         <h1>Neutral Items</h1>
         <p className={styles.subtitle}>
@@ -229,7 +231,7 @@ export default function ItemNeutrals() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching neutral item data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching neutral item data..." />}
 
       {error && (
         <div className={styles.error}>

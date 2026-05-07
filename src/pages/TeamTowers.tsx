@@ -4,7 +4,8 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import type { TeamTowerLine } from '../types'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
@@ -170,6 +171,7 @@ export default function TeamTowers() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Team Tower Stats — Pro Dota 2" description="Tower kills and tower differentials for pro Dota 2 teams." />
       <div className={styles.header}>
         <h1>Team Tower Timings</h1>
         <p className={styles.subtitle}>
@@ -195,7 +197,7 @@ export default function TeamTowers() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching tower timings..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching tower timings..." />}
 
       {error && (
         <div className={styles.error}>

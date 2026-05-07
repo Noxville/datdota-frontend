@@ -3,6 +3,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import FilterPanel from '../components/FilterPanel'
 import EnigmaLoader from '../components/EnigmaLoader'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
 interface RuneDistRow {
@@ -54,6 +55,7 @@ export default function ScenarioFirstWisdoms() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="First Wisdom Rune Stats — Pro Dota 2" description="First Wisdom rune pickup analysis in pro Dota 2." />
       <div className={styles.header}>
         <h1>First Wisdom Runes</h1>
         <p className={styles.subtitle}>

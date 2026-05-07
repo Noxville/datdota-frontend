@@ -6,6 +6,8 @@ import { apiFetch } from '../api/client'
 import { heroesById } from '../data/heroes'
 import { heroImageUrl, teamLogoUrl, leagueLogoUrl } from '../config'
 import { TeamLogo } from '../components/DataTable'
+import PageMeta from '../components/PageMeta'
+import { buildOrganization, buildWebSite } from '../lib/seo'
 import styles from './Home.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -132,6 +134,11 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
+      <PageMeta
+        title="datdota — Professional Dota 2 Statistics"
+        description="Live pro Dota 2 matches, team ratings, hero meta, draft analysis and tournament data. Stats for The International, DPC, Major and tier 1-2 events."
+        jsonLd={[buildWebSite(), buildOrganization()]}
+      />
       <div className={styles.mainGrid}>
         {/* Left column: live games + recent matches + active leagues */}
         <div>

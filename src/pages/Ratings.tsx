@@ -4,8 +4,9 @@ import { type ColumnDef, type ColumnHelper, createColumnHelper } from '@tanstack
 import { useApiQuery } from '../api/queries'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, DeltaCell, TeamCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import type { RatingEntry } from '../types'
 import styles from './Ratings.module.css'
 
@@ -253,6 +254,7 @@ export default function Ratings() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Dota 2 Team Rankings — Glicko-2 Ratings" description="Pro Dota 2 team rankings and rating ladder — current Glicko-2 ratings and historical leaderboards for every tracked competitive team." />
       <div className={styles.header}>
         <div>
           <h1>Team Ratings</h1>
@@ -277,7 +279,7 @@ export default function Ratings() {
         </div>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading ratings..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading ratings..." />}
 
       {error && (
         <ErrorState

@@ -1,3 +1,4 @@
+import PageMeta from '../components/PageMeta'
 import styles from './NotFound.module.css'
 
 const ERRORS = {
@@ -36,6 +37,7 @@ export function CfWidget() {
 function ErrorPage({ image, title, message }: { image: string; title: string; message: string }) {
   return (
     <div className={styles.container}>
+      <PageMeta title={title} description={message} noindex />
       <img src={image} alt={title} className={styles.image} />
       <h2 className={styles.title}>{title}</h2>
       <p className={styles.message}>{message}</p>

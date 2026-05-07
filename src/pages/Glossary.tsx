@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import glossary from '../data/glossary'
 import styles from './Glossary.module.css'
+import PageMeta from '../components/PageMeta'
 
 function sectionSlug(name: string): string {
   return `section-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
@@ -64,6 +65,7 @@ export default function Glossary() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Dota 2 Stats Glossary" description="Definitions for KDA, GPM, XPM, networth, Glicko-2, Elo and other Dota 2 esports metrics." />
       <div className={styles.header}>
         <h1>Glossary</h1>
         <p className={styles.subtitle}>

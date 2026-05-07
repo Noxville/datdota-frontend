@@ -1,8 +1,10 @@
 import styles from './Terms.module.css'
+import PageMeta from '../components/PageMeta'
 
 export default function PrivacyPolicy() {
   return (
     <div className={styles.page}>
+      <PageMeta title="Privacy Policy" description="Privacy policy for datdota.com — what we collect and how we use it." />
       <h1 className={styles.title}>Privacy Policy</h1>
       <p className={styles.text}>
         <em>Effective date: 20 March 2026 &mdash; Last updated: 20 March 2026</em>

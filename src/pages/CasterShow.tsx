@@ -5,6 +5,7 @@ import { useApiQuery } from '../api/queries'
 import DataTable, { NumericCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import PageMeta from '../components/PageMeta'
 import styles from './EntityShow.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -164,6 +165,11 @@ export default function CasterShow() {
 
   return (
     <div className={styles.page}>
+      <PageMeta
+        title={`${caster.nickname} — Dota 2 Caster`}
+        description={`Match casting history and details for Dota 2 caster ${caster.nickname}.`}
+        noindex
+      />
       {/* Header */}
       <div className={styles.headerRow}>
         <div className={styles.headerLogoPlaceholder}>

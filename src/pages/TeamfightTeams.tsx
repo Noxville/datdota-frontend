@@ -6,7 +6,8 @@ import { useFilters } from '../hooks/useFilters'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, DeltaCell, TeamCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
+import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
 
@@ -313,6 +314,7 @@ export default function TeamfightTeams() {
 
   return (
     <div className={styles.page}>
+      <PageMeta title="Teamfight Stats by Team — Pro Dota 2" description="Teamfight performance metrics for pro Dota 2 teams." />
       <div className={styles.header}>
         <h1>Team Teamfights</h1>
         <p className={styles.subtitle}>
@@ -355,7 +357,7 @@ export default function TeamfightTeams() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching team teamfight data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching team teamfight data..." />}
 
       {error && (
         <div className={styles.error}>
