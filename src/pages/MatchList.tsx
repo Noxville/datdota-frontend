@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import DataTable, { PlayerCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import LeagueLogo from '../components/LeagueLogo'
 import PageMeta from '../components/PageMeta'
 import type { MatchListEntry } from '../types'
@@ -206,7 +206,7 @@ export default function MatchList() {
         ))}
       </div>
 
-      {isLoading && <EnigmaLoader text="Fetching matches..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching matches..." />}
 
       {error && (
         <div className={styles.error}>

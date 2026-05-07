@@ -4,7 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import LeagueLogo from '../components/LeagueLogo'
 import PageMeta from '../components/PageMeta'
 import { fmtTime } from '../utils/format'
@@ -188,7 +188,7 @@ export default function ScenarioMegacreepComebacks() {
         </div>
       )}
 
-      {isLoading && hasFilters && <EnigmaLoader text="Fetching megacreep comebacks..." />}
+      {isLoading && hasFilters && <TableSkeleton columns={columns} rows={10} loaderText="Fetching megacreep comebacks..." />}
 
       {error && hasFilters && (
         <div className={styles.error}>

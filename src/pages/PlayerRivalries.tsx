@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import type { Rivalry } from '../types'
@@ -119,7 +119,7 @@ export default function PlayerRivalries() {
         </p>
       </div>
 
-      {isLoading && <EnigmaLoader text="Fetching rivalry data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching rivalry data..." />}
 
       {error && (
         <ErrorState

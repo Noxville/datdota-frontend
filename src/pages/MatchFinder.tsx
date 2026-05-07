@@ -10,7 +10,7 @@ import { patches } from '../data/patches'
 import DataTable from '../components/DataTable'
 import LeagueLogo from '../components/LeagueLogo'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import type { MatchFinderEntry, MatchFinderResponse } from '../types'
 import { fmtTime } from '../utils/format'
 import styles from './PlayerPerformances.module.css'
@@ -506,7 +506,7 @@ export default function MatchFinder() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Searching matches..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Searching matches..." />}
 
       {error && (
         <div className={styles.error}>

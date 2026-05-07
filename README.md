@@ -87,6 +87,17 @@ The `dist/` folder contains all static files ready to be served by nginx.
 | League | `/leagues/:id` | Tournament stats, team records, head-to-head matchups, all matches |
 | Caster | `/casters/:id` | Games cast, co-casters, recent matches |
 
+### Loading states
+
+Two loaders, picked by page shape:
+
+| Component | Use when | Example |
+|-----------|----------|---------|
+| `<TableSkeleton columns={cols} rows={10} loaderText="..." />` | Page is a single `<DataTable>` below an optional FilterPanel. Renders a column-aware shimmer shell with the EnigmaLoader centered on top — reserves layout space and prevents CLS. | `PlayerPerformances`, `Ratings`, `LeaguePedigrees` |
+| `<EnigmaLoader text="..." />` | Page is multi-section (chart + table, multiple tables, custom layout) or an entity detail page (`PlayerShow`, `TeamShow`, `LeagueShow`, `MatchShow`, `CasterShow`). Skeleton shape would misrepresent the layout, so use the standalone loader. | `EventKills`, `WinExpectancy`, `Scorigami`, all `*Show` pages |
+
+Pass the same `columns` array to `TableSkeleton` that the page's `<DataTable>` receives. `loaderText` is the same string that was previously on `<EnigmaLoader>`.
+
 ### Filters (available on query pages via FilterPanel)
 
 Each query page declares which subset of filters to show via `showFilters`. All active filter values sync bidirectionally with URL query parameters.

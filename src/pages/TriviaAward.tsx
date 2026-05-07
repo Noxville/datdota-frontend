@@ -5,7 +5,7 @@ import { useApiQuery } from '../api/queries'
 import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import styles from './TriviaAward.module.css'
@@ -291,7 +291,7 @@ export default function TriviaAward() {
         <p className={styles.description}>{meta.description}</p>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading award data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading award data..." />}
 
       {error && (
         <ErrorState

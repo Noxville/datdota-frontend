@@ -6,7 +6,7 @@ import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { HeroPerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -290,7 +290,7 @@ export default function HeroPerformances() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching hero data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching hero data..." />}
 
       {error && (
         <div className={styles.error}>

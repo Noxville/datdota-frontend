@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import DataTable, { PlayerCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import { AbilitySequenceCell, abilityName } from '../components/AbilityIcon'
 import styles from './PlayerPerformances.module.css'
@@ -117,7 +117,7 @@ export default function AbilityBuildMatches() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Loading matches..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading matches..." />}
 
       {error && (
         <div className={styles.error}>

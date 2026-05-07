@@ -4,7 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { TeamTowerLine } from '../types'
 import { fmtTime } from '../utils/format'
@@ -197,7 +197,7 @@ export default function TeamTowers() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching tower timings..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching tower timings..." />}
 
       {error && (
         <div className={styles.error}>

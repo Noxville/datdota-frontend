@@ -7,7 +7,7 @@ import { heroesById } from '../data/heroes'
 import { frames as framesStatic } from '../data/frames'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
@@ -576,7 +576,7 @@ export default function Frames() {
         </div>
       )}
 
-      {isLoading && hasFilters && <EnigmaLoader text="Fetching frame data..." />}
+      {isLoading && hasFilters && <TableSkeleton columns={columns} rows={10} loaderText="Fetching frame data..." />}
 
       {error && hasFilters && (
         <ErrorState

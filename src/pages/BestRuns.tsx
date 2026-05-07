@@ -3,7 +3,7 @@ import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, TeamCell, PercentCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import styles from './BestRuns.module.css'
@@ -201,7 +201,7 @@ export default function BestRuns() {
         ))}
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading best runs..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading best runs..." />}
 
       {error && (
         <ErrorState

@@ -4,7 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { TeamThrowLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -123,7 +123,7 @@ export default function TeamThrows() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching throw data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching throw data..." />}
 
       {error && (
         <div className={styles.error}>

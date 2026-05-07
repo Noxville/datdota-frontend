@@ -3,7 +3,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { leagueLogoUrl } from '../config'
 import DataTable, { NumericCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
@@ -172,7 +172,7 @@ export default function Leagues() {
         </p>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading leagues..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading leagues..." />}
 
       {error && (
         <ErrorState

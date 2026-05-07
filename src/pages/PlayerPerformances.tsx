@@ -4,7 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { PlayerPerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -203,7 +203,9 @@ export default function PlayerPerformances() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching player data..." />}
+      {isLoading && (
+        <TableSkeleton columns={columns} rows={12} loaderText="Fetching player data..." />
+      )}
 
       {error && (
         <div className={styles.error}>

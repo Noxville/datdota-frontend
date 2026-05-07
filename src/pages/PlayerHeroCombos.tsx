@@ -6,7 +6,7 @@ import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { PlayerHeroComboLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -227,7 +227,7 @@ export default function PlayerHeroCombos() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching hero combo data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching hero combo data..." />}
 
       {error && (
         <div className={styles.error}>

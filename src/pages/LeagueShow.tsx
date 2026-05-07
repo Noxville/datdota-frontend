@@ -7,6 +7,7 @@ import DataTable, { NumericCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
+import { buildSportsEvent, buildBreadcrumbs } from '../lib/seo'
 import styles from './EntityShow.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -328,6 +329,21 @@ export default function LeagueShow() {
       <PageMeta
         title={`${info.name} — Pro Dota 2 Tournament Stats`}
         description={`Match results, hero pick & ban data, and team performance for the ${info.name} Dota 2 tournament. ${m.total} matches.`}
+        jsonLd={[
+          buildSportsEvent({
+            leagueId: info.leagueId,
+            name: info.name,
+            description: info.description,
+            startDate: dateRange?.first ?? null,
+            endDate: dateRange?.last ?? null,
+            logo: leagueLogoUrl(info.leagueId),
+          }),
+          buildBreadcrumbs([
+            { name: 'Home', path: '/' },
+            { name: 'Leagues', path: '/leagues' },
+            { name: info.name },
+          ]),
+        ]}
       />
       {/* Header */}
       <div className={styles.headerRow}>

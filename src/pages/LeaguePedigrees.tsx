@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import DataTable, { NumericCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
@@ -143,7 +143,7 @@ export default function LeaguePedigrees() {
         </p>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading pedigrees..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading pedigrees..." />}
 
       {error && (
         <ErrorState

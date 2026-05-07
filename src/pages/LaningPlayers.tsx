@@ -5,7 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import { useLaneToggles, LANE_KEYS } from '../hooks/useLaneToggles'
 import DataTable, { NumericCell, PercentCell, DeltaCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import { LANES, laneLabel, laneColor } from '../data/lanes'
 import styles from './PlayerPerformances.module.css'
@@ -275,7 +275,7 @@ export default function LaningPlayers() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching laning data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching laning data..." />}
 
       {error && (
         <div className={styles.error}>

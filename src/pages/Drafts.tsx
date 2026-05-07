@@ -280,7 +280,7 @@ export default function Drafts() {
 
   return (
     <div className={styles.page}>
-      <PageMeta title="Draft Analysis — Pro Dota 2" description="Pro Dota 2 draft analysis — pick & ban order and captain's mode tendencies." />
+      <PageMeta title="Dota 2 Draft Analysis — Pro Pick & Ban Stats" description="Pro Dota 2 draft analysis — captain's mode pick & ban order, hero priorities and team tendencies across the competitive meta." />
       <div className={styles.header}>
         <h1>Drafts Summary</h1>
         <p className={styles.subtitle}>

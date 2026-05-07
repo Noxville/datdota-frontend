@@ -6,7 +6,7 @@ import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { FrequentPlayerHero } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -214,7 +214,7 @@ export default function HeroFrequentPlayers() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching frequent players..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching frequent players..." />}
 
       {error && (
         <div className={styles.error}>

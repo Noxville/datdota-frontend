@@ -8,7 +8,7 @@ import { heroesById } from '../data/heroes'
 import { tooltipsAndFacets } from '../data/tooltips-and-facets'
 import DataTable, { NumericCell, PercentCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { FacetSummaryLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -196,7 +196,7 @@ export default function FacetSummary() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching facet data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching facet data..." />}
 
       {error && (
         <div className={styles.error}>

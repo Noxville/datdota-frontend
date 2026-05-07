@@ -4,7 +4,7 @@ import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, TeamCell } from '../components/DataTable'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import styles from './TeamStreaks.module.css'
@@ -179,7 +179,7 @@ export default function TeamStreaks() {
         </a>
       </div>
 
-      {isLoading && <EnigmaLoader text="Loading streaks..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Loading streaks..." />}
 
       {error && (
         <ErrorState

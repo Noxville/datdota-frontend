@@ -6,7 +6,7 @@ import { heroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import type { UniqueHeroLine } from '../types'
 import styles from './PlayerPerformances.module.css'
@@ -150,7 +150,7 @@ export default function PlayerUniqueHeroes() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching unique heroes data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching unique heroes data..." />}
 
       {error && (
         <div className={styles.error}>

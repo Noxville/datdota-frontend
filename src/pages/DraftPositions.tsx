@@ -4,7 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
@@ -212,7 +212,7 @@ export default function DraftPositions() {
         </div>
       )}
 
-      {isLoading && hasFilters && <EnigmaLoader text="Fetching draft positions..." />}
+      {isLoading && hasFilters && <TableSkeleton columns={columns} rows={10} loaderText="Fetching draft positions..." />}
 
       {error && hasFilters && (
         <div className={styles.error}>

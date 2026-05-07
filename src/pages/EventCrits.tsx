@@ -4,7 +4,7 @@ import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
 import DataTable, { PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import { heroesById } from '../data/heroes'
 import { heroImageUrl } from '../config'
@@ -169,7 +169,7 @@ export default function EventCrits() {
         </div>
       )}
 
-      {isLoading && hasFilters && <EnigmaLoader text="Fetching big crits..." />}
+      {isLoading && hasFilters && <TableSkeleton columns={columns} rows={10} loaderText="Fetching big crits..." />}
 
       {error && hasFilters && (
         <div className={styles.error}>

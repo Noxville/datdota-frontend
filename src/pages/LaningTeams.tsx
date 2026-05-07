@@ -5,7 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import { teamLogoUrl } from '../config'
 import DataTable, { NumericCell, PercentCell, DeltaCell, TeamCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
-import EnigmaLoader from '../components/EnigmaLoader'
+import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 
@@ -228,7 +228,7 @@ export default function LaningTeams() {
         </div>
       )}
 
-      {isLoading && <EnigmaLoader text="Fetching team laning data..." />}
+      {isLoading && <TableSkeleton columns={columns} rows={10} loaderText="Fetching team laning data..." />}
 
       {error && (
         <div className={styles.error}>

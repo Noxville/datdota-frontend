@@ -8,6 +8,7 @@ import DataTable, { NumericCell, PlayerCell, TeamCell } from '../components/Data
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
+import { buildSportsTeam, buildBreadcrumbs } from '../lib/seo'
 import styles from './EntityShow.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -411,6 +412,19 @@ export default function TeamShow() {
       <PageMeta
         title={`${team.team.name} — Pro Dota 2 Team Stats`}
         description={`Match history, roster, ratings and tournament results for pro Dota 2 team ${team.team.name} (${team.team.tag}). ${totalGames.toLocaleString()} tracked games.`}
+        jsonLd={[
+          buildSportsTeam({
+            valveId: team.team.valveId,
+            name: team.team.name,
+            tag: team.team.tag,
+            logo: logoUrl,
+          }),
+          buildBreadcrumbs([
+            { name: 'Home', path: '/' },
+            { name: 'Teams', path: '/teams/performances' },
+            { name: team.team.name },
+          ]),
+        ]}
       />
       {/* Header */}
       <div className={styles.headerRow}>
