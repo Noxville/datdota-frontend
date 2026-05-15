@@ -413,6 +413,58 @@ export interface DurationResponse {
   count: number
 }
 
+export interface MidlaneMatchRow {
+  matchId: number
+  viewerHero: number | null
+  opponentHero: number | null
+  opponentSteamId: number
+  opponentNickname: string
+  win: boolean
+  /** Flat map keyed by `${base}At${min}` / `${diff}At${min}`. min ∈ {8,10,12}. */
+  metrics: Record<string, number | null>
+}
+
+export interface MidlaneMatchupPlayerRef {
+  steamId: number
+  nickname: string
+}
+
+export interface MidlaneMatchupExtremum {
+  matchId: number
+  value: number
+}
+
+export interface MidlaneMatchupMetricSummary {
+  avg: number | null
+  top5: MidlaneMatchupExtremum[]
+  bottom5: MidlaneMatchupExtremum[]
+}
+
+export interface MidlaneMatchupVsPlayer {
+  opponent: MidlaneMatchupPlayerRef
+  games: number
+  wins: number
+  losses: number
+  rows: MidlaneMatchRow[]
+}
+
+export interface MidlaneMatchupVsField {
+  games: number
+  wins: number
+  losses: number
+  metrics: Record<string, MidlaneMatchupMetricSummary>
+}
+
+export interface MidlaneMatchupPlayer {
+  player: MidlaneMatchupPlayerRef
+  vsPlayers: MidlaneMatchupVsPlayer[]
+  vsField: MidlaneMatchupVsField | null
+}
+
+export interface MidlaneMatchupResponse {
+  players: MidlaneMatchupPlayer[]
+}
+
 export interface FilterValues {
   players?: string
   teams?: string

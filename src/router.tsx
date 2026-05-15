@@ -104,6 +104,7 @@ const router = createBrowserRouter([
       { path: '/lanes/laning/players', element: lz(() => import('./pages/LaningPlayers')) },
       { path: '/lanes/laning/teams', element: lz(() => import('./pages/LaningTeams')) },
       { path: '/lanes/laning/heroes', element: lz(() => import('./pages/LaningHeroes')) },
+      { path: '/lanes/laning/midlane-matchup', element: lz(() => import('./pages/MidlaneMatchup')) },
 
       // Meta
       { path: '/lanes/compositions', element: lz(() => import('./pages/LaneCompositions')) },

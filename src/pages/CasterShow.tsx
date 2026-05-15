@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
+import { useNoIndex } from '../hooks/useNoIndex'
 import DataTable, { NumericCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
@@ -147,6 +148,9 @@ export default function CasterShow() {
     if (!caster?.recentMatches) return 0
     return new Set(caster.recentMatches.map((m) => m.leagueId)).size
   }, [caster?.recentMatches])
+
+  const notFound = !isLoading && (!!error || !caster)
+  useNoIndex(notFound)
 
   if (isLoading) return <div className={styles.page}><EnigmaLoader text="Loading caster..." /></div>
 

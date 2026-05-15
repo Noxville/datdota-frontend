@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import * as d3 from 'd3'
 import { useApiQuery } from '../api/queries'
+import { useNoIndex } from '../hooks/useNoIndex'
 import { heroImageUrl, teamLogoUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, TeamCell } from '../components/DataTable'
@@ -510,6 +511,9 @@ export default function PlayerShow() {
       (a, b) => new Date(b.start).getTime() - new Date(a.start).getTime(),
     )
   }, [player?.stints])
+
+  const notFound = !isLoading && (!!error || !player)
+  useNoIndex(notFound)
 
   if (isLoading) return <div className={styles.page}><EnigmaLoader text="Loading player..." /></div>
 

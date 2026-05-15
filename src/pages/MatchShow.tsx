@@ -2,6 +2,7 @@ import { Fragment, useMemo, useCallback, useRef, useEffect, useState } from 'rea
 import * as d3 from 'd3'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useApiQuery } from '../api/queries'
+import { useNoIndex } from '../hooks/useNoIndex'
 import { heroImageUrl, itemImageUrl, abilityImageUrl, teamLogoUrl, leagueLogoUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import { items as itemsData } from '../data/items'
@@ -1334,6 +1335,9 @@ export default function MatchShow() {
   const laning = laningRaw?.data
 
   const match = data?.data
+
+  const notFound = !isLoading && (!!error || !match)
+  useNoIndex(notFound)
 
   if (isLoading) return <div className={styles.page}><EnigmaLoader text="Loading match..." /></div>
 

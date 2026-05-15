@@ -170,6 +170,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Player Laning', to: '/lanes/laning/players?default=true' },
           { label: 'Team Laning', to: '/lanes/laning/teams?default=true' },
           { label: 'Hero Laning', to: '/lanes/laning/heroes?default=true' },
+          { label: 'Midlane Matchup', to: '/lanes/laning/midlane-matchup?default=true' },
         ],
       },
       {
