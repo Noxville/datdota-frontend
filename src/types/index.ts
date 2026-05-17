@@ -63,8 +63,10 @@ export interface HeroTupleLine {
 export interface HeroEloByPhaseLine {
   hero: number
   phase: number
-  shift: number
+  shift: number | null
   games: number
+  wins: number
+  losses: number
 }
 
 export interface HeroEloByPhaseResponse {
@@ -324,6 +326,28 @@ export type PlayerRecordAggregateTuple = [string, string, number, number]
 
 export type PlayerRecordsResponse = Record<string, PlayerRecordTuple[] | PlayerRecordAggregateTuple[]>
 
+// ── Team Records ──
+export interface TeamRecordSingleMatch {
+  valveId: number
+  teamName: string
+  value: number
+  matchId: number
+  opponentValveId: number | null
+  opponentTeamName: string | null
+  logoId: string | null
+  opponentLogoId: string | null
+}
+
+export interface TeamRecordAggregate {
+  valveId: number
+  teamName: string
+  value: number
+  numGames: number
+  logoId: string | null
+}
+
+export type TeamRecordsResponse = Record<string, TeamRecordSingleMatch[] | TeamRecordAggregate[]>
+
 // Team Map Control
 export interface TeamMapControlTeam {
   valveId: number
@@ -411,6 +435,23 @@ export interface DurationResponse {
   mean: number
   stdDev: number
   count: number
+}
+
+export interface NetworthComebackTeam {
+  valveId: number
+  teamName: string
+  logoId: string | null
+}
+
+export interface NetworthComebackLine {
+  matchId: number
+  time: number
+  duration: number
+  comeback: number
+  winnerNetworth: number
+  loserNetworth: number
+  winner: NetworthComebackTeam
+  loser: NetworthComebackTeam
 }
 
 export interface MidlaneMatchRow {

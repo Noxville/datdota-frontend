@@ -23,6 +23,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <Home /> },
       { path: '/styleguide', element: lz(() => import('./pages/Mockups')) },
+      { path: '/metrics', element: lz(() => import('./pages/Metrics')) },
 
       // Heroes
       { path: '/heroes/performances', element: lz(() => import('./pages/HeroPerformances')) },
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
       { path: '/teams/comebacks', element: lz(() => import('./pages/TeamComebacks')) },
       { path: '/teams/map-control', element: lz(() => import('./pages/TeamMapControl')) },
       { path: '/teams/identity', element: lz(() => import('./pages/TeamIdentity')) },
+      { path: '/teams/records', element: lz(() => import('./pages/TeamRecords')) },
       { path: '/teams/:id', element: lz(() => import('./pages/TeamShow')) },
 
       // Matches
@@ -61,6 +63,7 @@ const router = createBrowserRouter([
       { path: '/matches/finder', element: lz(() => import('./pages/MatchFinder')) },
       { path: '/matches/durations', element: lz(() => import('./pages/MatchDurations')) },
       { path: '/matches/scorigami', element: lz(() => import('./pages/Scorigami')) },
+      { path: '/matches/comebacks', element: lz(() => import('./pages/MatchComebacks')) },
       { path: '/matches/:id', element: lz(() => import('./pages/MatchShow')) },
 
       // Events — Combat

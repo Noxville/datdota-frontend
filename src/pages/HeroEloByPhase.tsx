@@ -27,17 +27,26 @@ function HeroIconCell({ heroId }: { heroId: number }) {
   )
 }
 
-// Pivoted row: one per hero, with shift/games for each phase
+interface PhaseStats {
+  shift: number | null
+  games: number
+  wins: number
+  losses: number
+}
+
 interface PivotedRow {
   hero: number
-  phase1Shift: number | null
-  phase1Games: number
-  phase2Shift: number | null
-  phase2Games: number
-  phase3Shift: number | null
-  phase3Games: number
+  phase1: PhaseStats
+  phase2: PhaseStats
+  phase3: PhaseStats
   totalGames: number
+  totalWins: number
+  totalLosses: number
   totalAvgShift: number | null
+}
+
+function emptyPhase(): PhaseStats {
+  return { shift: null, games: 0, wins: 0, losses: 0 }
 }
 
 function pivotData(allPicks: HeroEloByPhaseLine[]): PivotedRow[] {
@@ -48,30 +57,41 @@ function pivotData(allPicks: HeroEloByPhaseLine[]): PivotedRow[] {
     if (!row) {
       row = {
         hero: entry.hero,
-        phase1Shift: null, phase1Games: 0,
-        phase2Shift: null, phase2Games: 0,
-        phase3Shift: null, phase3Games: 0,
-        totalGames: 0, totalAvgShift: null,
+        phase1: emptyPhase(),
+        phase2: emptyPhase(),
+        phase3: emptyPhase(),
+        totalGames: 0, totalWins: 0, totalLosses: 0, totalAvgShift: null,
       }
       byHero.set(entry.hero, row)
     }
-    if (entry.phase === 1) { row.phase1Shift = entry.shift; row.phase1Games = entry.games }
-    if (entry.phase === 2) { row.phase2Shift = entry.shift; row.phase2Games = entry.games }
-    if (entry.phase === 3) { row.phase3Shift = entry.shift; row.phase3Games = entry.games }
+    const stats: PhaseStats = { shift: entry.shift, games: entry.games, wins: entry.wins, losses: entry.losses }
+    if (entry.phase === 1) row.phase1 = stats
+    if (entry.phase === 2) row.phase2 = stats
+    if (entry.phase === 3) row.phase3 = stats
   }
 
-  // Compute totals
   for (const row of byHero.values()) {
     let totalWeighted = 0
     let totalGames = 0
-    if (row.phase1Shift !== null) { totalWeighted += row.phase1Shift * row.phase1Games; totalGames += row.phase1Games }
-    if (row.phase2Shift !== null) { totalWeighted += row.phase2Shift * row.phase2Games; totalGames += row.phase2Games }
-    if (row.phase3Shift !== null) { totalWeighted += row.phase3Shift * row.phase3Games; totalGames += row.phase3Games }
+    for (const p of [row.phase1, row.phase2, row.phase3]) {
+      row.totalWins += p.wins
+      row.totalLosses += p.losses
+      if (p.shift !== null) { totalWeighted += p.shift * p.games; totalGames += p.games }
+    }
     row.totalGames = totalGames
     row.totalAvgShift = totalGames > 0 ? totalWeighted / totalGames : null
   }
 
   return Array.from(byHero.values())
+}
+
+function WinLossCell({ wins, losses }: { wins: number; losses: number }) {
+  if (wins + losses === 0) return <span style={{ color: 'var(--color-text-muted)' }}>—</span>
+  return (
+    <span style={{ fontSize: '0.78rem', fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--font-mono)' }}>
+      {wins}-{losses}
+    </span>
+  )
 }
 
 const columns: ColumnDef<PivotedRow, unknown>[] = [
@@ -85,39 +105,63 @@ const columns: ColumnDef<PivotedRow, unknown>[] = [
   },
   {
     id: 'phase1Shift',
-    accessorKey: 'phase1Shift',
-    header: 'Phase 1',
+    accessorFn: (row) => row.phase1.shift,
+    header: 'P1 Shift',
     size: 80,
     meta: { numeric: true, heatmap: 'high-good', tooltip: 'First Phase Elo Shift' },
     cell: ({ row }) => {
-      const v = row.original.phase1Shift
+      const v = row.original.phase1.shift
       if (v === null) return <span style={{ color: 'var(--color-text-muted)' }}>—</span>
-      return <span title={`${row.original.phase1Games} games`}><DeltaCell value={v} decimals={2} /></span>
+      return <DeltaCell value={v} decimals={2} />
     },
+  },
+  {
+    id: 'phase1WL',
+    accessorFn: (row) => row.phase1.games,
+    header: 'P1 W-L',
+    size: 75,
+    meta: { numeric: true, tooltip: 'First Phase Wins-Losses' },
+    cell: ({ row }) => <WinLossCell wins={row.original.phase1.wins} losses={row.original.phase1.losses} />,
   },
   {
     id: 'phase2Shift',
-    accessorKey: 'phase2Shift',
-    header: 'Phase 2',
+    accessorFn: (row) => row.phase2.shift,
+    header: 'P2 Shift',
     size: 80,
     meta: { numeric: true, heatmap: 'high-good', tooltip: 'Second Phase Elo Shift' },
     cell: ({ row }) => {
-      const v = row.original.phase2Shift
+      const v = row.original.phase2.shift
       if (v === null) return <span style={{ color: 'var(--color-text-muted)' }}>—</span>
-      return <span title={`${row.original.phase2Games} games`}><DeltaCell value={v} decimals={2} /></span>
+      return <DeltaCell value={v} decimals={2} />
     },
   },
   {
+    id: 'phase2WL',
+    accessorFn: (row) => row.phase2.games,
+    header: 'P2 W-L',
+    size: 75,
+    meta: { numeric: true, tooltip: 'Second Phase Wins-Losses' },
+    cell: ({ row }) => <WinLossCell wins={row.original.phase2.wins} losses={row.original.phase2.losses} />,
+  },
+  {
     id: 'phase3Shift',
-    accessorKey: 'phase3Shift',
-    header: 'Phase 3',
+    accessorFn: (row) => row.phase3.shift,
+    header: 'P3 Shift',
     size: 80,
     meta: { numeric: true, heatmap: 'high-good', tooltip: 'Third Phase Elo Shift' },
     cell: ({ row }) => {
-      const v = row.original.phase3Shift
+      const v = row.original.phase3.shift
       if (v === null) return <span style={{ color: 'var(--color-text-muted)' }}>—</span>
-      return <span title={`${row.original.phase3Games} games`}><DeltaCell value={v} decimals={2} /></span>
+      return <DeltaCell value={v} decimals={2} />
     },
+  },
+  {
+    id: 'phase3WL',
+    accessorFn: (row) => row.phase3.games,
+    header: 'P3 W-L',
+    size: 75,
+    meta: { numeric: true, tooltip: 'Third Phase Wins-Losses' },
+    cell: ({ row }) => <WinLossCell wins={row.original.phase3.wins} losses={row.original.phase3.losses} />,
   },
   {
     id: 'totalGames',

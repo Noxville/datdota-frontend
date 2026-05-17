@@ -1,0 +1,108 @@
+.fullBleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  padding: 0 5vw;
+  box-sizing: border-box;
+}
+
+.profileCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.profileCellHit {
+  border-left: 3px solid #2dd4bf;
+}
+.profileCellMiss {
+  border-left: 3px solid #fbbf24;
+}
+.profileCellNocache {
+  border-left: 3px solid #f87171;
+}
+
+.profileCellChanged {
+  border-color: rgba(196, 139, 196, 0.45);
+  background: rgba(196, 139, 196, 0.10);
+  animation: metricFlash 1400ms ease-out;
+}
+
+@keyframes metricFlash {
+  0%   { background: rgba(196, 139, 196, 0.45); }
+  100% { background: rgba(196, 139, 196, 0.10); }
+}
+
+.profileLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  width: 8.5ch;
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-border);
+  padding-right: 10px;
+}
+
+.profileCount {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  text-align: right;
+}
+
+.profileRps {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  text-align: right;
+}
+
+.profileMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, 10ch);
+  gap: 8px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.profileMetric {
+  display: grid;
+  grid-template-columns: 3ch 1fr;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.profileMetricLabel {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
+}
+
+.profileMetricValue {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.profileEmpty {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 6px 8px;
+}

@@ -4,6 +4,8 @@ Disallow: /matches
 Disallow: /api/matches
 Disallow: /casters
 Disallow: /api/casters
+Disallow: /metrics
+Disallow: /api/internal
 
 User-agent: Bingbot
 Allow: /
@@ -11,6 +13,8 @@ Disallow: /matches
 Disallow: /api/matches
 Disallow: /casters
 Disallow: /api/casters
+Disallow: /metrics
+Disallow: /api/internal
 Crawl-delay: 10
 
 User-agent: *
@@ -19,6 +23,8 @@ Disallow: /matches
 Disallow: /api/matches
 Disallow: /casters
 Disallow: /api/casters
+Disallow: /metrics
+Disallow: /api/internal
 Disallow: /administrator/
 Disallow: /wp-admin/
 

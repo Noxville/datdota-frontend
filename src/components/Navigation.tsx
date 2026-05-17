@@ -66,6 +66,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Towers', to: '/teams/towers?default=true' },
           { label: 'Map Control', to: '/teams/map-control?default=true' },
           { label: 'Identity', to: '/teams/identity?default=true' },
+          { label: 'Records', to: '/teams/records?default=true' },
           { label: 'Throws', to: '/teams/throws?default=true' },
           { label: 'Comebacks', to: '/teams/comebacks?default=true' },
         ],
@@ -81,6 +82,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Finder', to: '/matches/finder?default=true' },
           { label: 'Durations', to: '/matches/durations?default=true' },
           { label: 'Scorigami', to: '/matches/scorigami?default=true' },
+          { label: 'Comebacks', to: '/matches/comebacks?default=true' },
         ],
       },
       {
