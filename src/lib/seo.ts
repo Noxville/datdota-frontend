@@ -135,10 +135,11 @@ export interface BreadcrumbItem {
 }
 
 export function buildBreadcrumbs(items: BreadcrumbItem[]) {
+  const valid = items.filter((it) => typeof it.name === 'string' && it.name.trim() !== '')
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, i) => {
+    itemListElement: valid.map((item, i) => {
       const el: Record<string, unknown> = {
         '@type': 'ListItem',
         position: i + 1,

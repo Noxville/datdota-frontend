@@ -327,16 +327,17 @@ export default function LeagueShow() {
   const m = league.matches
   const radiantPct = m.total > 0 ? ((m.radiantWins / m.total) * 100).toFixed(1) : '0'
   const direPct = m.total > 0 ? ((m.direWins / m.total) * 100).toFixed(1) : '0'
+  const displayName = info.name && info.name.trim() !== '' ? info.name : `League ${info.leagueId}`
 
   return (
     <div className={styles.page}>
       <PageMeta
-        title={`${info.name} — Pro Dota 2 Tournament Stats`}
-        description={`Match results, hero pick & ban data, and team performance for the ${info.name} Dota 2 tournament. ${m.total} matches.`}
+        title={`${displayName} — Pro Dota 2 Tournament Stats`}
+        description={`Match results, hero pick & ban data, and team performance for the ${displayName} Dota 2 tournament. ${m.total} matches.`}
         jsonLd={[
           buildSportsEvent({
             leagueId: info.leagueId,
-            name: info.name,
+            name: displayName,
             description: info.description,
             startDate: dateRange?.first ?? null,
             endDate: dateRange?.last ?? null,
@@ -345,7 +346,7 @@ export default function LeagueShow() {
           buildBreadcrumbs([
             { name: 'Home', path: '/' },
             { name: 'Leagues', path: '/leagues' },
-            { name: info.name },
+            { name: displayName },
           ]),
         ]}
       />
@@ -353,12 +354,12 @@ export default function LeagueShow() {
       <div className={styles.headerRow}>
         <img
           src={leagueLogoUrl(info.leagueId)}
-          alt={info.name}
+          alt={displayName}
           className={styles.headerLogoWide}
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
         <div className={styles.headerInfo}>
-          <h1>{info.name}</h1>
+          <h1>{displayName}</h1>
           <div className={styles.headerMeta}>
             <span>{TIER_LABELS[info.tier] ?? `Tier ${info.tier}`}</span>
             {m.byPatch.length > 0 && (
