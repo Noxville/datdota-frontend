@@ -45,6 +45,7 @@ function DateInput({
   }
 
   const [text, setText] = useState(toDisplay(value))
+  const pickerRef = useRef<HTMLInputElement>(null)
 
   // Sync from external value changes
   useEffect(() => {
@@ -60,16 +61,57 @@ function DateInput({
     }
   }, [text, onChange])
 
+  const openPicker = useCallback(() => {
+    const el = pickerRef.current
+    if (!el) return
+    try {
+      el.showPicker()
+    } catch {
+      // showPicker requires a user gesture and isn't supported everywhere;
+      // fall back to focusing the hidden native input which also opens the
+      // calendar in most browsers.
+      el.focus()
+    }
+  }, [])
+
   return (
-    <input
-      className={className}
-      type="text"
-      placeholder="dd/mm/yyyy"
-      value={text}
-      onChange={(e) => setText(e.target.value)}
-      onBlur={commit}
-      onKeyDown={(e) => { if (e.key === 'Enter') commit() }}
-    />
+    <span style={{ position: 'relative', display: 'inline-flex', flex: 1, minWidth: 0 }}>
+      <input
+        className={className}
+        type="text"
+        placeholder="dd/mm/yyyy"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={commit}
+        onClick={openPicker}
+        onFocus={openPicker}
+        onKeyDown={(e) => { if (e.key === 'Enter') commit() }}
+        style={{ width: '100%' }}
+      />
+      <input
+        ref={pickerRef}
+        type="date"
+        value={toIso(text) || value || ''}
+        onChange={(e) => {
+          const iso = e.target.value
+          setText(toDisplay(iso))
+          onChange(iso)
+        }}
+        tabIndex={-1}
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          opacity: 0,
+          pointerEvents: 'none',
+          border: 0,
+          padding: 0,
+          margin: 0,
+        }}
+      />
+    </span>
   )
 }
 
