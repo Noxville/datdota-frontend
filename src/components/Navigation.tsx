@@ -285,7 +285,7 @@ function Dropdown({
   )
 }
 
-export default function Navigation() {
+export default function Navigation({ onOpenSearch }: { onOpenSearch?: () => void }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
@@ -340,6 +340,21 @@ export default function Navigation() {
           datdota
         </Link>
 
+        {/* Desktop: inline nav items */}
+        <div className={styles.items}>
+          {navItems}
+        </div>
+
+        <button
+          className={styles.searchBtn}
+          onClick={() => onOpenSearch?.()}
+          aria-label="Search"
+        >
+          <span className={styles.searchIcon}>&#9906;</span>
+          <span className={styles.searchLabel}>Search</span>
+          <kbd className={styles.searchKbd}>&#8984;K</kbd>
+        </button>
+
         <button
           className={styles.hamburger}
           onClick={() => { setMobileOpen(!mobileOpen); setOpenIndex(null) }}
@@ -347,11 +362,6 @@ export default function Navigation() {
         >
           {mobileOpen ? '\u2715' : '\u2630'}
         </button>
-
-        {/* Desktop: inline nav items */}
-        <div className={styles.items}>
-          {navItems}
-        </div>
       </nav>
 
       {/* Mobile: portal so it's not contained by nav's backdrop-filter */}

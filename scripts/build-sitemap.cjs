@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
 /**
- * Generates dist/sitemap.xml after `vite build`.
+ * Generates dist/sitemap.xml and dist/search-index.json after `vite build`.
  *
- * Combines:
- *   - Hardcoded static routes (mirrored from src/router.tsx)
+ * A single fetch of the entity lists feeds both outputs, so they never diverge:
  *   - Players with >=500 games in tier 1-2 from /api/players/performances
  *   - Currently-rated teams from /api/ratings
  *   - All leagues from /api/leagues
  *
- * Excludes routes that are noindex, disallowed in robots.txt, or filter-dependent
- * (e.g. /matches/:id, /casters/*, /styleguide, /abilities/builds/matches).
+ * sitemap.xml additionally includes hardcoded static routes (mirrored from
+ * src/router.tsx), excluding routes that are noindex, disallowed in robots.txt,
+ * or filter-dependent (e.g. /matches/:id, /casters/*, /styleguide).
+ *
+ * search-index.json powers the in-app global search (Ctrl-K). It holds only the
+ * dynamic entities (id + display name); static app pages live in the bundled
+ * src/data/searchPages.ts.
  *
  * Usage: node scripts/build-sitemap.cjs
  */
@@ -20,7 +24,10 @@ const path = require('path')
 
 const SITE_URL = 'https://datdota.com'
 const API_BASE = 'https://api.datdota.com'
-const OUTPUT_PATH = path.join(__dirname, '../dist/sitemap.xml')
+const SITEMAP_PATH = path.join(__dirname, '../dist/sitemap.xml')
+const SEARCH_INDEX_PATH = path.join(__dirname, '../dist/search-index.json')
+// Also written to public/ so the vite dev server serves it at /search-index.json
+const SEARCH_INDEX_PUBLIC_PATH = path.join(__dirname, '../public/search-index.json')
 
 const STATIC_ROUTES = [
   '/',
@@ -141,7 +148,7 @@ function urlEntry(loc, lastmod, priority) {
   return `  <url>\n${parts.join('\n')}\n  </url>`
 }
 
-async function main() {
+async function fetchEntities() {
   console.log('Fetching entity lists from', API_BASE, '...')
 
   const [leaguesRes, ratingsRes, playersRes] = await Promise.all([
@@ -150,36 +157,58 @@ async function main() {
     fetchJson(`${API_BASE}/api/players/performances?tier=1,2&threshold=500`),
   ])
 
-  const leagueIds = (leaguesRes.data ?? [])
-    .map((l) => l.leagueId)
-    .filter((id) => Number.isFinite(id))
-  const teamIds = (ratingsRes.data ?? [])
-    .map((t) => t.valveId)
-    .filter((id) => Number.isFinite(id))
-  const playerIds = (playersRes.data ?? [])
-    .map((p) => p.steamId)
-    .filter((id) => Number.isFinite(id))
+  // `w` is a per-type popularity weight used only as a ranking tie-breaker in
+  // the in-app search (higher = more prominent): games played for players,
+  // current Elo for teams, match count for leagues.
+  const players = (playersRes.data ?? [])
+    .filter((p) => Number.isFinite(p.steamId) && p.nickname)
+    .map((p) => ({ t: 'player', id: p.steamId, n: String(p.nickname), w: Math.round(p.total) || 0 }))
 
-  console.log(`  ${leagueIds.length} leagues`)
-  console.log(`  ${teamIds.length} teams (rated)`)
-  console.log(`  ${playerIds.length} players (tier 1-2, ≥500 games)`)
+  const teams = (ratingsRes.data ?? [])
+    .filter((t) => Number.isFinite(t.valveId) && t.teamName)
+    .map((t) => ({
+      t: 'team',
+      id: t.valveId,
+      n: String(t.teamName),
+      logo: t.logoId != null ? String(t.logoId) : undefined,
+      r: t.region || undefined,
+      w: Math.round(t.elo64?.current ?? t.elo32?.current ?? 0),
+    }))
 
+  const leagues = (leaguesRes.data ?? [])
+    .filter((l) => Number.isFinite(l.leagueId) && l.name)
+    .map((l) => ({
+      t: 'league',
+      id: l.leagueId,
+      n: String(l.name),
+      tier: l.tier?.name || undefined,
+      ti: l.tier?.id ?? undefined, // 1 PREMIUM · 2 PROFESSIONAL · 3 SEMI_PRO · 4 AMATEUR
+      w: Math.round(l.count) || 0,
+    }))
+
+  console.log(`  ${leagues.length} leagues`)
+  console.log(`  ${teams.length} teams (rated)`)
+  console.log(`  ${players.length} players (tier 1-2, ≥500 games)`)
+
+  return { players, teams, leagues }
+}
+
+function buildSitemap({ players, teams, leagues }) {
   const today = new Date().toISOString().slice(0, 10)
-
   const urls = []
 
   for (const route of STATIC_ROUTES) {
     const priority = route === '/' ? 1.0 : 0.7
     urls.push(urlEntry(route, today, priority))
   }
-  for (const id of leagueIds) {
-    urls.push(urlEntry(`/leagues/${id}`, null, 0.6))
+  for (const l of leagues) {
+    urls.push(urlEntry(`/leagues/${l.id}`, null, 0.6))
   }
-  for (const id of teamIds) {
-    urls.push(urlEntry(`/teams/${id}`, null, 0.6))
+  for (const t of teams) {
+    urls.push(urlEntry(`/teams/${t.id}`, null, 0.6))
   }
-  for (const id of playerIds) {
-    urls.push(urlEntry(`/players/${id}`, null, 0.6))
+  for (const p of players) {
+    urls.push(urlEntry(`/players/${p.id}`, null, 0.6))
   }
 
   const xml =
@@ -188,14 +217,40 @@ async function main() {
     urls.join('\n') +
     '\n</urlset>\n'
 
-  const distDir = path.dirname(OUTPUT_PATH)
-  if (!fs.existsSync(distDir)) {
-    throw new Error(`dist/ does not exist — run \`npm run build\` first.`)
+  if (!fs.existsSync(path.dirname(SITEMAP_PATH))) {
+    console.warn('dist/ not found — skipping sitemap.xml (run `npm run build` first).')
+    return
   }
+  fs.writeFileSync(SITEMAP_PATH, xml, 'utf8')
+  const sizeKb = (fs.statSync(SITEMAP_PATH).size / 1024).toFixed(1)
+  console.log(`Wrote ${urls.length} URLs to ${SITEMAP_PATH} (${sizeKb} KB)`)
+}
 
-  fs.writeFileSync(OUTPUT_PATH, xml, 'utf8')
-  const sizeKb = (fs.statSync(OUTPUT_PATH).size / 1024).toFixed(1)
-  console.log(`Wrote ${urls.length} URLs to ${OUTPUT_PATH} (${sizeKb} KB)`)
+function buildSearchIndex({ players, teams, leagues }) {
+  // Amateur leagues (tier 4) are noise in search — exclude them (they remain in
+  // the sitemap). Semi-pro leagues are kept but deprioritised at search time.
+  const searchableLeagues = leagues.filter((l) => l.ti !== 4)
+  const index = {
+    generated: new Date().toISOString().slice(0, 10),
+    entities: [...teams, ...players, ...searchableLeagues],
+  }
+  const json = JSON.stringify(index)
+  const sizeKb = (Buffer.byteLength(json) / 1024).toFixed(1)
+
+  // public/ copy: served by vite dev and copied into dist on the next build
+  fs.writeFileSync(SEARCH_INDEX_PUBLIC_PATH, json, 'utf8')
+  // dist/ copy: covers the current post-build deploy, since this script runs
+  // after `vite build` has already emitted dist/
+  if (fs.existsSync(path.dirname(SEARCH_INDEX_PATH))) {
+    fs.writeFileSync(SEARCH_INDEX_PATH, json, 'utf8')
+  }
+  console.log(`Wrote ${index.entities.length} entities (${sizeKb} KB) to public/ and dist/`)
+}
+
+async function main() {
+  const entities = await fetchEntities()
+  buildSitemap(entities)
+  buildSearchIndex(entities)
 }
 
 main().catch((err) => {

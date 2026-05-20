@@ -14,6 +14,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.21",
     "d3": "^7.9.0",
+    "fuse.js": "^7.3.0",
     "motion": "^12.35.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
