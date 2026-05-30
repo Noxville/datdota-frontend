@@ -223,6 +223,19 @@ export default function HeroEloByPhase() {
         onClear={clearFilters}
         collapsed={filtersCollapsed}
         onToggleCollapsed={() => setFiltersCollapsed(!filtersCollapsed)}
+        showFilters={[
+          'teams',
+          'leagues',
+          'splits',
+          'patch',
+          'after',
+          'before',
+          'tier',
+          'split-type',
+          'duration',
+          'result-faction',
+          'threshold',
+        ]}
       />
 
       {!hasFilters && (
