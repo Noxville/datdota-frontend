@@ -268,7 +268,6 @@ const columns: ColumnDef<MatchFinderEntry, unknown>[] = [
     accessorKey: 'radName',
     header: 'Radiant',
     size: 130,
-    enableSorting: false,
     cell: ({ row }) => {
       const won = row.original.radVictory
       return (
@@ -294,7 +293,6 @@ const columns: ColumnDef<MatchFinderEntry, unknown>[] = [
     accessorKey: 'direName',
     header: 'Dire',
     size: 130,
-    enableSorting: false,
     cell: ({ row }) => {
       const won = !row.original.radVictory
       return (
