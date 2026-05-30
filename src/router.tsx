@@ -65,6 +65,7 @@ const router = createBrowserRouter([
       { path: '/matches/scorigami', element: lz(() => import('./pages/Scorigami')) },
       { path: '/matches/comebacks', element: lz(() => import('./pages/MatchComebacks')) },
       { path: '/matches/:id', element: lz(() => import('./pages/MatchShow')) },
+      { path: '/livematches/:id', element: lz(() => import('./pages/LiveMatch')) },
 
       // Events — Combat
       { path: '/events/hero-kills', element: lz(() => import('./pages/EventKills')) },

@@ -1,0 +1,439 @@
+/* ── Live status strip ─────────────────────────────────── */
+
+.statusStrip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding: 8px 14px;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  flex-wrap: wrap;
+}
+
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ff4d4d;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  box-shadow: 0 0 8px #ff4d4d;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.85); }
+}
+
+.clock {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.statusSep {
+  color: var(--color-text-muted);
+}
+
+.statusRight {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.delay {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
+/* ── Series score (above kill score) ──────────────────── */
+
+.seriesScore {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.seriesWin {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+/* ── Map view ─────────────────────────────────────────── */
+
+.mapWrap {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.mapSvgWrap {
+  background: linear-gradient(135deg, #0e1410 0%, #14181d 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  position: relative;
+  width: 30%;
+  min-width: 240px;
+  max-width: 360px;
+  flex-shrink: 0;
+}
+
+.mapSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-sm);
+  aspect-ratio: 1 / 1;
+}
+
+.mapLegend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.roshanCard {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.roshanLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.roshanTimer {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+.heroDot {
+  cursor: pointer;
+}
+
+.heroDot circle {
+  transition: r 120ms ease;
+}
+
+.heroDot:hover circle {
+  r: 22;
+}
+
+.deadHero {
+  opacity: 0.35;
+}
+
+/* ── Live scoreboard extras (items, ult, respawn) ─────── */
+
+.itemSlot {
+  width: 28px;
+  height: 22px;
+  border-radius: 2px;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.itemImg {
+  width: 28px;
+  height: 22px;
+  border-radius: 2px;
+  display: inline-block;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
+.itemRow {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.heroSlot {
+  position: relative;
+  display: inline-block;
+}
+
+.heroLevel {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 0 4px;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.ultReady {
+  outline: 2px solid #facc15;
+  outline-offset: 1px;
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.55);
+}
+
+.respawnOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ff6b6b;
+  border-radius: 2px;
+}
+
+/* ── Fixed-width scoreboard table ─────────────────────── */
+
+.fixedTable {
+  table-layout: fixed;
+}
+
+/* ── Draft strip (two rows, packed) ────────────────────── */
+
+.draftScroll {
+  overflow-x: auto;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.draftSideRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 6px 0;
+}
+
+.draftSideRow + .draftSideRow {
+  border-top: 1px solid var(--color-border);
+}
+
+.draftSideLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-left: 3px solid var(--color-border);
+  padding-left: 8px;
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.draftSideRadiant {
+  color: #4ade80;
+  border-left-color: #4ade80;
+}
+
+.draftSideDire {
+  color: #f87171;
+  border-left-color: #f87171;
+}
+
+.draftSideCells {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.draftPhaseGap {
+  display: inline-block;
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.draftPadCell {
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.draftGroup {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.draftGroupLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  margin-top: 10px;
+}
+
+.draftEmpty {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  align-self: center;
+}
+
+.fpToggleWrap {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fpToggleLabel {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.fpToggleBtn {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.fpToggleBtn:hover {
+  color: var(--color-text-secondary);
+  border-color: var(--color-primary-dim);
+}
+
+.fpToggleActive {
+  background: rgba(196, 139, 196, 0.12);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.draftCellWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.draftOrderCell {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  line-height: 1;
+}
+
+.draftCell {
+  position: relative;
+  width: 60px;
+  height: 34px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.draftCellImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.draftCellBan .draftCellImg {
+  filter: grayscale(1) brightness(0.45);
+}
+
+.draftCellPending {
+  width: 100%;
+  height: 100%;
+  background: var(--color-bg-raised);
+  border: 1px dashed var(--color-border);
+  border-radius: 3px;
+}
+
+.draftBanX {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff6b6b;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+/* ── Tower / rax marker shared bits ──────────────────── */
+
+.tower {
+  pointer-events: none;
+}

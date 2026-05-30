@@ -223,7 +223,7 @@ function LiveBanner({ games }: { games: Record<string, LiveGame> }) {
       </div>
       <div className={styles.liveCards}>
         {visible.map((g) => (
-          <Link key={g.matchId} to={`/matches/${g.matchId}`} className={styles.liveCard}>
+          <Link key={g.matchId} to={`/livematches/${g.matchId}`} className={styles.liveCard}>
             <div className={styles.liveTeams}>
               <span>{g.radiant.name}</span>
               <span className={styles.liveScore}>{g.radiant.score}</span>
