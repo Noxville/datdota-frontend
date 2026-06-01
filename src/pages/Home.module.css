@@ -355,10 +355,13 @@
   position: relative;
   border-radius: 3px;
   overflow: hidden;
-  cursor: default;
+  cursor: pointer;
   flex: 1 1 0;
   aspect-ratio: 1;
   min-width: 0;
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .heroCellImg {

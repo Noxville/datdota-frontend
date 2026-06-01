@@ -363,6 +363,24 @@ function HeroPopularity({ heroes }: { heroes: HeroCount[] }) {
     { count: 20, heroes: sorted.slice(48, 68) },
   ]
 
+  const { after, before } = useMemo(() => {
+    const now = new Date()
+    const two = new Date(now)
+    two.setDate(now.getDate() - 14)
+    return { after: two.toISOString().slice(0, 10), before: now.toISOString().slice(0, 10) }
+  }, [])
+
+  function heroFilterLink(heroId: number): string {
+    const params = new URLSearchParams({
+      tier: '1,2',
+      heroes: String(heroId),
+      after,
+      before,
+      threshold: '1',
+    })
+    return `/players/single-performances?${params.toString()}`
+  }
+
   return (
     <div>
       <div className={styles.sectionTitle}>
@@ -378,10 +396,11 @@ function HeroPopularity({ heroes }: { heroes: HeroCount[] }) {
                 const name = heroName(h.hero)
                 const opacity = 0.35 + 0.65 * (h.count / maxCount)
                 return (
-                  <div
+                  <Link
                     key={h.hero}
+                    to={heroFilterLink(h.hero)}
                     className={styles.heroCell}
-                    title={`${name}: ${h.count} games`}
+                    title={`${name}: ${h.count} games — see top performances`}
                     style={{ opacity }}
                   >
                     {pic ? (
@@ -392,7 +411,7 @@ function HeroPopularity({ heroes }: { heroes: HeroCount[] }) {
                     <div className={styles.heroCellOverlay}>
                       <span className={styles.heroCellCount}>{h.count}</span>
                     </div>
-                  </div>
+                  </Link>
                 )
               })}
             </div>
