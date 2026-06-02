@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
 import { useFilters } from '../hooks/useFilters'
@@ -10,6 +10,7 @@ import DataTable, { NumericCell, PercentCell, DeltaCell } from '../components/Da
 import FilterPanel from '../components/FilterPanel'
 import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
+import MatchIdsModal from '../components/MatchIdsModal'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
 
@@ -19,6 +20,8 @@ interface LaningHeroAgg {
   hero: number
   metaLane: string
   gameCount: number
+  gamesWon: number
+  matchIds: number[]
   avgNetworth: number
   avgLastHits: number
   avgDenies: number
@@ -58,7 +61,8 @@ function HeroIconCell({ heroId }: { heroId: number }) {
 
 /* ── Columns ────────────────────────────────────────────── */
 
-const columns: ColumnDef<LaningHeroAgg, unknown>[] = [
+function buildColumns(onShowMatches: (row: LaningHeroAgg) => void): ColumnDef<LaningHeroAgg, unknown>[] {
+  return [
   {
     id: 'heroIcon',
     accessorKey: 'hero',
@@ -92,6 +96,14 @@ const columns: ColumnDef<LaningHeroAgg, unknown>[] = [
     size: 80,
     meta: { numeric: true, heatmap: 'high-good', tooltip: 'Total games as core in this lane' },
     cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
+  },
+  {
+    id: 'winRate',
+    accessorFn: (row) => (row.gameCount > 0 ? row.gamesWon / row.gameCount : 0),
+    header: 'Win%',
+    size: 78,
+    meta: { numeric: true, heatmap: 'high-good', tooltip: 'Match win rate (games won / total games)' },
+    cell: ({ getValue }) => <PercentCell value={getValue() as number} />,
   },
   {
     id: 'avgNetworth',
@@ -221,7 +233,40 @@ const columns: ColumnDef<LaningHeroAgg, unknown>[] = [
     meta: { numeric: true, heatmap: 'high-bad', tooltip: 'Percentage of games with TERRIBLE lane outcome' },
     cell: ({ getValue }) => <PercentCell value={(getValue() as number) / 100} />,
   },
-]
+  {
+    id: 'matches',
+    header: '',
+    size: 80,
+    enableSorting: false,
+    meta: { tooltip: 'Show match IDs' },
+    cell: ({ row }) => {
+      const ids = row.original.matchIds ?? []
+      if (ids.length === 0) return null
+      return (
+        <button
+          type="button"
+          onClick={() => onShowMatches(row.original)}
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 'var(--font-weight-bold)',
+            fontSize: '0.6rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            padding: '3px 8px',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--color-border)',
+            background: 'var(--color-bg-elevated)',
+            color: 'var(--color-text-secondary)',
+            cursor: 'pointer',
+          }}
+        >
+          Matches
+        </button>
+      )
+    },
+  },
+  ]
+}
 
 /* ── Page ───────────────────────────────────────────────── */
 
@@ -242,6 +287,10 @@ export default function LaningHeroes() {
     const all = data?.data ?? []
     return all.filter((r) => visible.has(r.metaLane))
   }, [data, visible])
+
+  const [modalRow, setModalRow] = useState<LaningHeroAgg | null>(null)
+  const onShowMatches = useCallback((row: LaningHeroAgg) => setModalRow(row), [])
+  const columns = useMemo(() => buildColumns(onShowMatches), [onShowMatches])
 
   return (
     <div className={styles.page}>
@@ -302,6 +351,14 @@ export default function LaningHeroes() {
           columns={columns}
           defaultSorting={[{ id: 'gameCount', desc: true }]}
           searchableColumns={['heroName', 'metaLane']}
+        />
+      )}
+
+      {modalRow && (
+        <MatchIdsModal
+          title={`${heroName(modalRow.hero)} · ${laneLabel(modalRow.metaLane)}`}
+          matchIds={modalRow.matchIds}
+          onClose={() => setModalRow(null)}
         />
       )}
     </div>
