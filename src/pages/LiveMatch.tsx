@@ -231,10 +231,10 @@ const POLL_MS = 5000
 
 function useLiveMatch(id: string | undefined) {
   return useQuery<LiveMatchResponse>({
-    queryKey: ['api', '/api/livegame', id],
+    queryKey: ['api', '/api/livegames', id],
     queryFn: async () => {
       if (id === 'test') return exampleLiveMatch as LiveMatchResponse
-      return apiFetch<LiveMatchResponse>(`/api/livegame/${id}`)
+      return apiFetch<LiveMatchResponse>(`/api/livegames/${id}`)
     },
     enabled: !!id,
     refetchInterval: id === 'test' ? false : POLL_MS,
@@ -576,7 +576,6 @@ function LiveScoreboardTable({
 
 function LivePlayerRow({ p, playerName }: { p: LiveScoreboardPlayer; playerName: string }) {
   const pic = heroPic(p.hero_id)
-  const ultReady = p.ultimate_state === 3
   const isDead = p.respawn_timer > 0
   const itemIds = [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5]
 
@@ -588,7 +587,7 @@ function LivePlayerRow({ p, playerName }: { p: LiveScoreboardPlayer; playerName:
             <img
               src={heroImageUrl(pic)}
               alt={heroName(p.hero_id)}
-              className={`${shared.heroImg} ${ultReady ? styles.ultReady : ''}`}
+              className={shared.heroImg}
               title={heroName(p.hero_id)}
             />
           ) : (

@@ -221,12 +221,6 @@
   line-height: 1.2;
 }
 
-.ultReady {
-  outline: 2px solid #facc15;
-  outline-offset: 1px;
-  box-shadow: 0 0 6px rgba(250, 204, 21, 0.55);
-}
-
 .respawnOverlay {
   position: absolute;
   inset: 0;

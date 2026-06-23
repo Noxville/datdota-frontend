@@ -149,6 +149,9 @@ const router = createBrowserRouter([
       { path: '/cf500', element: lz(() => import('./pages/CloudflareError').then(m => ({ default: m.Cf500 }))) },
       { path: '/cfattack', element: lz(() => import('./pages/CloudflareError').then(m => ({ default: m.CfAttack }))) },
       { path: '/cfwidget', element: lz(() => import('./pages/CloudflareError').then(m => ({ default: m.CfWidget }))) },
+      { path: '/cfwafblock', element: lz(() => import('./pages/CloudflareError').then(m => ({ default: m.CfWafBlock }))) },
+      { path: '/cfinteractivechallenge', element: lz(() => import('./pages/CloudflareError').then(m => ({ default: m.CfInteractiveChallenge }))) },
+      { path: '/cfipblock', element: lz(() => import('./pages/CloudflareError').then(m => ({ default: m.CfIpBlock }))) },
 
       // Catch-all
       { path: '*', element: <NotFound /> },
