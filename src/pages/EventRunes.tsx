@@ -461,7 +461,14 @@ export default function EventRunes() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'matchId', desc: true }]}
-            searchableColumns={['player', 'type']}
+            searchValue={(r) => [
+              String(r.matchId),
+              r.player.nickname,
+              String(r.player.steamId),
+              heroesById[String(r.player.hero)]?.name ?? '',
+              String(r.player.hero),
+              r.type,
+            ].join(' ')}
           />
         </>
       )}

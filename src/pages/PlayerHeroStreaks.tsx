@@ -228,7 +228,16 @@ export default function PlayerHeroStreaks() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'streakLength', desc: true }]}
-          searchableColumns={['playerName']}
+          searchValue={(r) => [
+            r.playerName,
+            String(r.steamId),
+            heroName(r.heroId),
+            String(r.heroId),
+            r.stillRunning ? 'Ongoing' : '',
+            r.lostToTeamName ?? '',
+            r.lostToTeamId != null ? String(r.lostToTeamId) : '',
+            r.matches.join(' '),
+          ].join(' ')}
           rowHeight={60}
         />
       )}

@@ -538,7 +538,16 @@ export default function MatchFinder() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'matchId', desc: true }]}
-            searchableColumns={['radName', 'direName', 'leagueName']}
+            searchValue={(r) => [
+              String(r.matchId),
+              r.radName,
+              String(r.radTeamId),
+              r.direName,
+              String(r.direTeamId),
+              r.leagueName,
+              String(r.leagueId),
+              [...r.radPicks, ...r.direPicks].map((id) => heroesById[String(id)]?.name ?? '').filter(Boolean).join(' '),
+            ].join(' ')}
           />
         </>
       )}

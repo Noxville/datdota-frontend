@@ -189,7 +189,17 @@ export default function EventDeaths() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'matchId', desc: true }]}
-            searchableColumns={['killerName', 'victimName']}
+            searchValue={(r) => [
+              String(r.matchId),
+              r.killer.nickname,
+              String(r.killer.steamId),
+              heroesById[String(r.killer.hero)]?.name ?? '',
+              String(r.killer.hero),
+              r.dyer.nickname,
+              String(r.dyer.steamId),
+              heroesById[String(r.dyer.hero)]?.name ?? '',
+              String(r.dyer.hero),
+            ].join(' ')}
           />
         </>
       )}

@@ -510,7 +510,10 @@ export default function MatchDurations() {
               data={longestRows}
               columns={matchColumns}
               defaultSorting={[{ id: 'duration', desc: true }]}
-              searchableColumns={['teams']}
+              searchValue={(r) => [
+                String(r.matchId),
+                r.teams?.map((t) => `${t.name} ${t.valveId}`).join(' ') ?? '',
+              ].join(' ')}
             />
           )}
           {tab === 'shortest' && shortestRows.length > 0 && (
@@ -518,7 +521,10 @@ export default function MatchDurations() {
               data={shortestRows}
               columns={matchColumns}
               defaultSorting={[{ id: 'duration', desc: false }]}
-              searchableColumns={['teams']}
+              searchValue={(r) => [
+                String(r.matchId),
+                r.teams?.map((t) => `${t.name} ${t.valveId}`).join(' ') ?? '',
+              ].join(' ')}
             />
           )}
         </>

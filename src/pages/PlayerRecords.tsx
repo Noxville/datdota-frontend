@@ -296,7 +296,7 @@ export default function PlayerRecords() {
                     data={recordRows}
                     columns={recordColumns}
                     defaultSorting={[{ id: 'value', desc: true }]}
-                    searchableColumns={['nickname', 'hero']}
+                    searchValue={(r) => [r.nickname, r.steamId, r.heroName, r.heroKey, String(r.matchId)].join(' ')}
                   />
                 )}
               </div>
@@ -319,7 +319,7 @@ export default function PlayerRecords() {
                     data={perMinRows}
                     columns={aggregateColumns}
                     defaultSorting={[{ id: 'value', desc: true }]}
-                    searchableColumns={['nickname']}
+                    searchValue={(r) => [r.nickname, r.steamId].join(' ')}
                   />
                 )}
               </div>
@@ -331,7 +331,7 @@ export default function PlayerRecords() {
                 data={recordRows}
                 columns={recordColumns}
                 defaultSorting={[{ id: 'value', desc: true }]}
-                searchableColumns={['nickname', 'hero']}
+                searchValue={(r) => [r.nickname, r.steamId, r.heroName, r.heroKey, String(r.matchId)].join(' ')}
               />
             )
           )}

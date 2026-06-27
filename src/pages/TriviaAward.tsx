@@ -306,7 +306,15 @@ export default function TriviaAward() {
           data={rows}
           columns={columns}
           defaultSorting={getDefaultSort(type)}
-          searchableColumns={['nickname', 'leagueName']}
+          searchValue={(r) => [
+            String(r.matchId),
+            r.nickname,
+            String(r.steamId),
+            r.leagueName,
+            String(r.leagueId),
+            heroesById[String(r.hero)]?.name ?? '',
+            String(r.hero),
+          ].join(' ')}
         />
       )}
     </div>

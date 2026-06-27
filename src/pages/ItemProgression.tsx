@@ -190,7 +190,14 @@ export default function ItemProgression() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'matchId', desc: true }]}
-            searchableColumns={['player']}
+            searchValue={(r) => [
+              String(r.matchId),
+              r.nickname,
+              String(r.steamId),
+              heroesById[String(r.hero)]?.name ?? '',
+              String(r.hero),
+              r.itemIds.map((id) => itemsData[String(id)]?.longName ?? '').join(' '),
+            ].join(' ')}
           />
         </>
       )}

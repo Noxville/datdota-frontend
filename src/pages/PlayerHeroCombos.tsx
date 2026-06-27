@@ -240,7 +240,12 @@ export default function PlayerHeroCombos() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'total', desc: true }]}
-          searchableColumns={['nickname']}
+          searchValue={(r) => [
+            r.nickname,
+            String(r.steamId),
+            heroesById[String(r.hero)]?.name ?? '',
+            String(r.hero),
+          ].join(' ')}
         />
       )}
     </div>

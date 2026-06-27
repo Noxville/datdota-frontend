@@ -288,7 +288,7 @@ export default function LaningPlayers() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'gameCount', desc: true }]}
-          searchableColumns={['nickname', 'metaLane']}
+          searchValue={(r) => [r.nickname, String(r.steamId), r.metaLane].join(' ')}
         />
       )}
     </div>

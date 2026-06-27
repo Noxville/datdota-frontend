@@ -131,7 +131,7 @@ export default function Casters() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'count', desc: true }]}
-          searchableColumns={['caster']}
+          searchValue={(r) => [r.nickname, String(r.steam32), String(r.steam64), String(r.matchId)].join(' ')}
         />
       )}
     </div>

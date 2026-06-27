@@ -350,7 +350,7 @@ export default function LaningHeroes() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'gameCount', desc: true }]}
-          searchableColumns={['heroName', 'metaLane']}
+          searchValue={(r) => [heroName(r.hero), String(r.hero), r.metaLane].join(' ')}
         />
       )}
 

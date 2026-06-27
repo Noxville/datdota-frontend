@@ -214,7 +214,7 @@ export default function TeamPerformances() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'total', desc: true }]}
-          searchableColumns={['team']}
+          searchValue={(r) => [r.team.name, r.team.tag ?? '', String(r.team.valveId)].join(' ')}
         />
       )}
     </div>

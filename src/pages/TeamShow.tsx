@@ -481,7 +481,7 @@ export default function TeamShow() {
               data={perfRows}
               columns={perfColumns}
               defaultSorting={[{ id: 'total', desc: true }]}
-              searchableColumns={['nickname']}
+              searchValue={(r) => [r.nickname, String(r.steamId)].join(' ')}
             />
           </div>
         )}
@@ -493,7 +493,14 @@ export default function TeamShow() {
               data={matchRows}
               columns={matchColumns}
               defaultSorting={[{ id: 'date', desc: true }]}
-              searchableColumns={['opponent', 'league']}
+              searchValue={(r) => [
+                String(r.matchId),
+                r.opponent.name,
+                r.opponent.tag ?? '',
+                String(r.opponent.valveId),
+                r.league.name,
+                String(r.league.leagueId),
+              ].join(' ')}
             />
           </div>
         )}

@@ -300,18 +300,56 @@ export default function TeamRecords() {
                 data={aggregateOnlyRows}
                 columns={aggregateOnlyCols}
                 defaultSorting={[{ id: 'value', desc: true }]}
-                searchableColumns={['team']}
+                searchValue={(r) => [r.teamName, String(r.valveId)].join(' ')}
               />
             )
           ) : section.perMinKey ? (
             <PairedTables
-              left={{ title: 'Most in a Match', rows: primaryRows, cols: primaryCols }}
-              right={{ title: 'Highest Per Minute (Single Match)', rows: perMinRows, cols: perMinCols }}
+              left={{
+                title: 'Most in a Match',
+                rows: primaryRows,
+                cols: primaryCols,
+                searchValue: (r) => [
+                  r.teamName,
+                  String(r.valveId),
+                  r.opponentTeamName ?? '',
+                  r.opponentValveId != null ? String(r.opponentValveId) : '',
+                  String(r.matchId),
+                ].join(' '),
+              }}
+              right={{
+                title: 'Highest Per Minute (Single Match)',
+                rows: perMinRows,
+                cols: perMinCols,
+                searchValue: (r) => [
+                  r.teamName,
+                  String(r.valveId),
+                  r.opponentTeamName ?? '',
+                  r.opponentValveId != null ? String(r.opponentValveId) : '',
+                  String(r.matchId),
+                ].join(' '),
+              }}
             />
           ) : section.avgKey ? (
             <PairedTables
-              left={{ title: 'Most in a Match', rows: primaryRows, cols: primaryCols }}
-              right={{ title: 'Highest Career Average', rows: avgRows, cols: avgCols }}
+              left={{
+                title: 'Most in a Match',
+                rows: primaryRows,
+                cols: primaryCols,
+                searchValue: (r) => [
+                  r.teamName,
+                  String(r.valveId),
+                  r.opponentTeamName ?? '',
+                  r.opponentValveId != null ? String(r.opponentValveId) : '',
+                  String(r.matchId),
+                ].join(' '),
+              }}
+              right={{
+                title: 'Highest Career Average',
+                rows: avgRows,
+                cols: avgCols,
+                searchValue: (r) => [r.teamName, String(r.valveId)].join(' '),
+              }}
             />
           ) : (
             primaryRows.length > 0 && (
@@ -319,7 +357,13 @@ export default function TeamRecords() {
                 data={primaryRows}
                 columns={primaryCols}
                 defaultSorting={[{ id: 'value', desc: true }]}
-                searchableColumns={['team']}
+                searchValue={(r) => [
+                  r.teamName,
+                  String(r.valveId),
+                  r.opponentTeamName ?? '',
+                  r.opponentValveId != null ? String(r.opponentValveId) : '',
+                  String(r.matchId),
+                ].join(' ')}
               />
             )
           )}
@@ -335,6 +379,7 @@ interface PairedTableSide<T> {
   title: string
   rows: T[]
   cols: ColumnDef<T, unknown>[]
+  searchValue?: (row: T) => string
 }
 
 function PairedTables<L extends object, R extends object>({
@@ -352,7 +397,8 @@ function PairedTables<L extends object, R extends object>({
             data={left.rows}
             columns={left.cols}
             defaultSorting={[{ id: 'value', desc: true }]}
-            searchableColumns={['team']}
+            searchValue={left.searchValue}
+            searchableColumns={left.searchValue ? undefined : ['team']}
           />
         )}
       </div>
@@ -363,7 +409,8 @@ function PairedTables<L extends object, R extends object>({
             data={right.rows}
             columns={right.cols}
             defaultSorting={[{ id: 'value', desc: true }]}
-            searchableColumns={['team']}
+            searchValue={right.searchValue}
+            searchableColumns={right.searchValue ? undefined : ['team']}
           />
         )}
       </div>

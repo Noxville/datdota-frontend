@@ -174,7 +174,7 @@ export default function ItemAverages() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'purchases', desc: true }]}
-          searchableColumns={['item']}
+          searchValue={(r) => [r.name, r.localizedName, String(r.valveId)].join(' ')}
         />
       )}
     </div>

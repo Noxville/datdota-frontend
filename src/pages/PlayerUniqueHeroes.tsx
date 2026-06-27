@@ -178,7 +178,7 @@ export default function PlayerUniqueHeroes() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'countUnique', desc: true }]}
-            searchableColumns={['nickname', 'heroes']}
+            searchValue={(r) => [r.nickname, String(r.steamId), heroNames(r.heroes)].join(' ')}
             rowHeight={60}
           />
         </>

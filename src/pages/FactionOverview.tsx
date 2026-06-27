@@ -468,7 +468,7 @@ export default function FactionOverview() {
                 data={teamPatchRows}
                 columns={teamPatchColumns}
                 defaultSorting={[{ id: 'eloShift', desc: true }]}
-                searchableColumns={['team']}
+                searchValue={(r) => [r.teamName, String(r.teamId), r.patch].join(' ')}
               />
             </div>
           )}

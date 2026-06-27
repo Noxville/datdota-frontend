@@ -194,7 +194,14 @@ export default function TeamStreaks() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'streakLength', desc: true }]}
-          searchableColumns={['teamName']}
+          searchValue={(r) => [
+            r.teamName,
+            String(r.teamId),
+            r.stillRunning ? 'Ongoing' : '',
+            r.lostToTeamName ?? '',
+            r.lostToTeamId != null ? String(r.lostToTeamId) : '',
+            r.matches.join(' '),
+          ].join(' ')}
           rowHeight={60}
         />
       )}

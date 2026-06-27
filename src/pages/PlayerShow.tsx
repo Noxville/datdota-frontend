@@ -606,7 +606,7 @@ export default function PlayerShow() {
               data={recentRows}
               columns={recentGameColumns}
               defaultSorting={[{ id: 'date', desc: true }]}
-              searchableColumns={['hero']}
+              searchValue={(r) => [String(r.matchId), heroName(r.hero), String(r.hero)].join(' ')}
             />
           </div>
         )}
@@ -619,7 +619,7 @@ export default function PlayerShow() {
                 data={sortedTeamResults}
                 columns={teamResultColumns}
                 defaultSorting={[{ id: 'total', desc: true }]}
-                searchableColumns={['name']}
+                searchValue={(r) => [r.name, String(r.valveId)].join(' ')}
               />
             </div>
           )}
@@ -631,7 +631,7 @@ export default function PlayerShow() {
                 data={sortedStints}
                 columns={stintColumns}
                 defaultSorting={[{ id: 'period', desc: true }]}
-                searchableColumns={['name']}
+                searchValue={(r) => [r.name, String(r.valveId)].join(' ')}
               />
             </div>
           )}

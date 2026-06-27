@@ -187,7 +187,12 @@ export default function Leagues() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'last', desc: true }]}
-          searchableColumns={['name', 'tier', 'tags']}
+          searchValue={(r) => [
+            r.name,
+            String(r.leagueId),
+            r.tier?.name ?? '',
+            r.tags.join(' '),
+          ].join(' ')}
         />
       )}
     </div>

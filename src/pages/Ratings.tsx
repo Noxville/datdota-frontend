@@ -294,7 +294,7 @@ export default function Ratings() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'glicko2LowerBound', desc: true }]}
-          searchableColumns={['teamName']}
+          searchValue={(r) => [r.teamName, String(r.valveId)].join(' ')}
         />
       )}
     </div>

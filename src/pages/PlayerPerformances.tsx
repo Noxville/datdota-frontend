@@ -218,7 +218,7 @@ export default function PlayerPerformances() {
           data={performances}
           columns={columns}
           defaultSorting={[{ id: 'total', desc: true }]}
-          searchableColumns={['nickname']}
+          searchValue={(r) => [r.nickname, String(r.steamId)].join(' ')}
         />
       )}
     </div>

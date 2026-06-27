@@ -221,7 +221,7 @@ export default function CasterShow() {
               data={sortedMatches}
               columns={matchColumns}
               defaultSorting={[{ id: 'date', desc: true }]}
-              searchableColumns={['league']}
+              searchValue={(r) => [String(r.matchId), r.leagueName, String(r.leagueId)].join(' ')}
             />
           </div>
         )}
@@ -233,7 +233,7 @@ export default function CasterShow() {
               data={sortedCocasters}
               columns={cocasterColumns}
               defaultSorting={[{ id: 'sharedGames', desc: true }]}
-              searchableColumns={['nickname']}
+              searchValue={(r) => [r.nickname, String(r.steam32)].join(' ')}
             />
           </div>
         )}

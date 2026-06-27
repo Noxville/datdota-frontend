@@ -389,7 +389,7 @@ export default function TeamfightPlayers() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'totalTeamfightsAttended', desc: true }]}
-          searchableColumns={['nickname']}
+          searchValue={(r) => [r.nickname, String(r.steamId)].join(' ')}
           stickyColumns={1}
         />
       )}

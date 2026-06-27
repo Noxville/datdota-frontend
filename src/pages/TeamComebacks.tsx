@@ -136,7 +136,7 @@ export default function TeamComebacks() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'avgComeback', desc: true }]}
-          searchableColumns={['team']}
+          searchValue={(r) => [r.team.name, String(r.team.valveId)].join(' ')}
         />
       )}
     </div>

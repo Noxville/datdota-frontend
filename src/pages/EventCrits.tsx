@@ -182,7 +182,18 @@ export default function EventCrits() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'amount', desc: true }]}
-          searchableColumns={['critter', 'target']}
+          searchValue={(r) => [
+            String(r.matchId),
+            r.critter.nickname,
+            String(r.critter.steamId),
+            heroesById[String(r.critter.hero)]?.name ?? '',
+            String(r.critter.hero),
+            r.target?.nickname ?? '',
+            r.target?.steamId != null ? String(r.target.steamId) : '',
+            r.target?.hero != null ? (heroesById[String(r.target.hero)]?.name ?? '') : '',
+            r.target?.hero != null ? String(r.target.hero) : '',
+            r.nonHeroTarget ?? '',
+          ].join(' ')}
         />
       )}
     </div>

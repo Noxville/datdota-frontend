@@ -498,7 +498,13 @@ export default function ItemDistribution() {
               data={fastestRows}
               columns={columns}
               defaultSorting={[{ id: 'time', desc: false }]}
-              searchableColumns={['player', 'hero']}
+              searchValue={(r) => [
+                String(r.matchId),
+                r.player.nickname,
+                String(r.player.steamId),
+                heroesById[String(r.player.hero)]?.name ?? '',
+                String(r.player.hero),
+              ].join(' ')}
             />
           )}
           {tab === 'slowest' && slowestRows.length > 0 && (
@@ -506,7 +512,13 @@ export default function ItemDistribution() {
               data={slowestRows}
               columns={columns}
               defaultSorting={[{ id: 'time', desc: true }]}
-              searchableColumns={['player', 'hero']}
+              searchValue={(r) => [
+                String(r.matchId),
+                r.player.nickname,
+                String(r.player.steamId),
+                heroesById[String(r.player.hero)]?.name ?? '',
+                String(r.player.hero),
+              ].join(' ')}
             />
           )}
         </>

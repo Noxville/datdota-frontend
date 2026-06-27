@@ -154,7 +154,15 @@ export default function EventRoshan() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'time', desc: false }]}
-            searchableColumns={['teamName', 'player']}
+            searchValue={(r) => [
+              String(r.matchId),
+              r.team.name,
+              String(r.team.valveId),
+              r.player.nickname,
+              String(r.player.steamId),
+              heroesById[String(r.player.hero)]?.name ?? '',
+              String(r.player.hero),
+            ].join(' ')}
           />
         </>
       )}

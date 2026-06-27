@@ -177,7 +177,7 @@ export default function PlayerTeamCombos() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'total', desc: true }]}
-          searchableColumns={['nickname']}
+          searchValue={(r) => [r.nickname, String(r.steamId), r.team.name, String(r.team.valveId)].join(' ')}
         />
       )}
     </div>

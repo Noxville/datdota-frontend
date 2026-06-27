@@ -143,7 +143,13 @@ export default function EventTormentor() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'time', desc: false }]}
-            searchableColumns={['player']}
+            searchValue={(r) => [
+              String(r.matchId),
+              r.player.nickname,
+              String(r.player.steamId),
+              heroesById[String(r.player.hero)]?.name ?? '',
+              String(r.player.hero),
+            ].join(' ')}
           />
         </>
       )}

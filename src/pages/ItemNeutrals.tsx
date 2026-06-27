@@ -313,7 +313,7 @@ export default function ItemNeutrals() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'games', desc: true }]}
-            searchableColumns={['item']}
+            searchValue={(r) => [r.name, String(r.itemId), `tier ${r.tier}`].join(' ')}
           />
         </>
       )}

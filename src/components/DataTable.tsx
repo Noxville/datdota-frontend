@@ -29,7 +29,12 @@ interface DataTableProps<T> {
   data: T[]
   columns: ColumnDef<T, unknown>[]
   defaultSorting?: SortingState
+  /** Column IDs whose accessor value should be matched against the search box. Legacy API. */
   searchableColumns?: string[]
+  /** Preferred: build a single search-haystack string per row. Use this when the displayed
+   *  value differs from the raw accessor value (e.g. heroId → "Pangolier", boolean → "Ongoing")
+   *  or when you want to include extra fields that aren't visible columns (e.g. team IDs). */
+  searchValue?: (row: T) => string
   rowHeight?: number
   maxHeight?: string
   stickyColumns?: number
@@ -410,6 +415,7 @@ export default function DataTable<T>({
   columns,
   defaultSorting = [],
   searchableColumns,
+  searchValue,
   rowHeight = 36,
   maxHeight,
   stickyColumns = 0,
@@ -426,19 +432,22 @@ export default function DataTable<T>({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const columnFilterFn = useMemo(() => {
-    if (!searchableColumns || searchableColumns.length === 0) return undefined
+    if (!searchValue && (!searchableColumns || searchableColumns.length === 0)) return undefined
     return (
-      row: { getValue: (id: string) => unknown },
+      row: { getValue: (id: string) => unknown; original: T },
       _columnId: string,
       filterValue: string,
     ) => {
       const lower = filterValue.toLowerCase()
-      return searchableColumns.some((col) => {
+      if (searchValue) {
+        return searchValue(row.original).toLowerCase().includes(lower)
+      }
+      return (searchableColumns ?? []).some((col) => {
         const val = row.getValue(col)
         return val !== null && val !== undefined && String(val).toLowerCase().includes(lower)
       })
     }
-  }, [searchableColumns])
+  }, [searchableColumns, searchValue])
 
   const table = useReactTable({
     data,

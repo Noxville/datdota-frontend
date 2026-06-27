@@ -331,7 +331,17 @@ export default function EventFirstBloods() {
                   data={fastestRows}
                   columns={columns}
                   defaultSorting={[{ id: 'time', desc: false }]}
-                  searchableColumns={['killerName', 'victimName']}
+                  searchValue={(r) => [
+                    String(r.matchId),
+                    r.killer.nickname,
+                    String(r.killer.steamId),
+                    heroesById[String(r.killer.hero)]?.name ?? '',
+                    String(r.killer.hero),
+                    r.victim.nickname,
+                    String(r.victim.steamId),
+                    heroesById[String(r.victim.hero)]?.name ?? '',
+                    String(r.victim.hero),
+                  ].join(' ')}
                 />
               )}
               {tab === 'slowest' && slowestRows.length > 0 && (
@@ -339,7 +349,17 @@ export default function EventFirstBloods() {
                   data={slowestRows}
                   columns={columns}
                   defaultSorting={[{ id: 'time', desc: true }]}
-                  searchableColumns={['killerName', 'victimName']}
+                  searchValue={(r) => [
+                    String(r.matchId),
+                    r.killer.nickname,
+                    String(r.killer.steamId),
+                    heroesById[String(r.killer.hero)]?.name ?? '',
+                    String(r.killer.hero),
+                    r.victim.nickname,
+                    String(r.victim.steamId),
+                    heroesById[String(r.victim.hero)]?.name ?? '',
+                    String(r.victim.hero),
+                  ].join(' ')}
                 />
               )}
             </>
@@ -363,7 +383,7 @@ export default function EventFirstBloods() {
                   data={killerSummary}
                   columns={killerSummaryColumns}
                   defaultSorting={[{ id: 'kills', desc: true }]}
-                  searchableColumns={['player']}
+                  searchValue={(r) => [r.nickname, String(r.steamId)].join(' ')}
                 />
               </div>
               <div>
@@ -382,7 +402,7 @@ export default function EventFirstBloods() {
                   data={victimSummary}
                   columns={victimSummaryColumns}
                   defaultSorting={[{ id: 'deaths', desc: true }]}
-                  searchableColumns={['player']}
+                  searchValue={(r) => [r.nickname, String(r.steamId)].join(' ')}
                 />
               </div>
             </div>

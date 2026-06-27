@@ -241,7 +241,7 @@ export default function LaningTeams() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'gameCount', desc: true }]}
-          searchableColumns={['name']}
+          searchValue={(r) => [r.name, String(r.valveId)].join(' ')}
         />
       )}
     </div>

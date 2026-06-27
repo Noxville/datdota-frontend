@@ -209,7 +209,12 @@ export default function FacetSummary() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'numGames', desc: true }]}
-          searchableColumns={['hero', 'facetName']}
+          searchValue={(r) => [
+            heroName(r.hero),
+            String(r.hero),
+            r.facetName,
+            tooltipsAndFacets[r.facetName]?.longName ?? '',
+          ].join(' ')}
         />
       )}
     </div>

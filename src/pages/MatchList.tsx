@@ -219,7 +219,17 @@ export default function MatchList() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'matchId', desc: true }]}
-          searchableColumns={['radiantTeam', 'direTeam', 'league', 'radiantPlayers', 'direPlayers']}
+          searchValue={(r) => [
+            String(r.matchId),
+            r.league?.name ?? '',
+            String(r.league?.leagueId ?? ''),
+            r.radiant?.name ?? '',
+            String(r.radiant?.valveId ?? ''),
+            r.dire?.name ?? '',
+            String(r.dire?.valveId ?? ''),
+            r.radiantPlayers?.map((p) => `${p.nickname} ${p.steamId}`).join(' ') ?? '',
+            r.direPlayers?.map((p) => `${p.nickname} ${p.steamId}`).join(' ') ?? '',
+          ].join(' ')}
           rowHeight={40}
         />
       )}

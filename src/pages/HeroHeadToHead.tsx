@@ -610,7 +610,12 @@ export default function HeroHeadToHead() {
               data={filteredRows}
               columns={tableColumns}
               defaultSorting={[{ id: 'games', desc: true }]}
-              searchableColumns={['hero', 'against']}
+              searchValue={(r) => [
+                heroName(r.hero),
+                String(r.hero),
+                heroName(r.againstHero),
+                String(r.againstHero),
+              ].join(' ')}
             />
           )}
         </>

@@ -219,7 +219,7 @@ export default function AbilityBuilds() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'games', desc: true }]}
-          searchableColumns={['build']}
+          searchValue={(r) => abilitySequenceText(r.abilities)}
         />
       )}
     </div>

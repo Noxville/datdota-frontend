@@ -227,7 +227,13 @@ export default function HeroFrequentPlayers() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'rank1Games', desc: true }]}
-          searchableColumns={['hero', 'rank1Players', 'rank2Players', 'rank3Players']}
+          searchValue={(r) => [
+            heroName(r.hero),
+            String(r.hero),
+            r.rank1Players.map((p) => `${p.nickname} ${p.steamId}`).join(' '),
+            r.rank2Players.map((p) => `${p.nickname} ${p.steamId}`).join(' '),
+            r.rank3Players.map((p) => `${p.nickname} ${p.steamId}`).join(' '),
+          ].join(' ')}
         />
       )}
     </div>

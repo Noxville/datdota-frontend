@@ -188,7 +188,13 @@ export default function MatchComebacks() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'comeback', desc: true }]}
-          searchableColumns={['winner', 'loser']}
+          searchValue={(r) => [
+            String(r.matchId),
+            r.winner.teamName,
+            String(r.winner.valveId),
+            r.loser.teamName,
+            String(r.loser.valveId),
+          ].join(' ')}
         />
       )}
     </div>

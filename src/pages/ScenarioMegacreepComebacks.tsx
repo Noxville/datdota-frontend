@@ -201,7 +201,15 @@ export default function ScenarioMegacreepComebacks() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'matchId', desc: true }]}
-          searchableColumns={['winnerName', 'loserName', 'league']}
+          searchValue={(r) => [
+            String(r.matchId),
+            r.league.name,
+            String(r.league.leagueId),
+            r.radiant.name,
+            String(r.radiant.valveId),
+            r.dire.name,
+            String(r.dire.valveId),
+          ].join(' ')}
         />
       )}
     </div>

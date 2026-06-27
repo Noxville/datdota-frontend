@@ -172,7 +172,7 @@ export default function PlayerSquads() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'total', desc: true }]}
-          searchableColumns={['players']}
+          searchValue={(r) => r.players.map((p) => `${p.nickname} ${p.steamId}`).join(' ')}
           rowHeight={tupleSize > 2 ? 50 : undefined}
         />
       )}

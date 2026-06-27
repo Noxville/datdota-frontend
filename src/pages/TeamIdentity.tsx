@@ -347,7 +347,7 @@ export default function TeamIdentity() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'numGames', desc: true }]}
-          searchableColumns={['team']}
+          searchValue={(r) => [r.team.name, r.team.tag ?? '', String(r.team.valveId)].join(' ')}
           stickyColumns={1}
         />
       )}

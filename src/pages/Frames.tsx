@@ -603,7 +603,15 @@ export default function Frames() {
             defaultSorting={[]}
             stickyColumns={stickyCount}
             highlightColumnId={highlightedColId}
-            searchableColumns={['player', 'hero', 'team']}
+            searchValue={(r) => [
+              r.nickname ?? '',
+              r.steamId != null ? String(r.steamId) : '',
+              r.hero != null ? heroName(r.hero) : '',
+              r.hero != null ? String(r.hero) : '',
+              r.teamName ?? '',
+              r.valveId != null ? String(r.valveId) : '',
+              r.matchId != null ? String(r.matchId) : '',
+            ].join(' ')}
             renderTooltipExtra={renderRowSparkline}
           />
         </div>

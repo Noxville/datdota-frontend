@@ -210,7 +210,7 @@ export default function TeamTowers() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'numGames', desc: true }]}
-          searchableColumns={['team']}
+          searchValue={(r) => [r.name, String(r.valveId)].join(' ')}
         />
       )}
     </div>

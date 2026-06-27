@@ -235,7 +235,7 @@ export default function TeamMapControl() {
               data={teamRows}
               columns={teamColumns}
               defaultSorting={[{ id: 'avgNormControl', desc: true }]}
-              searchableColumns={['name']}
+              searchValue={(r) => [r.name, String(r.valveId)].join(' ')}
             />
           )}
           {tab === 'highest' && highestRows.length > 0 && (
@@ -243,7 +243,7 @@ export default function TeamMapControl() {
               data={highestRows}
               columns={matchColumns}
               defaultSorting={[{ id: 'normControl', desc: true }]}
-              searchableColumns={['teamName']}
+              searchValue={(r) => [String(r.matchId), r.teamName, String(r.valveId)].join(' ')}
             />
           )}
           {tab === 'lowest' && lowestRows.length > 0 && (
@@ -251,7 +251,7 @@ export default function TeamMapControl() {
               data={lowestRows}
               columns={matchColumns}
               defaultSorting={[{ id: 'normControl', desc: false }]}
-              searchableColumns={['teamName']}
+              searchValue={(r) => [String(r.matchId), r.teamName, String(r.valveId)].join(' ')}
             />
           )}
         </>

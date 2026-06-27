@@ -158,7 +158,11 @@ export default function LeaguePedigrees() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'top8Avg', desc: true }]}
-          searchableColumns={['name', 'topTeams']}
+          searchValue={(r) => [
+            r.league.name,
+            String(r.league.leagueId),
+            r.teams.map((t) => `${t.name} ${t.valveId}`).join(' '),
+          ].join(' ')}
         />
       )}
     </div>

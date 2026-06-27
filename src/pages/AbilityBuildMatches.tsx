@@ -136,7 +136,13 @@ export default function AbilityBuildMatches() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'matchId', desc: true }]}
-          searchableColumns={['player']}
+          searchValue={(r) => [
+            String(r.matchId),
+            r.player.nickname,
+            String(r.player.steamId),
+            r.player.hero != null ? String(r.player.hero) : '',
+            r.fullAbilities.map((id) => abilityName(id)).join(' '),
+          ].join(' ')}
         />
       )}
     </div>

@@ -216,7 +216,7 @@ export default function BestRuns() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'wins', desc: true }]}
-          searchableColumns={['teamName']}
+          searchValue={(r) => [r.teamName, String(r.teamId)].join(' ')}
         />
       )}
     </div>

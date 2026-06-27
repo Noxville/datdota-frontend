@@ -260,7 +260,7 @@ export default function HeroEloByPhase() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'totalAvgShift', desc: true }]}
-          searchableColumns={['hero']}
+          searchValue={(r) => [heroName(r.hero), String(r.hero)].join(' ')}
         />
       )}
     </div>

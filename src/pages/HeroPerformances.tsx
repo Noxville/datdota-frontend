@@ -303,7 +303,7 @@ export default function HeroPerformances() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'total', desc: true }]}
-          searchableColumns={['hero']}
+          searchValue={(r) => [heroName(r.hero), String(r.hero)].join(' ')}
         />
       )}
     </div>

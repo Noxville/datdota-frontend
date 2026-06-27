@@ -346,7 +346,11 @@ export default function Drafts() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'totalPB', desc: true }]}
-            searchableColumns={['hero']}
+            searchValue={(r) => [
+              heroesById[String(r.hero)]?.name ?? r.heroName,
+              String(r.hero),
+              r.heroImageName,
+            ].join(' ')}
           />
 
           <div style={{

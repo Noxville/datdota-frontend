@@ -555,7 +555,21 @@ export default function EventBuildings() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'matchId', desc: true }]}
-            searchableColumns={['killerName', 'teamName']}
+            searchValue={(r) => [
+              String(r.matchId),
+              heroesById[String(r.hero)]?.name ?? '',
+              String(r.hero),
+              r.killer.nickname,
+              String(r.killer.steamId),
+              r.denier?.nickname ?? '',
+              r.denier?.steamId != null ? String(r.denier.steamId) : '',
+              r.team.name,
+              String(r.team.valveId),
+              r.opponent.name,
+              String(r.opponent.valveId),
+              r.lane,
+              r.type,
+            ].join(' ')}
           />
         </>
       )}

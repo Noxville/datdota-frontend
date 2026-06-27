@@ -209,7 +209,15 @@ export default function EventCouriers() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'matchId', desc: true }]}
-            searchableColumns={['killerName', 'items']}
+            searchValue={(r) => [
+              String(r.matchId),
+              r.killer?.nickname ?? '',
+              r.killer?.steamId != null ? String(r.killer.steamId) : '',
+              r.killer?.hero != null ? (heroesById[String(r.killer.hero)]?.name ?? '') : '',
+              r.killer?.hero != null ? String(r.killer.hero) : '',
+              itemNames(r.items),
+              r.faction,
+            ].join(' ')}
           />
         </>
       )}

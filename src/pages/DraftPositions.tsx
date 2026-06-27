@@ -225,7 +225,7 @@ export default function DraftPositions() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'totalGames', desc: true }]}
-          searchableColumns={['player']}
+          searchValue={(r) => [r.nickname, String(r.steamId)].join(' ')}
         />
       )}
     </div>

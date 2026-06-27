@@ -286,7 +286,13 @@ export default function PlayerSinglePerformances() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'matchId', desc: true }]}
-          searchableColumns={['nickname', 'hero']}
+          searchValue={(r) => [
+            r.nickname,
+            String(r.steamId),
+            heroName(r.hero),
+            String(r.hero),
+            String(r.matchId),
+          ].join(' ')}
         />
       )}
     </div>

@@ -323,7 +323,19 @@ export default function EventWards() {
                 data={rows}
                 columns={columns}
                 defaultSorting={[{ id: 'matchId', desc: true }]}
-                searchableColumns={['placer', 'counterer']}
+                searchValue={(r) => [
+                  String(r.matchId),
+                  r.placer.nickname,
+                  String(r.placer.steamId),
+                  heroesById[String(r.placer.hero)]?.name ?? '',
+                  String(r.placer.hero),
+                  r.counterer?.nickname ?? '',
+                  r.counterer?.steamId != null ? String(r.counterer.steamId) : '',
+                  r.counterer?.hero != null ? (heroesById[String(r.counterer.hero)]?.name ?? '') : '',
+                  r.counterer?.hero != null ? String(r.counterer.hero) : '',
+                  r.type,
+                  r.faction,
+                ].join(' ')}
               />
             </>
           )}

@@ -134,7 +134,7 @@ export default function PlayerRivalries() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'games', desc: true }]}
-          searchableColumns={['playerA', 'playerB']}
+          searchValue={(r) => [r.a_nickname, r.a_steam_id, r.b_nickname, r.b_steam_id].join(' ')}
         />
       )}
     </div>

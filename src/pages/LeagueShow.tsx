@@ -413,7 +413,7 @@ export default function LeagueShow() {
               data={league.teams}
               columns={teamColumns}
               defaultSorting={[{ id: 'winrate', desc: true }]}
-              searchableColumns={['name', 'tag']}
+              searchValue={(r) => [r.name, r.tag, String(r.valveId)].join(' ')}
             />
           </div>
         )}
@@ -425,7 +425,12 @@ export default function LeagueShow() {
               data={matchupRows}
               columns={matchupColumns}
               defaultSorting={[{ id: 'total', desc: true }]}
-              searchableColumns={['first', 'second']}
+              searchValue={(r) => [
+                r.first.name,
+                String(r.first.valveId),
+                r.second.name,
+                String(r.second.valveId),
+              ].join(' ')}
               maxHeight="calc(70vh - 108px)"
             />
           </div>

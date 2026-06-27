@@ -210,7 +210,7 @@ export default function HeroTuplesElo() {
           data={rows}
           columns={columns}
           defaultSorting={[{ id: 'total', desc: true }]}
-          searchableColumns={['heroes']}
+          searchValue={(r) => [heroTupleNames(r.heroes), r.heroes.join(' ')].join(' ')}
         />
       )}
     </div>

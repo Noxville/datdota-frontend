@@ -176,7 +176,7 @@ export default function TeamUniqueHeroes() {
             data={rows}
             columns={columns}
             defaultSorting={[{ id: 'countUnique', desc: true }]}
-            searchableColumns={['name', 'heroes']}
+            searchValue={(r) => [r.name, String(r.valveId), heroNames(r.heroes), r.heroes.join(' ')].join(' ')}
             rowHeight={60}
           />
         </>
