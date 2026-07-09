@@ -61,6 +61,8 @@ const STATIC_ROUTES = [
   '/matches/finder',
   '/matches/durations',
   '/matches/scorigami',
+  '/matches/all-players-buyback',
+  '/matches/never-led',
   // Events
   '/events/hero-kills',
   '/events/hero-deaths',
@@ -73,6 +75,8 @@ const STATIC_ROUTES = [
   '/events/couriers',
   '/events/buildings',
   '/events/runes',
+  '/events/divine-rapiers',
+  '/events/rampages',
   // Scenarios
   '/scenarios/megacreep-comebacks',
   '/scenarios/first-wisdoms',
@@ -107,12 +111,14 @@ const STATIC_ROUTES = [
   '/trivia/player-hero-streaks/best',
   '/trivia/player-hero-streaks/worst',
   '/trivia/best-runs',
+  '/trivia/caps',
   '/trivia/akke',
   '/trivia/maelk',
   '/trivia/cty',
   // Leagues
   '/leagues',
   '/leagues/pedigrees',
+  '/leagues/contested-heroes',
   // About & Legal
   '/about',
   '/glossary',

@@ -835,7 +835,7 @@ export default function LiveMatch() {
 
   const nameMap = useMemo(() => {
     const m = new Map<number, string>()
-    if (data) {
+    if (Array.isArray(data?.players)) {
       for (const p of data.players) m.set(p.account_id, p.name)
     }
     return m

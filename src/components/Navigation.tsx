@@ -86,10 +86,18 @@ const NAV_ITEMS: NavItem[] = [
         ],
       },
       {
+        heading: 'Notable',
+        items: [
+          { label: 'All-Buyback Games', to: '/matches/all-players-buyback' },
+          { label: 'Never-Led Wins', to: '/matches/never-led' },
+        ],
+      },
+      {
         heading: 'Leagues',
         items: [
           { label: 'All Leagues', to: '/leagues' },
           { label: 'LAN Event Pedigrees', to: '/leagues/pedigrees' },
+          { label: 'Contested Heroes', to: '/leagues/contested-heroes' },
         ],
       },
     ],
@@ -130,6 +138,13 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'First Wisdoms', to: '/scenarios/first-wisdoms?default=true' },
           { label: 'Bounty Bazinga', to: '/scenarios/bounty-bazinga?default=true' },
           { label: 'Game Loop', to: '/scenarios/gameloop?default=true' },
+        ],
+      },
+      {
+        heading: 'Notable',
+        items: [
+          { label: 'Divine Rapiers', to: '/events/divine-rapiers' },
+          { label: 'Rampages', to: '/events/rampages' },
         ],
       },
     ],
@@ -212,6 +227,12 @@ const NAV_ITEMS: NavItem[] = [
         items: [
           { label: 'Best Streaks', to: '/trivia/player-hero-streaks/best' },
           { label: 'Worst Streaks', to: '/trivia/player-hero-streaks/worst' },
+        ],
+      },
+      {
+        heading: 'Caps',
+        items: [
+          { label: 'Caps', to: '/trivia/caps' },
         ],
       },
       {

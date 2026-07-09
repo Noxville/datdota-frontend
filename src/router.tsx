@@ -64,6 +64,8 @@ const router = createBrowserRouter([
       { path: '/matches/durations', element: lz(() => import('./pages/MatchDurations')) },
       { path: '/matches/scorigami', element: lz(() => import('./pages/Scorigami')) },
       { path: '/matches/comebacks', element: lz(() => import('./pages/MatchComebacks')) },
+      { path: '/matches/all-players-buyback', element: lz(() => import('./pages/MatchAllBuybacks')) },
+      { path: '/matches/never-led', element: lz(() => import('./pages/MatchNeverLed')) },
       { path: '/matches/:id', element: lz(() => import('./pages/MatchShow')) },
       { path: '/livematches/:id', element: lz(() => import('./pages/LiveMatch')) },
 
@@ -83,6 +85,10 @@ const router = createBrowserRouter([
       { path: '/events/couriers', element: lz(() => import('./pages/EventCouriers')) },
       { path: '/events/buildings', element: lz(() => import('./pages/EventBuildings')) },
       { path: '/events/runes', element: lz(() => import('./pages/EventRunes')) },
+
+      // Events — Notable
+      { path: '/events/divine-rapiers', element: lz(() => import('./pages/EventOddity')) },
+      { path: '/events/rampages', element: lz(() => import('./pages/EventOddity')) },
 
       // Scenarios
       { path: '/scenarios/megacreep-comebacks', element: lz(() => import('./pages/ScenarioMegacreepComebacks')) },
@@ -129,6 +135,7 @@ const router = createBrowserRouter([
       { path: '/trivia/team-streaks/:type', element: lz(() => import('./pages/TeamStreaks')) },
       { path: '/trivia/player-hero-streaks/:type', element: lz(() => import('./pages/PlayerHeroStreaks')) },
       { path: '/trivia/best-runs', element: lz(() => import('./pages/BestRuns')) },
+      { path: '/trivia/caps', element: lz(() => import('./pages/TriviaCaps')) },
       { path: '/trivia/akke', element: lz(() => import('./pages/TriviaAward')) },
       { path: '/trivia/maelk', element: lz(() => import('./pages/TriviaAward')) },
       { path: '/trivia/cty', element: lz(() => import('./pages/TriviaAward')) },
@@ -136,6 +143,7 @@ const router = createBrowserRouter([
       // Leagues
       { path: '/leagues', element: lz(() => import('./pages/Leagues')) },
       { path: '/leagues/pedigrees', element: lz(() => import('./pages/LeaguePedigrees')) },
+      { path: '/leagues/contested-heroes', element: lz(() => import('./pages/LeagueContestedHeroes')) },
       { path: '/leagues/:id', element: lz(() => import('./pages/LeagueShow')) },
 
       // About & Legal

@@ -1,3 +1,13 @@
+/** Format an ISO date as "9 Jul 2026" (en-GB), or "—" when missing */
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
 /** Format seconds as m:ss, handling negatives correctly (e.g. -52.5 → "-0:53") */
 export function fmtTime(secs: number | null | undefined): string {
   if (secs === null || secs === undefined || (secs === 0 && secs !== 0)) return '—'

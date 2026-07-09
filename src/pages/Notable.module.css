@@ -1,0 +1,165 @@
+.page {
+  /* full width of parent */
+}
+
+.header {
+  margin-bottom: var(--space-lg);
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.description {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+  max-width: 110ch;
+}
+
+.link {
+  color: var(--color-accent-bright);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--color-primary);
+}
+
+.leagueCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.leagueLink {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.leagueLink:hover {
+  color: var(--color-text);
+}
+
+.leagueText {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lanBadge {
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-dim);
+  color: var(--color-text);
+  border: 1px solid var(--color-primary);
+}
+
+.teamLink {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.teamLink:hover {
+  color: var(--color-accent-bright);
+}
+
+.win {
+  color: var(--color-win);
+}
+
+.loss {
+  color: var(--color-loss);
+}
+
+.dateRange {
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.playerList {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playerLink {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.playerLink:hover {
+  color: var(--color-accent-bright);
+}
+
+.heroRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.heroIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.spark {
+  display: block;
+  overflow: visible;
+}
+
+.sparkZero {
+  stroke: var(--color-border);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.sparkLine {
+  stroke: var(--color-accent-bright);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.sparkArea {
+  fill: var(--color-loss);
+  opacity: 0.12;
+}

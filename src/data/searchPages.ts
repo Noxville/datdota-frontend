@@ -46,6 +46,8 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Match Durations', path: '/matches/durations?default=true', keywords: ['match', 'duration', 'length', 'time'] },
   { label: 'Scorigami', path: '/matches/scorigami?default=true', keywords: ['match', 'score', 'scorigami', 'kills'] },
   { label: 'Match Comebacks', path: '/matches/comebacks?default=true', keywords: ['match', 'comeback'] },
+  { label: 'All-Buyback Games', path: '/matches/all-players-buyback', keywords: ['match', 'buyback', 'notable', 'all ten'] },
+  { label: 'Never-Led Wins', path: '/matches/never-led', keywords: ['match', 'comeback', 'never led', 'deficit', 'notable'] },
 
   // Events
   { label: 'Hero Kills', path: '/events/hero-kills?default=true', keywords: ['event', 'kill', 'combat'] },
@@ -59,6 +61,8 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Couriers', path: '/events/couriers?default=true', keywords: ['event', 'courier'] },
   { label: 'Buildings', path: '/events/buildings?default=true', keywords: ['event', 'building', 'tower', 'rax'] },
   { label: 'Runes', path: '/events/runes?default=true', keywords: ['event', 'rune', 'bounty'] },
+  { label: 'Divine Rapiers', path: '/events/divine-rapiers', keywords: ['event', 'rapier', 'divine', 'notable'] },
+  { label: 'Rampages', path: '/events/rampages', keywords: ['event', 'rampage', 'multikill', 'notable'] },
 
   // Scenarios
   { label: 'Megacreep Comebacks', path: '/scenarios/megacreep-comebacks?default=true', keywords: ['scenario', 'megacreep', 'comeback'] },
@@ -94,9 +98,16 @@ export const SEARCH_PAGES: SearchPage[] = [
   // Leagues
   { label: 'All Leagues', path: '/leagues', keywords: ['league', 'tournament', 'event'] },
   { label: 'LAN Event Pedigrees', path: '/leagues/pedigrees', keywords: ['league', 'lan', 'pedigree'] },
+  { label: 'Contested Heroes by Event', path: '/leagues/contested-heroes', keywords: ['league', 'contested', 'hero', 'pick', 'ban', 'meta'] },
 
   // Trivia
   { label: 'Best Runs', path: '/trivia/best-runs', keywords: ['trivia', 'run', 'best'] },
+  { label: 'Caps', path: '/trivia/caps', keywords: ['trivia', 'caps', 'experience', 'games', 'veteran'] },
+  { label: 'Caps — Biggest Experience Gaps', path: '/trivia/caps#count-gap', keywords: ['trivia', 'caps', 'gap', 'mismatch', 'experience'] },
+  { label: 'Caps — Biggest Hero-Experience Gaps', path: '/trivia/caps#hero-gap', keywords: ['trivia', 'caps', 'gap', 'hero', 'mismatch'] },
+  { label: 'Caps — Most Veteran-Heavy Matches', path: '/trivia/caps#combined-match', keywords: ['trivia', 'caps', 'combined', 'match', 'veteran'] },
+  { label: 'Caps — Most Experienced Five-Stacks', path: '/trivia/caps#combined-team', keywords: ['trivia', 'caps', 'combined', 'team', 'veteran'] },
+  { label: 'Caps — Most Hero-Experienced Five-Stacks', path: '/trivia/caps#hero-team', keywords: ['trivia', 'caps', 'hero', 'team', 'veteran'] },
   { label: 'Best Team Streaks', path: '/trivia/team-streaks/best', keywords: ['trivia', 'team', 'streak', 'win'] },
   { label: 'Worst Team Streaks', path: '/trivia/team-streaks/worst', keywords: ['trivia', 'team', 'streak', 'lose'] },
   { label: 'Best Player-Hero Streaks', path: '/trivia/player-hero-streaks/best', keywords: ['trivia', 'player', 'hero', 'streak'] },
