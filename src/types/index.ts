@@ -437,21 +437,37 @@ export interface DurationResponse {
   count: number
 }
 
-export interface NetworthComebackTeam {
-  valveId: number
-  teamName: string
+export interface ComebackTeam {
+  valveId: number | null
+  teamName: string | null
   logoId: string | null
 }
 
-export interface NetworthComebackLine {
+export interface ComebackLine {
   matchId: number
+  /** Match-time (seconds) at which the deficit was deepest. */
   time: number
+  /** Match duration in seconds. */
   duration: number
-  comeback: number
-  winnerNetworth: number
-  loserNetworth: number
-  winner: NetworthComebackTeam
-  loser: NetworthComebackTeam
+  /** How far the eventual winner was behind at `time` (always > 0). */
+  advantage: number
+  /** Winning team's total for this metric at `time`. */
+  winnerValue: number
+  /** Losing team's total for this metric at `time` (winnerValue + advantage). */
+  loserValue: number
+  event: {
+    leagueId: number | null
+    eventName: string | null
+    lan: boolean | null
+  }
+  winner: ComebackTeam
+  loser: ComebackTeam
+}
+
+export interface ComebacksResponse {
+  networth: ComebackLine[]
+  killDeficit: ComebackLine[]
+  experience: ComebackLine[]
 }
 
 export interface MidlaneMatchRow {

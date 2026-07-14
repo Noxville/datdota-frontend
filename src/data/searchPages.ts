@@ -45,7 +45,10 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Match Finder', path: '/matches/finder?default=true', keywords: ['match', 'finder', 'search'] },
   { label: 'Match Durations', path: '/matches/durations?default=true', keywords: ['match', 'duration', 'length', 'time'] },
   { label: 'Scorigami', path: '/matches/scorigami?default=true', keywords: ['match', 'score', 'scorigami', 'kills'] },
-  { label: 'Match Comebacks', path: '/matches/comebacks?default=true', keywords: ['match', 'comeback'] },
+  { label: 'Match Comebacks', path: '/matches/comebacks?default=true', keywords: ['match', 'comeback', 'networth', 'kill', 'xp', 'deficit'] },
+  { label: 'Comebacks — Net Worth', path: '/matches/comebacks?default=true#networth', keywords: ['comeback', 'networth', 'gold', 'deficit'] },
+  { label: 'Comebacks — Kill Deficit', path: '/matches/comebacks?default=true#kills', keywords: ['comeback', 'kill', 'deficit'] },
+  { label: 'Comebacks — Experience', path: '/matches/comebacks?default=true#xp', keywords: ['comeback', 'xp', 'experience', 'deficit'] },
   { label: 'All-Buyback Games', path: '/matches/all-players-buyback', keywords: ['match', 'buyback', 'notable', 'all ten'] },
   { label: 'Never-Led Wins', path: '/matches/never-led', keywords: ['match', 'comeback', 'never led', 'deficit', 'notable'] },
 
