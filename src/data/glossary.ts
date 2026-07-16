@@ -195,6 +195,24 @@ const glossary: GlossaryEntry[] = [
     detail:
       'An empirical Bayes shrinkage estimator. The shrinkage factor B = \u03C3\u00B2_between / (\u03C3\u00B2_between + \u03C3\u00B2_within / n) controls the blend between the hero-specific average and the global (lane, role) average. When a hero has been played many times (large n), B \u2248 1 and the benchmark is mostly hero-specific. When sample size is small, B is closer to 0 and the benchmark is pulled toward the global average for all heroes in that role and lane. This prevents misleading benchmarks for rarely-picked heroes.',
   },
+
+  // \u2500\u2500 Players \u2500\u2500
+  {
+    id: 'signature-heroes',
+    term: 'Signature Heroes',
+    section: 'Players',
+    summary: 'A player\u2019s most defining heroes, ranked by a weighted blend of how much, how distinctively, and how successfully they play each one.',
+    detail:
+      'Each hero gets a signature score \u2014 the sum of six weighted signals (below). A dominant signature hero lands around 1.5\u20132.5; there is no fixed maximum, so scores are shown relative to the player\u2019s own #1 hero rather than as a percentage. On the player page each hero\u2019s bar length is its signature score, and the coloured segments show which signals drive it. Segment sizes are weighted by percentile within each signal \u2014 how the value ranks against every pro \u2014 so a genuinely exceptional signal stands out instead of being swamped by raw volume, which is near-maximal for almost everyone\u2019s most-played hero. Distinctiveness and off-meta are volume-gated: a hero needs roughly 50 games to earn full rarity credit, so a 20-game novelty pick can\u2019t masquerade as a signature.',
+    bullets: [
+      'Volume \u2014 how much of their career this hero is, relative to their own most-played hero. The biggest signal.',
+      'Distinctiveness \u2014 how much they \u201Cown\u201D the hero across the whole pro scene. Absolute, so it\u2019s comparable between players.',
+      'Off-meta \u2014 how contrarian the pick is: playing it heavily in patches when few others do.',
+      'Big-stage \u2014 how much they bring it to LANs, especially Valve events (TIs and Majors), rather than online.',
+      'Win rate \u2014 whether they actually win on it, centred at 50% and smoothed for small samples. The only signal that can go negative and drag the score down.',
+      'Recency \u2014 whether they still play it (share of games in the last 18 months). Zero for a retired player\u2019s old heroes is expected, not missing data.',
+    ],
+  },
 ]
 
 export default glossary

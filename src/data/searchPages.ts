@@ -39,6 +39,7 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Team Records', path: '/teams/records?default=true', keywords: ['team', 'record', 'best'] },
   { label: 'Team Throws', path: '/teams/throws?default=true', keywords: ['team', 'throw', 'choke'] },
   { label: 'Team Comebacks', path: '/teams/comebacks?default=true', keywords: ['team', 'comeback'] },
+  { label: 'Team Series Outcomes', path: '/teams/series-outcomes?default=true', keywords: ['team', 'series', 'outcome', 'bo3', 'bo5', 'sweep', 'reverse'] },
 
   // Matches
   { label: 'Recent Matches', path: '/matches', keywords: ['match', 'recent', 'games'] },

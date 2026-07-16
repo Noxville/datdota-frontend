@@ -69,6 +69,7 @@ const NAV_ITEMS: NavItem[] = [
           { label: 'Records', to: '/teams/records?default=true' },
           { label: 'Throws', to: '/teams/throws?default=true' },
           { label: 'Comebacks', to: '/teams/comebacks?default=true' },
+          { label: 'Series Outcomes', to: '/teams/series-outcomes?default=true' },
         ],
       },
     ],

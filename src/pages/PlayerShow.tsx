@@ -12,6 +12,7 @@ import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import { buildPerson, buildBreadcrumbs } from '../lib/seo'
 import styles from './EntityShow.module.css'
+import sig from './SignatureHeroes.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
 
@@ -51,6 +52,24 @@ interface GameCount {
   count: number
 }
 
+interface SignatureHeroComponents {
+  volume: number
+  distinctiveness: number
+  offMeta: number
+  prestige: number
+  winrate: number
+  recency: number
+}
+
+interface SignatureHero {
+  hero: number
+  score: number
+  games: number
+  wins: number
+  winrate: number
+  components: SignatureHeroComponents
+}
+
 interface PlayerData {
   nickname: string
   steamId: string
@@ -61,6 +80,7 @@ interface PlayerData {
   recentGames: RecentGame[]
   resultsByTeam: TeamResult[]
   stints: TeamStint[]
+  signatureHeroes?: SignatureHero[]
   proGameCounts?: GameCount[]
 }
 
@@ -90,6 +110,149 @@ function formatStintDuration(start: string, end: string): { days: number; label:
   if (months > 0) parts.push(`${months}m`)
   if (days > 0 || parts.length === 0) parts.push(`${days}d`)
   return { days: totalDays, label: parts.join(' ') }
+}
+
+/* ── Signature Heroes ──────────────────────────────────── */
+
+const SIG_COMPONENTS: { key: keyof SignatureHeroComponents; label: string; color: string }[] = [
+  { key: 'volume', label: 'Volume', color: '#c48bc4' },
+  { key: 'distinctiveness', label: 'Distinctive', color: '#2dd4bf' },
+  { key: 'offMeta', label: 'Off-meta', color: '#e0a458' },
+  { key: 'prestige', label: 'Big-stage', color: '#7aa2f7' },
+  { key: 'winrate', label: 'Win rate', color: '#63c775' },
+  { key: 'recency', label: 'Recency', color: '#e879c7' },
+]
+
+/* Per-component distribution (value → percentile) across all pro player-hero pairings.
+   Segment sizes are weighted by percentile so an exceptional signal reads large even
+   when its raw contribution is small — otherwise volume (always ~1.0) swamps the bar. */
+const PCTL_STATS: Record<keyof SignatureHeroComponents, [number, number][]> = {
+  //                 [value, percentile]  (min, p50, p75, p90, p95, p99, max)
+  volume:          [[0.092, 0], [0.638, 0.5], [0.913, 0.75], [1.0, 0.9], [1.0, 0.95], [1.0, 0.99], [1.0, 1]],
+  distinctiveness: [[0.003, 0], [0.043, 0.5], [0.089, 0.75], [0.142, 0.9], [0.180, 0.95], [0.280, 0.99], [0.600, 1]],
+  offMeta:         [[0.0, 0], [0.154, 0.5], [0.222, 0.75], [0.286, 0.9], [0.324, 0.95], [0.392, 0.99], [0.400, 1]],
+  prestige:        [[0.0, 0], [0.118, 0.5], [0.203, 0.75], [0.300, 0.9], [0.300, 0.95], [0.300, 0.99], [0.300, 1]],
+  winrate:         [[-0.187, 0], [0.027, 0.5], [0.065, 0.75], [0.095, 0.9], [0.117, 0.95], [0.144, 0.99], [0.191, 1]],
+  recency:         [[0.0, 0], [0.0, 0.5], [0.032, 0.75], [0.120, 0.9], [0.180, 0.95], [0.288, 0.99], [0.300, 1]],
+}
+
+/** Percentile (0–1) of a component value. Flat quantile regions map to their lower
+    edge, so a maxed-out signal (e.g. volume = 1.0) reads as ~p90, not p100. */
+function percentileOf(key: keyof SignatureHeroComponents, v: number): number {
+  const bps = PCTL_STATS[key]
+  if (v <= bps[0][0]) return 0
+  for (let i = 1; i < bps.length; i++) {
+    if (bps[i][0] >= v) {
+      const [v0, p0] = bps[i - 1]
+      const [v1, p1] = bps[i]
+      return v1 === v0 ? p0 : p0 + (p1 - p0) * ((v - v0) / (v1 - v0))
+    }
+  }
+  return bps[bps.length - 1][1]
+}
+
+/** Rows shrink big→small: 10 heroes = 4+6; 8–9 = 4+4; fewer = a single row of up to 4. */
+function signatureRows(n: number): { count: number; size: 'big' | 'small' }[] {
+  if (n >= 10) return [{ count: 4, size: 'big' }, { count: 6, size: 'small' }]
+  if (n >= 8) return [{ count: 4, size: 'big' }, { count: 4, size: 'big' }]
+  return [{ count: Math.min(n, 4), size: 'big' }]
+}
+
+function heroBreakdownTitle(h: SignatureHero): string {
+  const lines = SIG_COMPONENTS.map((c) => {
+    const v = h.components[c.key]
+    return `${c.label}: ${v.toFixed(2)} (p${Math.round(percentileOf(c.key, v) * 100)})`
+  })
+  return `${heroName(h.hero)}\nScore ${h.score.toFixed(2)} · ${h.games} games · ${Math.round(h.winrate * 100)}% WR\n${lines.join('\n')}`
+}
+
+function SignatureBar({ h, max }: { h: SignatureHero; max: number }) {
+  // Segment size = percentile within the category (so volume doesn't swamp it);
+  // bar length = score relative to the player's #1 hero.
+  const parts = SIG_COMPONENTS.map((c) => ({ c, v: h.components[c.key], p: percentileOf(c.key, h.components[c.key]) }))
+  const totalP = parts.reduce((s, x) => s + x.p, 0) || 1
+  const barPct = Math.max(0, Math.min(1, h.score / max)) * 100
+  const negativeWinrate = h.components.winrate < 0
+  return (
+    <div className={sig.barWrap}>
+      <div className={`${sig.bar} ${negativeWinrate ? sig.barNeg : ''}`} style={{ width: `${barPct.toFixed(1)}%` }}>
+        {parts.map(({ c, v, p }) => {
+          if (p <= 0) return null
+          return (
+            <span
+              key={c.key}
+              style={{ width: `${((p / totalP) * 100).toFixed(1)}%`, background: c.color }}
+              title={`${c.label}: ${v.toFixed(2)} (p${Math.round(p * 100)})`}
+            />
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/** All-time, all-patches, premium+pro single performances for this player on this hero. */
+function heroPlayerLink(steamId: string, heroId: number): string {
+  const params = new URLSearchParams({ players: steamId, heroes: String(heroId), tier: '1,2' })
+  return `/players/single-performances?${params.toString()}`
+}
+
+function SignatureTile({ h, max, size, steamId }: { h: SignatureHero; max: number; size: 'big' | 'small'; steamId: string }) {
+  const pic = heroPicture(h.hero)
+  const name = heroName(h.hero)
+  return (
+    <a
+      className={`${sig.tile} ${size === 'small' ? sig.small : ''}`}
+      href={heroPlayerLink(steamId, h.hero)}
+      title={heroBreakdownTitle(h)}
+    >
+      {pic ? (
+        <img src={heroImageUrl(pic)} alt={name} className={sig.por} loading="lazy" />
+      ) : (
+        <div className={sig.porFallback} />
+      )}
+      <div className={sig.name}>{name}</div>
+      <SignatureBar h={h} max={max} />
+      <div className={sig.stat}>{h.games} games · {Math.round(h.winrate * 100)}%</div>
+    </a>
+  )
+}
+
+function SignatureHeroesBlock({ heroes, steamId }: { heroes: SignatureHero[]; steamId: string }) {
+  const sorted = useMemo(() => [...heroes].sort((a, b) => b.score - a.score), [heroes])
+  const max = sorted[0]?.score || 1
+
+  const rowSlices = useMemo(() => {
+    const out: { count: number; size: 'big' | 'small'; heroes: SignatureHero[] }[] = []
+    let offset = 0
+    for (const r of signatureRows(sorted.length)) {
+      out.push({ ...r, heroes: sorted.slice(offset, offset + r.count) })
+      offset += r.count
+    }
+    return out
+  }, [sorted])
+
+  return (
+    <>
+      <div className={sig.legend}>
+        {SIG_COMPONENTS.map((c) => (
+          <span key={c.key} className={sig.legendItem}>
+            <span className={sig.swatch} style={{ background: c.color }} />
+            {c.label}
+          </span>
+        ))}
+      </div>
+      <div className={sig.ladder}>
+        {rowSlices.map((r, ri) => (
+          <div key={ri} className={sig.row} style={{ gridTemplateColumns: `repeat(${r.count}, 1fr)` }}>
+            {r.heroes.map((h) => (
+              <SignatureTile key={h.hero} h={h} max={max} size={r.size} steamId={steamId} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
+  )
 }
 
 /* ── Recent Games columns ──────────────────────────────── */
@@ -612,6 +775,16 @@ export default function PlayerShow() {
         )}
 
         <div>
+          {player.signatureHeroes && player.signatureHeroes.length > 0 && (
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>
+                Signature Heroes
+                <a href="/glossary#signature-heroes" className={sig.help} title="What are signature heroes?" aria-label="What are signature heroes? — opens the glossary">?</a>
+              </div>
+              <SignatureHeroesBlock heroes={player.signatureHeroes} steamId={player.steamId} />
+            </div>
+          )}
+
           {sortedTeamResults.length > 0 && (
             <div className={styles.section}>
               <div className={styles.sectionTitle}>Results by Team</div>
