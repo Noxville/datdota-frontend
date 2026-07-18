@@ -89,9 +89,11 @@
 }
 
 .liveCard {
+  position: relative;
   flex: 1;
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
+  border-left-width: 3px;
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   min-width: 0;
@@ -102,6 +104,11 @@
 .liveCard:hover {
   border-color: var(--color-primary-dim);
 }
+
+/* Source colour-coding: coloured left border on the card. */
+.liveCard.srcWebapi { border-left-color: #60a5fa; }
+.liveCard.srcExt { border-left-color: var(--color-accent-bright); }
+.liveCard.srcGsi { border-left-color: var(--color-primary); }
 
 .liveTeams {
   display: flex;
@@ -118,7 +125,7 @@
   color: var(--color-text);
 }
 
-.liveLeague {
+.liveMeta {
   font-size: 0.6rem;
   color: var(--color-text-muted);
   white-space: nowrap;
@@ -293,7 +300,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
+  padding: 4px 8px;
   border-radius: var(--radius-sm);
   text-decoration: none;
   transition: background 150ms ease;
@@ -332,10 +339,33 @@
 
 .teamRating {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
+  margin-left: 40px;
+}
+
+/* Win-loss (last 2 months) — colour set inline from the win% ramp */
+.teamWl {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.teamWlRecord {
+  font-size: 0.62rem;
+  opacity: 0.7;
+}
+
+.teamWlPct {
+  font-size: 0.72rem;
+  width: 34px;
+  text-align: right;
 }
 
 /* ── Hero popularity (tiered rows) ────────────────────── */

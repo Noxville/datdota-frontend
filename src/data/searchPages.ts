@@ -32,6 +32,7 @@ export const SEARCH_PAGES: SearchPage[] = [
   // Teams
   { label: 'Team Average Performances', path: '/teams/performances?default=true', keywords: ['team', 'stats'] },
   { label: 'Team Head-to-Head', path: '/teams/head-to-head', keywords: ['team', 'matchup', 'h2h'] },
+  { label: 'Team H2H Cross-section', path: '/teams/h2h-cross-section?default=true', keywords: ['team', 'matchup', 'h2h', 'cross', 'table', 'cross-section'] },
   { label: 'Team Unique Heroes', path: '/teams/unique-heroes?default=true', keywords: ['team', 'hero', 'pool'] },
   { label: 'Team Towers', path: '/teams/towers?default=true', keywords: ['team', 'tower', 'building'] },
   { label: 'Team Map Control', path: '/teams/map-control?default=true', keywords: ['team', 'map', 'control', 'vision'] },

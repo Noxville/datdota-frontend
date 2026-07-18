@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../api/client'
@@ -6,6 +6,9 @@ import { useNoIndex } from '../hooks/useNoIndex'
 import { heroesById } from '../data/heroes'
 import { items as itemsData } from '../data/items'
 import { heroImageUrl, itemImageUrl, teamLogoUrl, leagueLogoUrl } from '../config'
+import { formatDuration, type DraftStep, phaseForIndex } from '../lib/live'
+import LiveMinimap, { type MinimapHero, type MinimapBuilding } from '../components/LiveMinimap'
+import LiveDraftView from '../components/LiveDraft'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
@@ -111,18 +114,16 @@ function heroPic(id: number): string | null {
   return heroesById[String(id)]?.picture ?? null
 }
 
+/** Prior pro & premium single performances for this player on this hero (all time, all patches). */
+function priorGamesLink(steamId: number, heroId: number): string {
+  const params = new URLSearchParams({ players: String(steamId), heroes: String(heroId), tier: '1,2' })
+  return `/players/single-performances?${params.toString()}`
+}
+
 function itemShortName(id: number): string | null {
   if (id <= 0) return null
   const item = itemsData[String(id)]
   return item?.shortName ?? null
-}
-
-function formatDuration(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
-  const total = Math.floor(seconds)
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
 function teamLogo(id: number | string | undefined): string | null {
@@ -138,92 +139,34 @@ function seriesTypeLabel(t: number): string {
   return 'Bo1'
 }
 
-/* ── Tower / barracks model ─────────────────────────────── */
+/* ── Building coordinates (Dota world coords, for the minimap) ─── */
 
-// Bit order (Valve dota_gc DOTA_TOWER_STATE):
-// 0: T1 top, 1: T1 mid, 2: T1 bot,
-// 3: T2 top, 4: T2 mid, 5: T2 bot,
-// 6: T3 top, 7: T3 mid, 8: T3 bot,
-// 9: T4 (ancient north), 10: T4 (ancient south)
-
-interface Tower {
-  bit: number
-  // normalized [0..1] in SVG viewBox space
-  cx: number
-  cy: number
-  tier: number
-}
-
-interface Rax {
-  bit: number
-  cx: number
-  cy: number
-  lane: 'top' | 'mid' | 'bot'
-  kind: 'melee' | 'ranged'
-}
-
-const RADIANT_TOWERS: Tower[] = [
-  { bit: 0, cx: 0.10, cy: 0.20, tier: 1 }, // T1 top
-  { bit: 1, cx: 0.46, cy: 0.50, tier: 1 }, // T1 mid
-  { bit: 2, cx: 0.72, cy: 0.90, tier: 1 }, // T1 bot
-  { bit: 3, cx: 0.10, cy: 0.40, tier: 2 }, // T2 top
-  { bit: 4, cx: 0.32, cy: 0.64, tier: 2 }, // T2 mid
-  { bit: 5, cx: 0.50, cy: 0.90, tier: 2 }, // T2 bot
-  { bit: 6, cx: 0.10, cy: 0.62, tier: 3 }, // T3 top
-  { bit: 7, cx: 0.22, cy: 0.78, tier: 3 }, // T3 mid
-  { bit: 8, cx: 0.30, cy: 0.90, tier: 3 }, // T3 bot
-  { bit: 9, cx: 0.10, cy: 0.83, tier: 4 }, // T4 north
-  { bit: 10, cx: 0.16, cy: 0.90, tier: 4 }, // T4 south
+// tower_state bit → world position, per side.
+// Bits: 0 T1top,1 T1mid,2 T1bot, 3 T2top,4 T2mid,5 T2bot, 6 T3top,7 T3mid,8 T3bot, 9 T4a,10 T4b
+const RADIANT_TOWER_XY: [number, number][] = [
+  [-5696, 1985], [-904, -1279], [5543.5, -6069.28],
+  [-5824, -743], [-2550.34, -2797.25], [280, -6127],
+  [-5952, -3279], [-4000, -4015], [-3312, -5983],
+  [-5072, -4735], [-4752, -5063],
+]
+const DIRE_TOWER_XY: [number, number][] = [
+  [-4635.06, 6057.44], [1164, 781], [6909.34, -2111],
+  [512, 6145], [3136, 2241], [7040, 513],
+  [4192, 5905], [4912, 3888], [6976, 3161],
+  [4976, 4312], [5920, 4561],
 ]
 
-const DIRE_TOWERS: Tower[] = [
-  { bit: 0, cx: 0.30, cy: 0.10, tier: 1 }, // T1 top
-  { bit: 1, cx: 0.54, cy: 0.46, tier: 1 }, // T1 mid
-  { bit: 2, cx: 0.90, cy: 0.70, tier: 1 }, // T1 bot
-  { bit: 3, cx: 0.50, cy: 0.10, tier: 2 }, // T2 top
-  { bit: 4, cx: 0.68, cy: 0.34, tier: 2 }, // T2 mid
-  { bit: 5, cx: 0.90, cy: 0.50, tier: 2 }, // T2 bot
-  { bit: 6, cx: 0.70, cy: 0.10, tier: 3 }, // T3 top
-  { bit: 7, cx: 0.80, cy: 0.20, tier: 3 }, // T3 mid
-  { bit: 8, cx: 0.90, cy: 0.30, tier: 3 }, // T3 bot
-  { bit: 9, cx: 0.90, cy: 0.10, tier: 4 }, // T4 north
-  { bit: 10, cx: 0.84, cy: 0.16, tier: 4 }, // T4 south
+// barracks_state bit → world position, per side.
+// Bits: 0 top melee,1 top ranged,2 mid melee,3 mid ranged,4 bot melee,5 bot ranged
+const RADIANT_RAX_XY: [number, number][] = [
+  [-6204, -3630], [-5696, -3629], [-4032, -4423], [-4420, -4070], [-3640, -6231], [-3639, -5724],
+]
+const DIRE_RAX_XY: [number, number][] = [
+  [7232, 3521], [6704, 3505], [5342, 3953], [4976, 4312], [4534, 6154], [4538, 5625],
 ]
 
-const RADIANT_RAX: Rax[] = [
-  { bit: 0, cx: 0.10, cy: 0.65, lane: 'top', kind: 'melee' },
-  { bit: 1, cx: 0.12, cy: 0.69, lane: 'top', kind: 'ranged' },
-  { bit: 2, cx: 0.17, cy: 0.82, lane: 'mid', kind: 'melee' },
-  { bit: 3, cx: 0.20, cy: 0.85, lane: 'mid', kind: 'ranged' },
-  { bit: 4, cx: 0.24, cy: 0.90, lane: 'bot', kind: 'melee' },
-  { bit: 5, cx: 0.28, cy: 0.90, lane: 'bot', kind: 'ranged' },
-]
-
-const DIRE_RAX: Rax[] = [
-  { bit: 0, cx: 0.74, cy: 0.10, lane: 'top', kind: 'melee' },
-  { bit: 1, cx: 0.78, cy: 0.10, lane: 'top', kind: 'ranged' },
-  { bit: 2, cx: 0.83, cy: 0.15, lane: 'mid', kind: 'melee' },
-  { bit: 3, cx: 0.85, cy: 0.18, lane: 'mid', kind: 'ranged' },
-  { bit: 4, cx: 0.90, cy: 0.30, lane: 'bot', kind: 'melee' },
-  { bit: 5, cx: 0.90, cy: 0.34, lane: 'bot', kind: 'ranged' },
-]
-
-// Roshan pit (approx) - slightly above & left of center
-const ROSHAN_POS = { cx: 0.40, cy: 0.32 }
-
-// World coords approx span; map fountain-to-fountain across about ±7500
-const WORLD_MIN = -7500
-const WORLD_MAX = 7500
-
-function worldToSvg(x: number, y: number, size: number): { x: number; y: number } {
-  const span = WORLD_MAX - WORLD_MIN
-  const nx = (x - WORLD_MIN) / span
-  const ny = (y - WORLD_MIN) / span
-  return {
-    x: Math.max(0, Math.min(1, nx)) * size,
-    y: Math.max(0, Math.min(1, 1 - ny)) * size,
-  }
-}
+const RADIANT_FORT: [number, number] = [-5280, -5223]
+const DIRE_FORT: [number, number] = [6168, 5129]
 
 /* ── Hooks ──────────────────────────────────────────────── */
 
@@ -231,10 +174,10 @@ const POLL_MS = 5000
 
 function useLiveMatch(id: string | undefined) {
   return useQuery<LiveMatchResponse>({
-    queryKey: ['api', '/api/livegames', id],
+    queryKey: ['api', '/api/livegames/webapi', id],
     queryFn: async () => {
       if (id === 'test') return exampleLiveMatch as LiveMatchResponse
-      return apiFetch<LiveMatchResponse>(`/api/livegames/${id}`)
+      return apiFetch<LiveMatchResponse>(`/api/livegames/webapi/${id}`)
     },
     enabled: !!id,
     refetchInterval: id === 'test' ? false : POLL_MS,
@@ -244,265 +187,60 @@ function useLiveMatch(id: string | undefined) {
 
 /* ── Map view ───────────────────────────────────────────── */
 
-const MAP_SIZE = 600
+function buildWebapiBuildings(sb: LiveScoreboard): MinimapBuilding[] {
+  const out: MinimapBuilding[] = []
+  const add = (
+    coords: [number, number][],
+    bits: number,
+    side: 'radiant' | 'dire',
+    type: 'tower' | 'rax',
+  ) => {
+    coords.forEach(([x, y], bit) => {
+      out.push({ key: `${side}-${type}-${bit}`, x, y, type, side, destroyed: (bits & (1 << bit)) === 0 })
+    })
+  }
+  add(RADIANT_TOWER_XY, sb.radiant.tower_state, 'radiant', 'tower')
+  add(DIRE_TOWER_XY, sb.dire.tower_state, 'dire', 'tower')
+  add(RADIANT_RAX_XY, sb.radiant.barracks_state, 'radiant', 'rax')
+  add(DIRE_RAX_XY, sb.dire.barracks_state, 'dire', 'rax')
+  // Ancients are always present while the game is live.
+  out.push({ key: 'radiant-ancient', x: RADIANT_FORT[0], y: RADIANT_FORT[1], type: 'ancient', side: 'radiant' })
+  out.push({ key: 'dire-ancient', x: DIRE_FORT[0], y: DIRE_FORT[1], type: 'ancient', side: 'dire' })
+  return out
+}
 
 function MapView({ data }: { data: LiveMatchData }) {
   const sb = data.scoreboard
-  const radiantTowerBits = sb.radiant.tower_state
-  const direTowerBits = sb.dire.tower_state
-  const radiantRaxBits = sb.radiant.barracks_state
-  const direRaxBits = sb.dire.barracks_state
+  const buildings = buildWebapiBuildings(sb)
 
-  const ros = sb.roshan_respawn_timer
+  const toHero = (p: LiveScoreboardPlayer, side: 'radiant' | 'dire'): MinimapHero => ({
+    key: `${side}-${p.account_id || p.player_slot}`,
+    x: p.position_x,
+    y: p.position_y,
+    picture: heroPic(p.hero_id),
+    side,
+    dead: p.respawn_timer > 0,
+    respawn: p.respawn_timer,
+    level: p.level,
+    label: `${heroName(p.hero_id)} · ${p.kills}/${p.death}/${p.assists}${p.respawn_timer > 0 ? ` · dead ${p.respawn_timer}s` : ''}`,
+  })
 
+  const heroes: MinimapHero[] = [
+    ...sb.radiant.players.map((p) => toHero(p, 'radiant')),
+    ...sb.dire.players.map((p) => toHero(p, 'dire')),
+  ]
+
+  return <LiveMinimap heroes={heroes} buildings={buildings} />
+}
+
+function RoshanStrip({ respawn }: { respawn: number }) {
+  const alive = respawn <= 0
   return (
-    <div className={styles.mapWrap}>
-      <div className={styles.mapSvgWrap}>
-        <svg
-          className={styles.mapSvg}
-          viewBox={`0 0 ${MAP_SIZE} ${MAP_SIZE}`}
-          xmlns="http://www.w3.org/2000/svg"
-          aria-label="Live map"
-        >
-          {/* Background quadrants — Radiant (green) bottom-left, Dire (red) top-right */}
-          <rect x="0" y="0" width={MAP_SIZE} height={MAP_SIZE} fill="#1a1f1c" />
-          <polygon
-            points={`0,${MAP_SIZE} ${MAP_SIZE},${MAP_SIZE} 0,0`}
-            fill="rgba(74, 222, 128, 0.06)"
-          />
-          <polygon
-            points={`${MAP_SIZE},0 ${MAP_SIZE},${MAP_SIZE} 0,0`}
-            fill="rgba(248, 113, 113, 0.06)"
-          />
-          {/* River diagonal */}
-          <line
-            x1="0"
-            y1={MAP_SIZE}
-            x2={MAP_SIZE}
-            y2="0"
-            stroke="rgba(96, 165, 250, 0.25)"
-            strokeWidth="14"
-          />
-
-          {/* Lanes (rough L shapes) */}
-          {/* Top lane: left edge + top edge */}
-          <polyline
-            points={`60,${MAP_SIZE - 60} 60,60 ${MAP_SIZE - 60},60`}
-            fill="none"
-            stroke="rgba(196, 139, 196, 0.18)"
-            strokeWidth="22"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {/* Bot lane: bottom edge + right edge */}
-          <polyline
-            points={`60,${MAP_SIZE - 60} ${MAP_SIZE - 60},${MAP_SIZE - 60} ${MAP_SIZE - 60},60`}
-            fill="none"
-            stroke="rgba(196, 139, 196, 0.18)"
-            strokeWidth="22"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {/* Mid lane */}
-          <line
-            x1="80"
-            y1={MAP_SIZE - 80}
-            x2={MAP_SIZE - 80}
-            y2="80"
-            stroke="rgba(196, 139, 196, 0.18)"
-            strokeWidth="22"
-            strokeLinecap="round"
-          />
-
-          {/* Ancients */}
-          <circle cx={0.12 * MAP_SIZE} cy={0.88 * MAP_SIZE} r="12" fill="#4ade80" opacity="0.85" />
-          <circle cx={0.88 * MAP_SIZE} cy={0.12 * MAP_SIZE} r="12" fill="#f87171" opacity="0.85" />
-
-          {/* Towers */}
-          {RADIANT_TOWERS.map((t) => (
-            <TowerMarker
-              key={`r-t-${t.bit}`}
-              tower={t}
-              alive={(radiantTowerBits & (1 << t.bit)) !== 0}
-              side="radiant"
-              size={MAP_SIZE}
-            />
-          ))}
-          {DIRE_TOWERS.map((t) => (
-            <TowerMarker
-              key={`d-t-${t.bit}`}
-              tower={t}
-              alive={(direTowerBits & (1 << t.bit)) !== 0}
-              side="dire"
-              size={MAP_SIZE}
-            />
-          ))}
-
-          {/* Barracks */}
-          {RADIANT_RAX.map((r) => (
-            <RaxMarker
-              key={`r-rx-${r.bit}`}
-              rax={r}
-              alive={(radiantRaxBits & (1 << r.bit)) !== 0}
-              side="radiant"
-              size={MAP_SIZE}
-            />
-          ))}
-          {DIRE_RAX.map((r) => (
-            <RaxMarker
-              key={`d-rx-${r.bit}`}
-              rax={r}
-              alive={(direRaxBits & (1 << r.bit)) !== 0}
-              side="dire"
-              size={MAP_SIZE}
-            />
-          ))}
-
-          {/* Roshan */}
-          <g transform={`translate(${ROSHAN_POS.cx * MAP_SIZE}, ${ROSHAN_POS.cy * MAP_SIZE})`}>
-            <circle r="10" fill={ros > 0 ? '#555' : '#facc15'} opacity={ros > 0 ? 0.55 : 0.9} />
-            <text
-              y="3"
-              textAnchor="middle"
-              fontSize="9"
-              fontFamily="var(--font-mono)"
-              fontWeight="700"
-              fill="#0e1410"
-            >
-              R
-            </text>
-          </g>
-
-          {/* Heroes */}
-          {sb.radiant.players.map((p) => (
-            <HeroDot key={`r-${p.account_id}`} p={p} side="radiant" size={MAP_SIZE} />
-          ))}
-          {sb.dire.players.map((p) => (
-            <HeroDot key={`d-${p.account_id}`} p={p} side="dire" size={MAP_SIZE} />
-          ))}
-        </svg>
-      </div>
-
-      <div className={styles.mapLegend}>
-        <div className={styles.roshanCard}>
-          <div className={styles.roshanLabel}>Roshan</div>
-          <div className={styles.roshanTimer}>
-            {ros > 0 ? `Respawn in ${formatDuration(ros)}` : 'Alive'}
-          </div>
-        </div>
-        <div className={styles.legendRow}>
-          <span className={styles.legendSwatch} style={{ background: '#4ade80' }} />
-          Radiant
-        </div>
-        <div className={styles.legendRow}>
-          <span className={styles.legendSwatch} style={{ background: '#f87171' }} />
-          Dire
-        </div>
-        <div className={styles.legendRow}>
-          <span className={styles.legendSwatch} style={{ background: '#facc15' }} />
-          Roshan
-        </div>
-        <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
-          Hero positions delayed ~{Math.floor(data.stream_delay_s / 60)} min per broadcast.
-        </div>
-      </div>
+    <div className={styles.roshanStrip}>
+      <span className={styles.roshanDot} style={{ background: alive ? 'var(--color-win)' : 'var(--color-loss)' }} />
+      <span className={styles.roshanStripLabel}>Roshan</span>
+      <span>{alive ? 'Alive' : `Respawn in ${formatDuration(respawn)}`}</span>
     </div>
-  )
-}
-
-function TowerMarker({
-  tower,
-  alive,
-  side,
-  size,
-}: {
-  tower: Tower
-  alive: boolean
-  side: 'radiant' | 'dire'
-  size: number
-}) {
-  const color = side === 'radiant' ? '#4ade80' : '#f87171'
-  return (
-    <g className={styles.tower}>
-      <rect
-        x={tower.cx * size - 4}
-        y={tower.cy * size - 4}
-        width="8"
-        height="8"
-        fill={alive ? color : '#3a3a3a'}
-        stroke={alive ? '#000' : '#222'}
-        strokeWidth="1"
-        opacity={alive ? 0.95 : 0.5}
-      />
-    </g>
-  )
-}
-
-function RaxMarker({
-  rax,
-  alive,
-  side,
-  size,
-}: {
-  rax: Rax
-  alive: boolean
-  side: 'radiant' | 'dire'
-  size: number
-}) {
-  const color = side === 'radiant' ? '#4ade80' : '#f87171'
-  return (
-    <g className={styles.tower}>
-      <rect
-        x={rax.cx * size - 3}
-        y={rax.cy * size - 3}
-        width="6"
-        height="6"
-        fill={alive ? color : '#3a3a3a'}
-        stroke={alive ? '#000' : '#222'}
-        strokeWidth="1"
-        opacity={alive ? 0.85 : 0.4}
-        transform={`rotate(45 ${rax.cx * size} ${rax.cy * size})`}
-      />
-    </g>
-  )
-}
-
-function HeroDot({
-  p,
-  side,
-  size,
-}: {
-  p: LiveScoreboardPlayer
-  side: 'radiant' | 'dire'
-  size: number
-}) {
-  const { x, y } = worldToSvg(p.position_x, p.position_y, size)
-  const isDead = p.respawn_timer > 0
-  const ring = side === 'radiant' ? '#4ade80' : '#f87171'
-  const pic = heroPic(p.hero_id)
-  const r = 16
-
-  return (
-    <g
-      className={`${styles.heroDot} ${isDead ? styles.deadHero : ''}`}
-      transform={`translate(${x}, ${y})`}
-    >
-      <title>{`${heroName(p.hero_id)} · ${p.kills}/${p.death}/${p.assists}${
-        isDead ? ` · dead ${p.respawn_timer}s` : ''
-      }`}</title>
-      <circle r={r} fill="#14181d" stroke={ring} strokeWidth="2.5" />
-      {pic && (
-        <image
-          href={heroImageUrl(pic)}
-          x={-r + 2}
-          y={-r + 2}
-          width={(r - 2) * 2}
-          height={(r - 2) * 2}
-          clipPath="circle()"
-          preserveAspectRatio="xMidYMid slice"
-        />
-      )}
-    </g>
   )
 }
 
@@ -513,36 +251,45 @@ function LiveScoreboardTable({
   label,
   team,
   nameMap,
+  advantage,
 }: {
   side: LiveScoreboardSide
   label: string
   team?: LiveTeam
   nameMap: Map<number, string>
+  advantage: number
 }) {
   const labelClass = label === 'Radiant' ? shared.radiantLabel : shared.direLabel
+  const netWorth = side.players.reduce((s, p) => s + p.net_worth, 0)
 
   return (
     <div className={shared.section}>
       <div className={`${shared.sectionTitle} ${labelClass}`}>
         {label} {team?.team_name ? `· ${team.team_name}` : ''}
         <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', color: 'var(--color-text-secondary)' }}>
-          {side.score} kills · {side.players.reduce((s, p) => s + p.net_worth, 0).toLocaleString()} net worth
+          {side.score} kills · {netWorth.toLocaleString()} net worth{' '}
+          {advantage !== 0 && (
+            <span style={{ color: advantage > 0 ? 'var(--color-win)' : 'var(--color-loss)' }}>
+              ({advantage > 0 ? '+' : ''}{advantage.toLocaleString()})
+            </span>
+          )}
         </span>
       </div>
       <div className={shared.scoreboardWrap}>
         <table className={`${shared.scoreboard} ${styles.fixedTable}`}>
           <colgroup>
-            <col style={{ width: 56 }} />
-            <col style={{ width: 140 }} />
+            <col style={{ width: 48 }} />
+            <col style={{ width: 116 }} />
+            <col style={{ width: 34 }} />
+            <col style={{ width: 34 }} />
+            <col style={{ width: 34 }} />
+            <col style={{ width: 46 }} />
+            <col style={{ width: 46 }} />
+            <col style={{ width: 76 }} />
+            <col style={{ width: 52 }} />
+            <col style={{ width: 52 }} />
+            <col style={{ width: 160 }} />
             <col style={{ width: 44 }} />
-            <col style={{ width: 44 }} />
-            <col style={{ width: 44 }} />
-            <col style={{ width: 56 }} />
-            <col style={{ width: 56 }} />
-            <col style={{ width: 80 }} />
-            <col style={{ width: 60 }} />
-            <col style={{ width: 60 }} />
-            <col style={{ width: 200 }} />
           </colgroup>
           <thead>
             <tr>
@@ -557,6 +304,7 @@ function LiveScoreboardTable({
               <th className={shared.thNum}>GPM</th>
               <th className={shared.thNum}>XPM</th>
               <th>Items</th>
+              <th className={shared.thNum}>Prior</th>
             </tr>
           </thead>
           <tbody>
@@ -568,9 +316,32 @@ function LiveScoreboardTable({
               />
             ))}
           </tbody>
+          <tfoot>
+            <LiveTotalsRow players={side.players} />
+          </tfoot>
         </table>
       </div>
     </div>
+  )
+}
+
+function LiveTotalsRow({ players }: { players: LiveScoreboardPlayer[] }) {
+  const sum = (fn: (p: LiveScoreboardPlayer) => number) => players.reduce((s, p) => s + fn(p), 0)
+  return (
+    <tr className={shared.totalsRow}>
+      <td className={shared.tdHero} />
+      <td className={shared.totalsLabel}>Total</td>
+      <td className={shared.tdNum}>{sum((p) => p.kills)}</td>
+      <td className={shared.tdNum}>{sum((p) => p.death)}</td>
+      <td className={shared.tdNum}>{sum((p) => p.assists)}</td>
+      <td className={shared.tdNum}>{sum((p) => p.last_hits)}</td>
+      <td className={shared.tdNum}>{sum((p) => p.denies)}</td>
+      <td className={shared.tdNum}>{sum((p) => p.net_worth).toLocaleString()}</td>
+      <td className={shared.tdNum}>{sum((p) => p.gold_per_min)}</td>
+      <td className={shared.tdNum}>{sum((p) => p.xp_per_min)}</td>
+      <td />
+      <td />
+    </tr>
   )
 }
 
@@ -597,7 +368,15 @@ function LivePlayerRow({ p, playerName }: { p: LiveScoreboardPlayer; playerName:
           {isDead && <div className={styles.respawnOverlay}>{p.respawn_timer}</div>}
         </div>
       </td>
-      <td className={shared.tdPlayer}>{playerName}</td>
+      <td className={shared.tdPlayer}>
+        {p.account_id ? (
+          <a href={`/players/${p.account_id}`} style={{ color: 'var(--color-accent-bright)', textDecoration: 'none' }}>
+            {playerName}
+          </a>
+        ) : (
+          playerName
+        )}
+      </td>
       <td className={shared.tdNum}>{p.kills}</td>
       <td className={shared.tdNum}>{p.death}</td>
       <td className={shared.tdNum}>{p.assists}</td>
@@ -622,6 +401,17 @@ function LivePlayerRow({ p, playerName }: { p: LiveScoreboardPlayer; playerName:
             )
           })}
         </div>
+      </td>
+      <td className={shared.tdNum}>
+        {p.account_id ? (
+          <a
+            href={priorGamesLink(p.account_id, p.hero_id)}
+            title={`Prior pro & premium games on ${heroName(p.hero_id)}`}
+            style={{ color: 'var(--color-accent-bright)', textDecoration: 'none', fontSize: '1.15rem', lineHeight: 1, display: 'inline-block' }}
+          >
+            ↗
+          </a>
+        ) : null}
       </td>
     </tr>
   )
@@ -667,25 +457,6 @@ const CM_SEQUENCE: { team: 'first' | 'second'; action: 'ban' | 'pick' }[] = [
   { team: 'second', action: 'pick' },
 ]
 
-interface DraftStep {
-  order: number
-  side: 'radiant' | 'dire'
-  action: 'ban' | 'pick'
-  heroId: number | null
-  phase: number
-}
-
-// Cumulative end-index (exclusive) for each sub-phase in CM_SEQUENCE.
-// 7 bans, 2 picks, 3 bans, 6 picks, 4 bans, 2 picks.
-const PHASE_BOUNDARIES = [7, 9, 12, 18, 22, 24]
-
-function phaseForIndex(i: number): number {
-  for (let p = 0; p < PHASE_BOUNDARIES.length; p++) {
-    if (i < PHASE_BOUNDARIES[p]) return p
-  }
-  return PHASE_BOUNDARIES.length - 1
-}
-
 function buildDraftSequence(
   radiant: { picks: LivePickBan[]; bans: LivePickBan[] },
   dire: { picks: LivePickBan[]; bans: LivePickBan[] },
@@ -701,7 +472,7 @@ function buildDraftSequence(
     const side: 'radiant' | 'dire' =
       step.team === 'first' ? firstPick : firstPick === 'radiant' ? 'dire' : 'radiant'
     const teamData = side === 'radiant' ? radiant : dire
-    const arr = step.action === 'ban' ? teamData.bans : teamData.picks
+    const arr = (step.action === 'ban' ? teamData.bans : teamData.picks) ?? []
     const cursor = cursors[side][step.action]
     const heroId = arr[cursor]?.hero_id ?? null
     cursors[side][step.action]++
@@ -718,16 +489,6 @@ function DraftStrip({ data }: { data: LiveMatchData }) {
     () => buildDraftSequence(r, d, firstPick),
     [r, d, firstPick],
   )
-  // Group steps by phase per side, then pad each phase to the wider side's count
-  // so columns line up across the two rows.
-  const phaseCount = PHASE_BOUNDARIES.length
-  const radiantByPhase: DraftStep[][] = Array.from({ length: phaseCount }, () => [])
-  const direByPhase: DraftStep[][] = Array.from({ length: phaseCount }, () => [])
-  for (const s of sequence) {
-    if (s.side === 'radiant') radiantByPhase[s.phase].push(s)
-    else direByPhase[s.phase].push(s)
-  }
-  const phaseWidths = radiantByPhase.map((r, i) => Math.max(r.length, direByPhase[i].length))
 
   return (
     <div className={shared.section}>
@@ -751,75 +512,7 @@ function DraftStrip({ data }: { data: LiveMatchData }) {
           </button>
         </span>
       </div>
-      <div className={styles.draftScroll}>
-        <DraftSideRow label="Radiant" side="radiant" phases={radiantByPhase} widths={phaseWidths} />
-        <DraftSideRow label="Dire" side="dire" phases={direByPhase} widths={phaseWidths} />
-      </div>
-    </div>
-  )
-}
-
-function DraftSideRow({
-  label,
-  side,
-  phases,
-  widths,
-}: {
-  label: string
-  side: 'radiant' | 'dire'
-  phases: DraftStep[][]
-  widths: number[]
-}) {
-  const sideClass = side === 'radiant' ? styles.draftSideRadiant : styles.draftSideDire
-  return (
-    <div className={styles.draftSideRow}>
-      <div className={`${styles.draftSideLabel} ${sideClass}`}>{label}</div>
-      <div className={styles.draftSideCells}>
-        {phases.map((phaseSteps, phaseIdx) => {
-          const pad = widths[phaseIdx] - phaseSteps.length
-          return (
-            <Fragment key={`${side}-phase-${phaseIdx}`}>
-              {phaseIdx > 0 && <span className={styles.draftPhaseGap} aria-hidden />}
-              {phaseSteps.map((s) => (
-                <DraftCell key={`${side}-${s.order}`} step={s} />
-              ))}
-              {Array.from({ length: pad }).map((_, j) => (
-                <span key={`${side}-pad-${phaseIdx}-${j}`} className={styles.draftPadCell} aria-hidden />
-              ))}
-            </Fragment>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-function DraftCell({ step }: { step: DraftStep }) {
-  const banned = step.action === 'ban'
-  const pic = step.heroId ? heroPic(step.heroId) : null
-  const className = `${styles.draftCell} ${banned ? styles.draftCellBan : ''}`
-  return (
-    <div className={styles.draftCellWrap}>
-      <div
-        className={className}
-        title={
-          step.heroId
-            ? `${banned ? 'Ban' : 'Pick'} #${step.order}: ${heroName(step.heroId)}`
-            : `${banned ? 'Ban' : 'Pick'} #${step.order} (pending)`
-        }
-      >
-        {pic ? (
-          <img
-            src={heroImageUrl(pic)}
-            alt={heroName(step.heroId ?? 0)}
-            className={styles.draftCellImg}
-          />
-        ) : (
-          <div className={styles.draftCellPending} />
-        )}
-        {banned && <span className={styles.draftBanX}>×</span>}
-      </div>
-      <span className={styles.draftOrderCell}>{step.order}</span>
+      <LiveDraftView steps={sequence} />
     </div>
   )
 }
@@ -852,7 +545,27 @@ export default function LiveMatch() {
     )
   }
 
+  if (!data.scoreboard) {
+    return (
+      <>
+        <ErrorState
+          message="No live scoreboard available"
+          detail="This match has finished or is not currently broadcasting live data."
+          onRetry={() => refetch()}
+        />
+        <div style={{ textAlign: 'center', marginTop: 'var(--space-md)' }}>
+          <a href={`/matches/${id}`} style={{ color: 'var(--color-accent-bright)', textDecoration: 'none' }}>
+            View end-game stats →
+          </a>
+        </div>
+      </>
+    )
+  }
+
   const sb = data.scoreboard
+  const radiantAdvantage =
+    sb.radiant.players.reduce((s, p) => s + p.net_worth, 0) -
+    sb.dire.players.reduce((s, p) => s + p.net_worth, 0)
   const radiantName = data.radiant_team?.team_name ?? 'Radiant'
   const direName = data.dire_team?.team_name ?? 'Dire'
   const radiantLogo = teamLogo(data.radiant_team?.team_logo)
@@ -885,58 +598,58 @@ export default function LiveMatch() {
       </div>
 
       {/* Match header */}
-      <div className={shared.matchHeader}>
+      <div className={`${shared.matchHeader} ${styles.header}`}>
         <div className={`${shared.teamSide} ${shared.radiantSide}`}>
           {radiantLogo && (
             <img
               src={radiantLogo}
               alt={radiantName}
-              className={shared.teamLogo}
+              className={`${shared.teamLogo} ${styles.headerLogo}`}
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           )}
           <div className={shared.teamInfo}>
             {data.radiant_team?.team_id ? (
-              <a href={`/teams/${data.radiant_team.team_id}`} className={shared.teamName}>
+              <a href={`/teams/${data.radiant_team.team_id}`} className={`${shared.teamName} ${styles.headerName}`}>
                 {radiantName}
               </a>
             ) : (
-              <span className={shared.teamName}>{radiantName}</span>
+              <span className={`${shared.teamName} ${styles.headerName}`}>{radiantName}</span>
             )}
           </div>
         </div>
 
-        <div className={shared.scoreBlock}>
+        <div className={`${shared.scoreBlock} ${styles.headerBlock}`}>
           <div className={styles.seriesScore}>
             <span className={styles.seriesWin}>{data.radiant_series_wins}</span>
             <span>{seriesTypeLabel(data.series_type)}</span>
             <span className={styles.seriesWin}>{data.dire_series_wins}</span>
           </div>
           <div className={shared.scoreLine}>
-            <span className={shared.score} style={{ color: 'var(--color-win)' }}>{sb.radiant.score}</span>
-            <span className={shared.scoreDivider}>–</span>
-            <span className={shared.score} style={{ color: 'var(--color-loss)' }}>{sb.dire.score}</span>
+            <span className={`${shared.score} ${styles.headerScore}`} style={{ color: 'var(--color-win)' }}>{sb.radiant.score}</span>
+            <span className={`${shared.scoreDivider} ${styles.headerDivider}`}>–</span>
+            <span className={`${shared.score} ${styles.headerScore}`} style={{ color: 'var(--color-loss)' }}>{sb.dire.score}</span>
           </div>
-          <div className={shared.matchMeta}>
-            <span>{formatDuration(sb.duration)}</span>
-          </div>
+          {/* Mirrors the series-score row so the block is vertically symmetric,
+              centring the team names on the score. */}
+          <div className={styles.seriesScore} aria-hidden style={{ visibility: 'hidden' }}>&nbsp;</div>
         </div>
 
         <div className={`${shared.teamSide} ${shared.direSide}`}>
           <div className={`${shared.teamInfo} ${shared.teamInfoRight}`}>
             {data.dire_team?.team_id ? (
-              <a href={`/teams/${data.dire_team.team_id}`} className={shared.teamName}>
+              <a href={`/teams/${data.dire_team.team_id}`} className={`${shared.teamName} ${styles.headerName}`}>
                 {direName}
               </a>
             ) : (
-              <span className={shared.teamName}>{direName}</span>
+              <span className={`${shared.teamName} ${styles.headerName}`}>{direName}</span>
             )}
           </div>
           {direLogo && (
             <img
               src={direLogo}
               alt={direName}
-              className={shared.teamLogo}
+              className={`${shared.teamLogo} ${styles.headerLogo}`}
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           )}
@@ -957,15 +670,22 @@ export default function LiveMatch() {
         <span className={shared.matchId}>Match {data.match_id}</span>
       </div>
 
-      {/* Map view */}
-      <div className={shared.section}>
-        <div className={shared.sectionTitle}>Map</div>
-        <MapView data={data} />
+      {/* 2-column: map (40%) · teams (60%) */}
+      <div className={styles.liveGrid}>
+        <div className={styles.mapCol}>
+          <div className={shared.section}>
+            <div className={shared.sectionTitle}>Map</div>
+            <div className={styles.mapSize}>
+              <MapView data={data} />
+            </div>
+            <RoshanStrip respawn={sb.roshan_respawn_timer} />
+          </div>
+        </div>
+        <div className={styles.teamsCol}>
+          <LiveScoreboardTable side={sb.radiant} label="Radiant" team={data.radiant_team} nameMap={nameMap} advantage={radiantAdvantage} />
+          <LiveScoreboardTable side={sb.dire} label="Dire" team={data.dire_team} nameMap={nameMap} advantage={-radiantAdvantage} />
+        </div>
       </div>
-
-      {/* Scoreboards */}
-      <LiveScoreboardTable side={sb.radiant} label="Radiant" team={data.radiant_team} nameMap={nameMap} />
-      <LiveScoreboardTable side={sb.dire} label="Dire" team={data.dire_team} nameMap={nameMap} />
 
       {/* Draft */}
       <DraftStrip data={data} />

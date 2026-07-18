@@ -8,6 +8,7 @@ import { heroImageUrl, miniHeroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell, DeltaCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
+import HelpLabel from '../components/HelpLabel'
 import EnigmaLoader from '../components/EnigmaLoader'
 import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
@@ -555,17 +556,10 @@ export default function HeroHeadToHead() {
 
             {/* Min interactions filter */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <label style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 800,
-                fontSize: '0.6rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                color: 'var(--color-text-muted)',
-                whiteSpace: 'nowrap',
-              }}>
-                Min Matchups
-              </label>
+              <HelpLabel
+                text="Min Matchups"
+                tip="Minimum number of distinct opposing heroes a hero must have faced (each meeting the Min Games threshold) to appear as a row/column."
+              />
               <input
                 type="range"
                 min={1}

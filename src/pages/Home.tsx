@@ -4,7 +4,9 @@ import { useQuery } from '@tanstack/react-query'
 import * as d3 from 'd3'
 import { apiFetch } from '../api/client'
 import { heroesById } from '../data/heroes'
+import { patches } from '../data/patches'
 import { heroImageUrl, teamLogoUrl, leagueLogoUrl } from '../config'
+import { formatDuration } from '../lib/live'
 import { TeamLogo } from '../components/DataTable'
 import PageMeta from '../components/PageMeta'
 import { buildOrganization, buildWebSite } from '../lib/seo'
@@ -29,15 +31,49 @@ interface RecentGame {
   duration: number
 }
 
-interface LiveGame {
+interface WebApiLiveGame {
   matchId: number
-  leagueId: number
   tier: number
-  leagueName: string
-  radiant: { name: string; valveId: number | null; score: number }
-  dire: { name: string; valveId: number | null; score: number }
-  duration: number
-  hide: boolean
+  leagueId?: number
+  leagueName?: string | null
+  radiant: string | null
+  dire: string | null
+  radiantScore: number | null
+  direScore: number | null
+  duration: number | null
+}
+
+interface ExtSeriesScore {
+  name: string
+  score: number
+  won: boolean
+}
+
+interface ExtLiveGame {
+  uuid: string
+  gameNumber: number
+  format: string
+  score: ExtSeriesScore[]
+  clock: number
+  teams: string[]
+}
+
+// Shape not yet finalised server-side; handle either matchId- or uuid-keyed entries.
+interface GsiLiveGame {
+  matchId?: number
+  uuid?: string
+  tier?: number
+  radiant?: string | null
+  dire?: string | null
+  radiantScore?: number | null
+  direScore?: number | null
+  duration?: number | null
+}
+
+interface LiveGames {
+  webapi: WebApiLiveGame[]
+  ext: ExtLiveGame[]
+  gsi: GsiLiveGame[]
 }
 
 interface HeroCount {
@@ -51,6 +87,8 @@ interface TopTeam {
   logoId: string
   valveId: number
   rating: number
+  wins: number
+  losses: number
 }
 
 interface ActiveLeague {
@@ -83,7 +121,7 @@ interface HomeCounts {
 
 interface HomeData {
   recentGames: RecentGame[]
-  liveGames: Record<string, LiveGame>
+  liveGames: LiveGames
   heroCount: HeroCount[]
   topTeams: TopTeam[]
   activeLeagues: ActiveLeague[]
@@ -92,13 +130,6 @@ interface HomeData {
 }
 
 /* ── Helpers ────────────────────────────────────────────── */
-
-function formatDuration(seconds: number): string {
-  if (seconds < 0) return 'Pre-game'
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
 
 function formatNumber(n: number): string {
   return n.toLocaleString()
@@ -192,15 +223,107 @@ function CountsBar({ counts }: { counts: HomeCounts }) {
 
 const LIVE_PAGE_SIZE = 2
 
-function LiveBanner({ games }: { games: Record<string, LiveGame> }) {
+type LiveSource = 'webapi' | 'ext' | 'gsi'
+
+interface LiveCard {
+  key: string
+  source: LiveSource
+  href: string
+  radiantName: string
+  direName: string
+  radiantScore: number | null
+  direScore: number | null
+  duration: number | null
+  meta?: string
+}
+
+const SOURCE_BADGE: Record<LiveSource, string> = {
+  webapi: styles.srcWebapi,
+  ext: styles.srcExt,
+  gsi: styles.srcGsi,
+}
+
+function teamName(name: string | null | undefined): string {
+  return name && name !== 'Unknown' ? name : 'Unknown'
+}
+
+/** best-of-3 → Bo3 */
+function formatSeriesType(format: string): string {
+  const m = /(\d+)/.exec(format)
+  return m ? `Bo${m[1]}` : format
+}
+
+function normalizeWebApi(g: WebApiLiveGame, source: LiveSource): LiveCard | null {
+  if (g.tier !== 1 && g.tier !== 2) return null
+  // Drop fully-empty placeholder rows.
+  if (!g.radiant && !g.dire && g.radiantScore == null && g.direScore == null && g.duration == null) {
+    return null
+  }
+  return {
+    key: `${source}-${g.matchId}`,
+    source,
+    href: `/livematches/webapi/${g.matchId}`,
+    radiantName: teamName(g.radiant),
+    direName: teamName(g.dire),
+    radiantScore: g.radiantScore ?? null,
+    direScore: g.direScore ?? null,
+    duration: g.duration ?? null,
+    meta: g.leagueName ?? undefined,
+  }
+}
+
+function normalizeExt(g: ExtLiveGame): LiveCard {
+  const [radiant, dire] = g.teams ?? []
+  return {
+    key: `ext-${g.uuid}`,
+    source: 'ext',
+    href: `/livematches/ext/${g.uuid}`,
+    radiantName: teamName(radiant ?? g.score?.[0]?.name),
+    direName: teamName(dire ?? g.score?.[1]?.name),
+    radiantScore: g.score?.[0]?.score ?? null,
+    direScore: g.score?.[1]?.score ?? null,
+    duration: g.clock ?? null,
+    meta: `Game ${g.gameNumber} · ${formatSeriesType(g.format)}`,
+  }
+}
+
+function normalizeGsi(g: GsiLiveGame): LiveCard | null {
+  if (g.uuid) {
+    return {
+      key: `gsi-${g.uuid}`,
+      source: 'gsi',
+      href: `/livematches/ext/${g.uuid}`,
+      radiantName: teamName(g.radiant),
+      direName: teamName(g.dire),
+      radiantScore: g.radiantScore ?? null,
+      direScore: g.direScore ?? null,
+      duration: g.duration ?? null,
+    }
+  }
+  if (g.matchId) {
+    return normalizeWebApi(g as WebApiLiveGame, 'gsi')
+  }
+  return null
+}
+
+function normalizeLive(games: LiveGames): LiveCard[] {
+  const cards: LiveCard[] = [
+    ...(games.ext ?? []).map(normalizeExt),
+    ...(games.gsi ?? []).map(normalizeGsi).filter((c): c is LiveCard => c !== null),
+    ...(games.webapi ?? [])
+      .map((g) => normalizeWebApi(g, 'webapi'))
+      .filter((c): c is LiveCard => c !== null),
+  ]
+  const order: Record<LiveSource, number> = { ext: 0, gsi: 1, webapi: 2 }
+  return cards.sort(
+    (a, b) => order[a.source] - order[b.source] || (b.duration ?? -Infinity) - (a.duration ?? -Infinity),
+  )
+}
+
+function LiveBanner({ games }: { games: LiveGames }) {
   const [page, setPage] = useState(0)
 
-  const liveList = useMemo(
-    () => Object.values(games)
-      .filter((g) => !g.hide && g.radiant && g.dire)
-      .sort((a, b) => a.tier - b.tier || b.duration - a.duration),
-    [games],
-  )
+  const liveList = useMemo(() => normalizeLive(games), [games])
 
   if (liveList.length === 0) return null
 
@@ -223,17 +346,19 @@ function LiveBanner({ games }: { games: Record<string, LiveGame> }) {
       </div>
       <div className={styles.liveCards}>
         {visible.map((g) => (
-          <Link key={g.matchId} to={`/livematches/${g.matchId}`} className={styles.liveCard}>
+          <Link key={g.key} to={g.href} className={`${styles.liveCard} ${SOURCE_BADGE[g.source]}`}>
             <div className={styles.liveTeams}>
-              <span>{g.radiant.name}</span>
-              <span className={styles.liveScore}>{g.radiant.score}</span>
+              <span>{g.radiantName}</span>
+              <span className={styles.liveScore}>{g.radiantScore ?? '–'}</span>
               <span style={{ color: 'var(--color-text-muted)' }}>-</span>
-              <span className={styles.liveScore}>{g.dire.score}</span>
-              <span>{g.dire.name}</span>
+              <span className={styles.liveScore}>{g.direScore ?? '–'}</span>
+              <span>{g.direName}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-              <span className={styles.liveLeague}>{g.leagueName}</span>
-              <span className={styles.liveDuration}>{formatDuration(g.duration)}</span>
+              <span className={styles.liveMeta}>{g.meta ?? ''}</span>
+              <span className={styles.liveDuration}>
+                {g.duration != null ? formatDuration(g.duration) : ''}
+              </span>
             </div>
           </Link>
         ))}
@@ -327,23 +452,50 @@ function RecentGames({ games }: { games: RecentGame[] }) {
 
 /* ── Top teams ──────────────────────────────────────────── */
 
+/** Win% → colour ramp: red below 50%, green above, deepening with distance. */
+function winRateColor(pct: number): string {
+  if (pct >= 60) return '#22c55e' // very green
+  if (pct >= 55) return '#4ade80' // medium green
+  if (pct >= 50) return '#86efac' // light green
+  if (pct >= 45) return '#fca5a5' // light red
+  if (pct >= 40) return '#f87171' // medium red
+  return '#ef4444' // deep red
+}
+
 function TopTeams({ teams }: { teams: TopTeam[] }) {
   const top16 = teams.slice(0, 16)
+  const currentPatch = patches[0]?.name ?? ''
+  const h2hHref =
+    `/teams/h2h-cross-section?teams=${top16.map((t) => t.valveId).join(',')}` +
+    `&tier=1,2&threshold=1${currentPatch ? `&patch=${encodeURIComponent(currentPatch)}` : ''}`
   return (
     <div>
       <div className={styles.sectionTitle}>
         Top Teams — Glicko-2
-        <Link to="/ratings" className={styles.sectionLink}>full ratings</Link>
+        <span style={{ display: 'inline-flex', gap: 12 }}>
+          <Link to={h2hHref} className={styles.sectionLink}>h2h cross-section</Link>
+          <Link to="/ratings" className={styles.sectionLink}>full ratings</Link>
+        </span>
       </div>
       <div className={styles.teamsList}>
-        {top16.map((t, i) => (
-          <Link key={t.valveId} to={`/teams/${t.valveId}`} className={styles.teamRow}>
-            <span className={styles.teamRank}>{i + 1}</span>
-            <TeamLogo logoUrl={teamLogoUrl(t.logoId)} name={t.name} className={styles.teamLogo} />
-            <span className={styles.teamName}>{t.name}</span>
-            <span className={styles.teamRating}>{Math.round(t.rating)}</span>
-          </Link>
-        ))}
+        {top16.map((t, i) => {
+          const games = t.wins + t.losses
+          const pct = games > 0 ? Math.round((t.wins / games) * 100) : null
+          return (
+            <Link key={t.valveId} to={`/teams/${t.valveId}`} className={styles.teamRow}>
+              <span className={styles.teamRank}>{i + 1}</span>
+              <TeamLogo logoUrl={teamLogoUrl(t.logoId)} name={t.name} className={styles.teamLogo} />
+              <span className={styles.teamName}>{t.name}</span>
+              {pct !== null && (
+                <span className={styles.teamWl} title="Win rate — last 2 months" style={{ color: winRateColor(pct) }}>
+                  <span className={styles.teamWlRecord}>{t.wins}-{t.losses}</span>
+                  <span className={styles.teamWlPct}>{pct}%</span>
+                </span>
+              )}
+              <span className={styles.teamRating}>{Math.round(t.rating)}</span>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )

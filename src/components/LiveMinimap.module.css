@@ -1,0 +1,154 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --hero-size: 7%;
+  --building-size: 4.4%;
+}
+
+/* Background zoomed to 110% (offset -5%) — matches the calibration reference. */
+.bg {
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Calibration transform (from dota-live tool, tuned at 543px → expressed as %). */
+.layer {
+  position: absolute;
+  inset: 0;
+  transform: translate(-3.057%, -0.645%) scale(0.867);
+  transform-origin: center center;
+}
+
+/* ── Heroes ── */
+
+.hero {
+  position: absolute;
+  width: var(--hero-size);
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 10;
+  transition: transform 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero:hover {
+  transform: translate(-50%, -50%) scale(1.35);
+  z-index: 20;
+}
+
+.heroImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.heroRadiant {
+  box-shadow: 0 0 0 1.5px #0e1116, 0 0 6px 1px #4ade80, inset 0 0 0 1.5px #4ade80;
+}
+
+.heroDire {
+  box-shadow: 0 0 0 1.5px #0e1116, 0 0 6px 1px #f87171, inset 0 0 0 1.5px #f87171;
+}
+
+.dead {
+  opacity: 0.55;
+  filter: grayscale(70%);
+}
+
+.heroLevel {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.respawn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ff6b6b;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.6rem;
+}
+
+/* ── Buildings ── */
+
+.building {
+  position: absolute;
+  width: var(--building-size);
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+/* Dark disc so icons read on same-colour terrain. */
+.building::before {
+  content: '';
+  position: absolute;
+  inset: -28%;
+  border-radius: 50%;
+  background: rgba(6, 10, 14, 0.6);
+  z-index: 0;
+}
+
+.building > * {
+  position: relative;
+  z-index: 1;
+}
+
+.buildingImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.tintRadiant .buildingImg {
+  filter: drop-shadow(0 0 2px #4ade80);
+}
+
+.tintDire .buildingImg {
+  filter: drop-shadow(0 0 2px #f87171);
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.tintRadiant .tint {
+  background: #4ade80;
+}
+
+.tintDire .tint {
+  background: #f87171;
+}

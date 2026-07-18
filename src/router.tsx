@@ -49,6 +49,7 @@ const router = createBrowserRouter([
       // Teams
       { path: '/teams/performances', element: lz(() => import('./pages/TeamPerformances')) },
       { path: '/teams/head-to-head', element: lz(() => import('./pages/TeamHeadToHead')) },
+      { path: '/teams/h2h-cross-section', element: lz(() => import('./pages/TeamH2HCrossSection')) },
       { path: '/teams/unique-heroes', element: lz(() => import('./pages/TeamUniqueHeroes')) },
       { path: '/teams/towers', element: lz(() => import('./pages/TeamTowers')) },
       { path: '/teams/throws', element: lz(() => import('./pages/TeamThrows')) },
@@ -68,7 +69,8 @@ const router = createBrowserRouter([
       { path: '/matches/all-players-buyback', element: lz(() => import('./pages/MatchAllBuybacks')) },
       { path: '/matches/never-led', element: lz(() => import('./pages/MatchNeverLed')) },
       { path: '/matches/:id', element: lz(() => import('./pages/MatchShow')) },
-      { path: '/livematches/:id', element: lz(() => import('./pages/LiveMatch')) },
+      { path: '/livematches/ext/:uuid', element: lz(() => import('./pages/ExtLiveMatch')) },
+      { path: '/livematches/webapi/:id', element: lz(() => import('./pages/LiveMatch')) },
 
       // Events — Combat
       { path: '/events/hero-kills', element: lz(() => import('./pages/EventKills')) },

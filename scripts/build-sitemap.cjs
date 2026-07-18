@@ -51,12 +51,14 @@ const STATIC_ROUTES = [
   // Teams
   '/teams/performances',
   '/teams/head-to-head',
+  '/teams/h2h-cross-section',
   '/teams/unique-heroes',
   '/teams/towers',
   '/teams/throws',
   '/teams/comebacks',
   '/teams/map-control',
   '/teams/identity',
+  '/teams/series-outcomes',
   // Matches (excluding /matches and /matches/:id — disallowed)
   '/matches/finder',
   '/matches/durations',

@@ -1,0 +1,35 @@
+.source {
+  font-size: 0.62rem;
+  color: var(--color-accent-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+.hpCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.hpBar {
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--color-bg-elevated);
+  overflow: hidden;
+}
+
+.hpFill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+}
+
+.hpText {
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}

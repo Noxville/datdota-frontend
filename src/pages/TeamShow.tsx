@@ -253,6 +253,18 @@ function ActivityChart({ data }: { data: GameCount[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
   const [tip, setTip] = useState<{ x: number; y: number; label: string; count: number } | null>(null)
+  const [width, setWidth] = useState(720)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width ?? 720
+      setWidth(Math.max(320, w - 32))
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   useEffect(() => {
     if (!svgRef.current || data.length === 0) return
@@ -260,49 +272,65 @@ function ActivityChart({ data }: { data: GameCount[] }) {
     svg.selectAll('*').remove()
 
     const margin = { top: 8, right: 8, bottom: 24, left: 30 }
-    // 24px per bar slot (bar + gap) — chart is only as wide as the data needs
-    const barSlot = 24
-    const width = margin.left + margin.right + data.length * barSlot
     const height = 100
+    const drawableW = Math.max(1, width - margin.left - margin.right)
+
+    // Merge consecutive months into buckets so the bars fill the width without scrolling.
+    const MIN_SLOT = 18
+    const maxBars = Math.max(1, Math.floor(drawableW / MIN_SLOT))
+    const groupSize = Math.max(1, Math.ceil(data.length / maxBars))
+    const buckets: { key: string; startYear: number; startMonth: number; endYear: number; endMonth: number; count: number }[] = []
+    for (let i = 0; i < data.length; i += groupSize) {
+      const grp = data.slice(i, i + groupSize)
+      const first = grp[0]
+      const last = grp[grp.length - 1]
+      buckets.push({
+        key: `${first.year}-${first.month}-${i}`,
+        startYear: first.year,
+        startMonth: first.month,
+        endYear: last.year,
+        endMonth: last.month,
+        count: grp.reduce((s, d) => s + d.count, 0),
+      })
+    }
 
     const x = d3.scaleBand()
-      .domain(data.map((d) => `${d.year}-${d.month}`))
+      .domain(buckets.map((b) => b.key))
       .range([margin.left, width - margin.right])
-      .padding(0.35)
+      .padding(0.3)
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(data, (d) => d.count) ?? 1])
+      .domain([0, d3.max(buckets, (b) => b.count) ?? 1])
       .nice()
       .range([height - margin.bottom, margin.top])
 
     svg.attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('preserveAspectRatio', 'xMinYMin meet')
       .style('width', `${width}px`)
-      .style('max-width', '100%')
       .style('height', '100px')
 
     svg.selectAll('rect.bar')
-      .data(data)
+      .data(buckets)
       .join('rect')
       .attr('class', 'bar')
-      .attr('x', (d) => x(`${d.year}-${d.month}`) ?? 0)
-      .attr('y', (d) => y(d.count))
+      .attr('x', (b) => x(b.key) ?? 0)
+      .attr('y', (b) => y(b.count))
       .attr('width', x.bandwidth())
-      .attr('height', (d) => y(0) - y(d.count))
+      .attr('height', (b) => y(0) - y(b.count))
       .attr('fill', 'var(--color-primary)')
       .attr('opacity', 0.6)
       .attr('rx', 1)
       .style('cursor', 'default')
-      .on('mouseenter', function (_event, d) {
+      .on('mouseenter', function (_event, b) {
         d3.select(this).attr('opacity', 1)
-        const container = containerRef.current
-        if (!container) return
         const barRect = (this as SVGRectElement).getBoundingClientRect()
+        const label = groupSize === 1
+          ? `${MONTH_NAMES[b.startMonth - 1]} ${b.startYear}`
+          : `${MONTH_NAMES[b.startMonth - 1]} ${b.startYear} – ${MONTH_NAMES[b.endMonth - 1]} ${b.endYear}`
         setTip({
           x: barRect.left + barRect.width / 2,
           y: barRect.top - 6,
-          label: `${MONTH_NAMES[d.month - 1]} ${d.year}`,
-          count: d.count,
+          label,
+          count: b.count,
         })
       })
       .on('mouseleave', function () {
@@ -310,16 +338,23 @@ function ActivityChart({ data }: { data: GameCount[] }) {
         setTip(null)
       })
 
-    const yearLabels = new Map<number, string>()
-    data.forEach((d) => {
-      if (!yearLabels.has(d.year)) yearLabels.set(d.year, `${d.year}-${d.month}`)
-    })
+    const yearTicks: string[] = []
+    const yearOf = new Map<string, number>()
+    let lastYear: number | null = null
+    for (const b of buckets) {
+      yearOf.set(b.key, b.startYear)
+      if (b.startYear !== lastYear) {
+        yearTicks.push(b.key)
+        lastYear = b.startYear
+      }
+    }
+
     svg.append('g')
       .attr('transform', `translate(0,${height - margin.bottom})`)
       .call(
         d3.axisBottom(x)
-          .tickValues([...yearLabels.values()])
-          .tickFormat((d) => String(d).split('-')[0]),
+          .tickValues(yearTicks)
+          .tickFormat((d) => String(yearOf.get(String(d)) ?? '')),
       )
       .call((g) => g.select('.domain').remove())
       .call((g) => g.selectAll('text')
@@ -339,7 +374,7 @@ function ActivityChart({ data }: { data: GameCount[] }) {
       .call((g) => g.selectAll('line')
         .attr('stroke', 'var(--color-border)')
         .attr('stroke-opacity', 0.3))
-  }, [data])
+  }, [data, width])
 
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
