@@ -213,6 +213,25 @@ const glossary: GlossaryEntry[] = [
       'Recency \u2014 whether they still play it (share of games in the last 18 months). Zero for a retired player\u2019s old heroes is expected, not missing data.',
     ],
   },
+
+  // \u2500\u2500 Teams \u2500\u2500
+  {
+    id: 'highground-scenarios',
+    term: 'Highground Scenarios',
+    section: 'Teams',
+    summary: 'The build-up to the first Tier-3 (highground) break of each game \u2014 leads, buybacks, aegis, fights and barracks conversion.',
+    detail:
+      'For every game we find the first Tier-3 tower break (the first highground break), identify the team that took it (the \u201ctaker\u201d), and sample the game state at the break and each minute back to five minutes prior (T\u22120 \u2026 T\u2212300). Each sample records interpolated net-worth / kill / XP leads, how many heroes on each side are buyback-ready, who holds the Aegis, and the tower / barracks state. We also count teamfights won and aegis pickups inside that five-minute window, flag whether breaking the T3 converted into that lane\u2019s ranged and melee barracks within 1, 2 or 3 minutes, and record whether the taker went on to win the game. Filter by the usual patch / tier / league / time scope, or by teams to see only games where a given team broke highground first.',
+    bullets: [
+      'Taker / Defender \u2014 the team that broke the first T3, and the team defending it.',
+      'Break time \u2014 game clock of the first highground break.',
+      'NW / Kill lead \u2014 the taker\u2019s net-worth and kill lead at the break (and each minute back to T\u2212300).',
+      'Buyback-ready & Aegis \u2014 buyback-ready hero counts and aegis possession at the break.',
+      'Fights won \u2014 teamfights the taker won of those in the 5-minute window, plus aegis pickups.',
+      'Rax conversion \u2014 whether the break turned into the lane\u2019s ranged / melee barracks within 1, 2 or 3 minutes.',
+      'Taker won \u2014 whether the team that broke highground first went on to win the game.',
+    ],
+  },
 ]
 
 export default glossary

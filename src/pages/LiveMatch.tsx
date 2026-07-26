@@ -6,7 +6,7 @@ import { useNoIndex } from '../hooks/useNoIndex'
 import { heroesById } from '../data/heroes'
 import { items as itemsData } from '../data/items'
 import { heroImageUrl, itemImageUrl, teamLogoUrl, leagueLogoUrl } from '../config'
-import { formatDuration, type DraftStep, phaseForIndex } from '../lib/live'
+import { formatDuration, buildDraftSequence } from '../lib/live'
 import LiveMinimap, { type MinimapHero, type MinimapBuilding } from '../components/LiveMinimap'
 import LiveDraftView from '../components/LiveDraft'
 import EnigmaLoader from '../components/EnigmaLoader'
@@ -419,74 +419,16 @@ function LivePlayerRow({ p, playerName }: { p: LiveScoreboardPlayer; playerName:
 
 /* ── Draft strip ────────────────────────────────────────── */
 
-/**
- * Captain's Mode draft order (24 actions = 14 bans + 10 picks).
- * 'first' = team with first pick, 'second' = the other.
- *
- * 1st ban phase  (7): A A B B A B B
- * 1st pick phase (2): A B
- * 2nd ban phase  (3): A A B
- * 2nd pick phase (6): B A A B B A
- * 3rd ban phase  (4): A B A B
- * 3rd pick phase (2): A B
- */
-const CM_SEQUENCE: { team: 'first' | 'second'; action: 'ban' | 'pick' }[] = [
-  { team: 'first', action: 'ban' },
-  { team: 'first', action: 'ban' },
-  { team: 'second', action: 'ban' },
-  { team: 'second', action: 'ban' },
-  { team: 'first', action: 'ban' },
-  { team: 'second', action: 'ban' },
-  { team: 'second', action: 'ban' },
-  { team: 'first', action: 'pick' },
-  { team: 'second', action: 'pick' },
-  { team: 'first', action: 'ban' },
-  { team: 'first', action: 'ban' },
-  { team: 'second', action: 'ban' },
-  { team: 'second', action: 'pick' },
-  { team: 'first', action: 'pick' },
-  { team: 'first', action: 'pick' },
-  { team: 'second', action: 'pick' },
-  { team: 'second', action: 'pick' },
-  { team: 'first', action: 'pick' },
-  { team: 'first', action: 'ban' },
-  { team: 'second', action: 'ban' },
-  { team: 'first', action: 'ban' },
-  { team: 'second', action: 'ban' },
-  { team: 'first', action: 'pick' },
-  { team: 'second', action: 'pick' },
-]
-
-function buildDraftSequence(
-  radiant: { picks: LivePickBan[]; bans: LivePickBan[] },
-  dire: { picks: LivePickBan[]; bans: LivePickBan[] },
-  firstPick: 'radiant' | 'dire',
-): DraftStep[] {
-  const cursors = {
-    radiant: { ban: 0, pick: 0 },
-    dire: { ban: 0, pick: 0 },
-  }
-  const result: DraftStep[] = []
-  for (let i = 0; i < CM_SEQUENCE.length; i++) {
-    const step = CM_SEQUENCE[i]
-    const side: 'radiant' | 'dire' =
-      step.team === 'first' ? firstPick : firstPick === 'radiant' ? 'dire' : 'radiant'
-    const teamData = side === 'radiant' ? radiant : dire
-    const arr = (step.action === 'ban' ? teamData.bans : teamData.picks) ?? []
-    const cursor = cursors[side][step.action]
-    const heroId = arr[cursor]?.hero_id ?? null
-    cursors[side][step.action]++
-    result.push({ order: i + 1, side, action: step.action, heroId, phase: phaseForIndex(i) })
-  }
-  return result
-}
-
 function DraftStrip({ data }: { data: LiveMatchData }) {
   const [firstPick, setFirstPick] = useState<'radiant' | 'dire'>('radiant')
   const r = data.scoreboard.radiant
   const d = data.scoreboard.dire
   const sequence = useMemo(
-    () => buildDraftSequence(r, d, firstPick),
+    () => buildDraftSequence(
+      { picks: r.picks.map((p) => p.hero_id), bans: r.bans.map((b) => b.hero_id) },
+      { picks: d.picks.map((p) => p.hero_id), bans: d.bans.map((b) => b.hero_id) },
+      firstPick,
+    ),
     [r, d, firstPick],
   )
 

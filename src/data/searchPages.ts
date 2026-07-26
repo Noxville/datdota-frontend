@@ -41,6 +41,7 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Team Throws', path: '/teams/throws?default=true', keywords: ['team', 'throw', 'choke'] },
   { label: 'Team Comebacks', path: '/teams/comebacks?default=true', keywords: ['team', 'comeback'] },
   { label: 'Team Series Outcomes', path: '/teams/series-outcomes?default=true', keywords: ['team', 'series', 'outcome', 'bo3', 'bo5', 'sweep', 'reverse'] },
+  { label: 'Highground Scenarios', path: '/teams/highground-scenarios?default=true', keywords: ['highground', 'high ground', 'tier 3', 't3', 'break', 'barracks', 'rax', 'aegis', 'buyback'] },
 
   // Matches
   { label: 'Recent Matches', path: '/matches', keywords: ['match', 'recent', 'games'] },

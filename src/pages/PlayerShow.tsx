@@ -675,12 +675,14 @@ export default function PlayerShow() {
     )
   }, [player?.stints])
 
-  const notFound = !isLoading && (!!error || !player)
+  // The API returns an empty object for unknown players with no tracked games.
+  const hasData = !!player && player.totalGames != null
+  const notFound = !isLoading && (!!error || !hasData)
   useNoIndex(notFound)
 
   if (isLoading) return <div className={styles.page}><EnigmaLoader text="Loading player..." /></div>
 
-  if (error || !player) {
+  if (error || !hasData) {
     return (
       <div className={styles.page}>
         <ErrorState

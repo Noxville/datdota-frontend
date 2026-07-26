@@ -35,6 +35,8 @@ interface WebApiLiveGame {
   matchId: number
   tier: number
   leagueId?: number
+  league?: string | null
+  tournament?: string | null
   leagueName?: string | null
   radiant: string | null
   dire: string | null
@@ -58,6 +60,23 @@ interface ExtLiveGame {
   teams: string[]
 }
 
+interface GcLiveGame {
+  matchId: number
+  serverSteamId: string
+  league?: string | null
+  leagueId?: number
+  tier: number
+  radiant: string | null
+  dire: string | null
+  radiantScore: number | null
+  direScore: number | null
+  gameTime: number | null
+  radiantLead?: number | null
+  gameState?: number
+  spectators?: number | null
+  hasStats?: boolean
+}
+
 // Shape not yet finalised server-side; handle either matchId- or uuid-keyed entries.
 interface GsiLiveGame {
   matchId?: number
@@ -73,6 +92,7 @@ interface GsiLiveGame {
 interface LiveGames {
   webapi: WebApiLiveGame[]
   ext: ExtLiveGame[]
+  gc: GcLiveGame[]
   gsi: GsiLiveGame[]
 }
 
@@ -121,7 +141,6 @@ interface HomeCounts {
 
 interface HomeData {
   recentGames: RecentGame[]
-  liveGames: LiveGames
   heroCount: HeroCount[]
   topTeams: TopTeam[]
   activeLeagues: ActiveLeague[]
@@ -150,6 +169,7 @@ function weekToDate(year: number, week: number): Date {
 }
 
 const POLL_INTERVAL = 60_000
+const LIVE_POLL_INTERVAL = 30_000
 
 /* ── Page ───────────────────────────────────────────────── */
 
@@ -159,6 +179,13 @@ export default function Home() {
     queryFn: () => apiFetch<HomeData>('/api/home'),
     staleTime: 30_000,
     refetchInterval: POLL_INTERVAL,
+  })
+
+  const { data: liveData } = useQuery<{ data: LiveGames }>({
+    queryKey: ['api', '/api/livegames'],
+    queryFn: () => apiFetch<{ data: LiveGames }>('/api/livegames'),
+    staleTime: 10_000,
+    refetchInterval: LIVE_POLL_INTERVAL,
   })
 
   if (!data) return null
@@ -173,7 +200,7 @@ export default function Home() {
       <div className={styles.mainGrid}>
         {/* Left column: live games + recent matches + active leagues */}
         <div>
-          <LiveBanner games={data.liveGames} />
+          <LiveBanner games={liveData?.data} />
           <RecentGames games={data.recentGames} />
           <div style={{ marginTop: 'var(--space-lg)' }}>
             <ActiveLeagues leagues={data.activeLeagues} />
@@ -221,9 +248,12 @@ function CountsBar({ counts }: { counts: HomeCounts }) {
 
 /* ── Live games (paginated, 2 at a time) ────────────────── */
 
-const LIVE_PAGE_SIZE = 2
+const LIVE_PAGE_SIZE = 4
 
-type LiveSource = 'webapi' | 'ext' | 'gsi'
+type LiveSource = 'webapi' | 'ext' | 'gc' | 'gsi'
+
+// gc source scope: tier ≤ 3.
+const GC_MAX_TIER = 3
 
 interface LiveCard {
   key: string
@@ -240,6 +270,7 @@ interface LiveCard {
 const SOURCE_BADGE: Record<LiveSource, string> = {
   webapi: styles.srcWebapi,
   ext: styles.srcExt,
+  gc: styles.srcGc,
   gsi: styles.srcGsi,
 }
 
@@ -268,7 +299,7 @@ function normalizeWebApi(g: WebApiLiveGame, source: LiveSource): LiveCard | null
     radiantScore: g.radiantScore ?? null,
     direScore: g.direScore ?? null,
     duration: g.duration ?? null,
-    meta: g.leagueName ?? undefined,
+    meta: g.league ?? g.leagueName ?? g.tournament ?? undefined,
   }
 }
 
@@ -284,6 +315,21 @@ function normalizeExt(g: ExtLiveGame): LiveCard {
     direScore: g.score?.[1]?.score ?? null,
     duration: g.clock ?? null,
     meta: `Game ${g.gameNumber} · ${formatSeriesType(g.format)}`,
+  }
+}
+
+function normalizeGc(g: GcLiveGame): LiveCard | null {
+  if (g.tier > GC_MAX_TIER) return null
+  return {
+    key: `gc-${g.matchId}`,
+    source: 'gc',
+    href: `/livematches/gc/${g.matchId}`,
+    radiantName: teamName(g.radiant),
+    direName: teamName(g.dire),
+    radiantScore: g.radiantScore ?? null,
+    direScore: g.direScore ?? null,
+    duration: g.gameTime ?? null,
+    meta: g.league ?? undefined,
   }
 }
 
@@ -306,21 +352,23 @@ function normalizeGsi(g: GsiLiveGame): LiveCard | null {
   return null
 }
 
-function normalizeLive(games: LiveGames): LiveCard[] {
+function normalizeLive(games: LiveGames | undefined): LiveCard[] {
+  if (!games) return []
   const cards: LiveCard[] = [
     ...(games.ext ?? []).map(normalizeExt),
+    ...(games.gc ?? []).map(normalizeGc).filter((c): c is LiveCard => c !== null),
     ...(games.gsi ?? []).map(normalizeGsi).filter((c): c is LiveCard => c !== null),
     ...(games.webapi ?? [])
       .map((g) => normalizeWebApi(g, 'webapi'))
       .filter((c): c is LiveCard => c !== null),
   ]
-  const order: Record<LiveSource, number> = { ext: 0, gsi: 1, webapi: 2 }
+  const order: Record<LiveSource, number> = { ext: 0, gc: 1, gsi: 2, webapi: 3 }
   return cards.sort(
     (a, b) => order[a.source] - order[b.source] || (b.duration ?? -Infinity) - (a.duration ?? -Infinity),
   )
 }
 
-function LiveBanner({ games }: { games: LiveGames }) {
+function LiveBanner({ games }: { games: LiveGames | undefined }) {
   const [page, setPage] = useState(0)
 
   const liveList = useMemo(() => normalizeLive(games), [games])
@@ -463,10 +511,10 @@ function winRateColor(pct: number): string {
 }
 
 function TopTeams({ teams }: { teams: TopTeam[] }) {
-  const top16 = teams.slice(0, 16)
+  const top20 = teams.slice(0, 20)
   const currentPatch = patches[0]?.name ?? ''
   const h2hHref =
-    `/teams/h2h-cross-section?teams=${top16.map((t) => t.valveId).join(',')}` +
+    `/teams/h2h-cross-section?teams=${top20.map((t) => t.valveId).join(',')}` +
     `&tier=1,2&threshold=1${currentPatch ? `&patch=${encodeURIComponent(currentPatch)}` : ''}`
   return (
     <div>
@@ -478,7 +526,7 @@ function TopTeams({ teams }: { teams: TopTeam[] }) {
         </span>
       </div>
       <div className={styles.teamsList}>
-        {top16.map((t, i) => {
+        {top20.map((t, i) => {
           const games = t.wins + t.losses
           const pct = games > 0 ? Math.round((t.wins / games) * 100) : null
           return (

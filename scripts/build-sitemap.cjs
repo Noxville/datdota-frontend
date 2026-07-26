@@ -59,6 +59,7 @@ const STATIC_ROUTES = [
   '/teams/map-control',
   '/teams/identity',
   '/teams/series-outcomes',
+  '/teams/highground-scenarios',
   // Matches (excluding /matches and /matches/:id — disallowed)
   '/matches/finder',
   '/matches/durations',
