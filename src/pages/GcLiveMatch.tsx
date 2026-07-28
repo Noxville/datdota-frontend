@@ -338,10 +338,10 @@ function GcScoreboardTable({ team, label, advantage }: { team: GcRawTeam; label:
             </tr>
           </thead>
           <tbody>
-            {team.players.map((p) => <GcPlayerRow key={p.accountid} p={p} />)}
+            {(team.players ?? []).map((p) => <GcPlayerRow key={p.accountid} p={p} />)}
           </tbody>
           <tfoot>
-            <GcTotalsRow players={team.players} />
+            <GcTotalsRow players={team.players ?? []} />
           </tfoot>
         </table>
       </div>
@@ -419,9 +419,10 @@ export default function GcLiveMatch() {
   const { data, status } = useGcStream(matchId)
 
   const draftSteps = useMemo(() => {
-    if (!data) return []
-    const picks = data.raw.match?.picks ?? []
-    const bans = data.raw.match?.bans ?? []
+    const match = data?.raw?.match
+    if (!match) return []
+    const picks = match.picks ?? []
+    const bans = match.bans ?? []
     if (picks.length === 0 && bans.length === 0) return []
     const bySide = (side: 'radiant' | 'dire') => ({
       picks: picks.filter((x) => sideOf(x.team) === side).map((x) => x.hero),
@@ -432,13 +433,13 @@ export default function GcLiveMatch() {
     return buildDraftSequence(bySide('radiant'), bySide('dire'), firstPick)
   }, [data])
 
-  if (!data) {
+  if (!data || !data.summary || !data.stats) {
     return <EnigmaLoader text={status === 'ended' ? 'Match has ended.' : 'Connecting to live stream...'} />
   }
 
   const { summary, stats, raw } = data
-  const radiant = raw.teams?.find((t) => t.team_number === 2)
-  const dire = raw.teams?.find((t) => t.team_number === 3)
+  const radiant = raw?.teams?.find((t) => t.team_number === 2)
+  const dire = raw?.teams?.find((t) => t.team_number === 3)
   const radiantName = radiant?.team_name || summary.radiant || 'Radiant'
   const direName = dire?.team_name || summary.dire || 'Dire'
   const radiantAdvantage = stats.radiantLead ?? ((radiant?.net_worth ?? 0) - (dire?.net_worth ?? 0))
@@ -504,21 +505,27 @@ export default function GcLiveMatch() {
       </div>
 
       {/* 2-column: map (40%) · teams (60%) */}
-      <div className={styles.liveGrid}>
-        <div className={styles.mapCol}>
-          <div className={shared.section}>
-            <div className={shared.sectionTitle}>Map</div>
-            <div className={styles.mapSize}>
-              <GcMapView raw={raw} />
+      {raw ? (
+        <div className={styles.liveGrid}>
+          <div className={styles.mapCol}>
+            <div className={shared.section}>
+              <div className={shared.sectionTitle}>Map</div>
+              <div className={styles.mapSize}>
+                <GcMapView raw={raw} />
+              </div>
+              <GoldGraph series={raw.graph_data?.graph_gold ?? []} gameTime={stats.gameTime} />
             </div>
-            <GoldGraph series={raw.graph_data?.graph_gold ?? []} gameTime={stats.gameTime} />
+          </div>
+          <div className={styles.teamsCol}>
+            {radiant && <GcScoreboardTable team={radiant} label="Radiant" advantage={radiantAdvantage} />}
+            {dire && <GcScoreboardTable team={dire} label="Dire" advantage={-radiantAdvantage} />}
           </div>
         </div>
-        <div className={styles.teamsCol}>
-          {radiant && <GcScoreboardTable team={radiant} label="Radiant" advantage={radiantAdvantage} />}
-          {dire && <GcScoreboardTable team={dire} label="Dire" advantage={-radiantAdvantage} />}
+      ) : (
+        <div className={shared.section} style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: 'var(--space-lg)' }}>
+          Waiting for in-game data — the match is still in the draft / loading.
         </div>
-      </div>
+      )}
 
       {/* Draft */}
       {draftSteps.length > 0 && (
