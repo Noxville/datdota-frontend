@@ -22,7 +22,7 @@ interface TooltipState {
   flipped: boolean
 }
 
-const GRID_SIZE = 60
+const GRID_SIZE = 61 // scores 0..60
 const CELL_SIZE = 12
 const CELL_GAP = 1
 const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 }
@@ -142,7 +142,7 @@ function ScorigamiGrid({ entries }: { entries: ScorigamiEntry[] }) {
         {/* X axis tick labels */}
         {Array.from({ length: GRID_SIZE }, (_, i) => {
           const x = MARGIN.left + i * step + CELL_SIZE / 2
-          const label = i + 1
+          const label = i
           return (
             <text
               key={`x-${i}`}
@@ -153,14 +153,14 @@ function ScorigamiGrid({ entries }: { entries: ScorigamiEntry[] }) {
               fontFamily="var(--font-body)"
               fontSize="8"
             >
-              {label % 5 === 0 || label === 1 ? label : ''}
+              {label % 5 === 0 ? label : ''}
             </text>
           )
         })}
         {/* Y axis tick labels */}
         {Array.from({ length: GRID_SIZE }, (_, i) => {
           const y = MARGIN.top + i * step + CELL_SIZE / 2
-          const label = i + 1
+          const label = i
           return (
             <text
               key={`y-${i}`}
@@ -172,15 +172,15 @@ function ScorigamiGrid({ entries }: { entries: ScorigamiEntry[] }) {
               fontFamily="var(--font-body)"
               fontSize="8"
             >
-              {label % 5 === 0 || label === 1 ? label : ''}
+              {label % 5 === 0 ? label : ''}
             </text>
           )
         })}
         {/* Grid cells */}
         {Array.from({ length: GRID_SIZE }, (_, radiantIdx) =>
           Array.from({ length: GRID_SIZE }, (_, direIdx) => {
-            const radiant = radiantIdx + 1
-            const dire = direIdx + 1
+            const radiant = radiantIdx
+            const dire = direIdx
             const count = countMap.get(`${radiant}-${dire}`) ?? 0
             const x = MARGIN.left + radiantIdx * step
             const y = MARGIN.top + direIdx * step
