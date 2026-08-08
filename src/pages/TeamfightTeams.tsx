@@ -10,6 +10,7 @@ import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
 import styles from './PlayerPerformances.module.css'
 import toggleStyles from './PlayerSquads.module.css'
+import { TEAMFIGHT_TYPE_COLORS } from '../data/teamfightTypes'
 
 /* ── Types ──────────────────────────────────────────────── */
 
@@ -59,12 +60,6 @@ const FIGHT_TYPES = [
 
 const TIME_BUCKETS = ['< 10', '10-20', '20-30', '30-40', '40+'] as const
 
-const FIGHT_TYPE_COLORS: Record<string, string> = {
-  BATTLE: '#e8a838',
-  SKIRMISH: '#60a5fa',
-  GANK: '#f472b6',
-  SOLO: '#a78bfa',
-}
 
 /* ── Hash-based fight type selector ────────────────────── */
 
@@ -342,7 +337,7 @@ export default function TeamfightTeams() {
               className={`${toggleStyles.toggleBtn} ${active ? toggleStyles.toggleActive : ''}`}
               title={ft.tip}
             >
-              <span style={{ color: active ? FIGHT_TYPE_COLORS[ft.id] : undefined }}>{ft.label}</span>
+              <span style={{ color: active ? TEAMFIGHT_TYPE_COLORS[ft.id] : undefined }}>{ft.label}</span>
             </button>
           )
         })}

@@ -13,6 +13,7 @@ import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
 import GlossaryTooltip from '../components/GlossaryTooltip'
 import PageMeta from '../components/PageMeta'
+import MatchTimeline from './MatchTimeline'
 import styles from './MatchShow.module.css'
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -1476,6 +1477,20 @@ export default function MatchShow() {
         showAbilities={abilities}
       />
 
+      {/* Timeline (win probability / net worth) */}
+      {id && (
+        <MatchTimeline
+          matchId={id}
+          heroPlayers={new Map([
+            ...match.radiant.player_performances.map((pp) => [pp.performance.hero.valve_id, pp.player.nickname] as const),
+            ...match.dire.player_performances.map((pp) => [pp.performance.hero.valve_id, pp.player.nickname] as const),
+          ])}
+        />
+      )}
+
+      {/* Map Control & Networth chart */}
+      <MapControlChart frames={match.frames} mapControl={match.map_control} />
+
       {/* Laning Phase */}
       {laning && laning.players.length > 0 && (
         <LaningSection
@@ -1486,9 +1501,6 @@ export default function MatchShow() {
           ])}
         />
       )}
-
-      {/* Map Control & Networth chart */}
-      <MapControlChart frames={match.frames} mapControl={match.map_control} />
 
       {/* Casters */}
       {match.channels.length > 0 && (

@@ -214,6 +214,22 @@ const glossary: GlossaryEntry[] = [
     ],
   },
 
+  // \u2500\u2500 Matches \u2500\u2500
+  {
+    id: 'teamfight-types',
+    term: 'Teamfight Types',
+    section: 'Matches',
+    summary: 'Teamfights are classified by how many heroes each side committed: Solo, Gank, Skirmish or Battle.',
+    detail:
+      'Every teamfight is bucketed by the number of heroes each team had involved \u2014 taking the smaller and larger of the two side counts. This captures the character of the fight, from a lane 1v1 up to a full five-man clash. On the match timeline each type is drawn in its own colour and can be toggled on/off.',
+    bullets: [
+      'Solo \u2014 1v1 (both sides had a single hero involved).',
+      'Gank \u2014 1 vs many (one side caught with a lone hero).',
+      'Skirmish \u2014 a multi-hero fight that isn\u2019t a full clash (fewer than 4-vs-4).',
+      'Battle \u2014 a large fight, at least 4 heroes on each side.',
+    ],
+  },
+
   // \u2500\u2500 Teams \u2500\u2500
   {
     id: 'highground-scenarios',
