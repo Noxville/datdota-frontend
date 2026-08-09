@@ -149,6 +149,7 @@ const router = createBrowserRouter([
       { path: '/leagues', element: lz(() => import('./pages/Leagues')) },
       { path: '/leagues/pedigrees', element: lz(() => import('./pages/LeaguePedigrees')) },
       { path: '/leagues/contested-heroes', element: lz(() => import('./pages/LeagueContestedHeroes')) },
+      { path: '/leagues/preview/:slug', element: lz(() => import('./pages/TournamentPreview')) },
       { path: '/leagues/:id', element: lz(() => import('./pages/LeagueShow')) },
 
       // About & Legal

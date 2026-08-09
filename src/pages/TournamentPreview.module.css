@@ -1,0 +1,478 @@
+.page {
+  animation: fadeUp 350ms ease both;
+}
+
+/* --- Header ------------------------------------------------ */
+.header {
+  margin-bottom: var(--space-xl);
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-sm);
+}
+
+.empty {
+  color: var(--color-text-muted);
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+
+/* --- H2H cross-section ------------------------------------- */
+.crossSection {
+  margin-bottom: var(--space-xl);
+}
+
+.crossTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.crossTop .sectionTitle {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.crossWrap {
+  overflow-x: auto;
+}
+
+.cross {
+  border-collapse: separate;
+  border-spacing: 2px;
+  table-layout: fixed;
+  font-family: var(--font-mono);
+}
+
+.crossCorner {
+  width: var(--rowhead);
+}
+
+.crossColHead {
+  width: var(--cell);
+  padding: 0 0 6px;
+  vertical-align: bottom;
+}
+
+.colHeadLink {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.crossRowHead {
+  width: var(--rowhead);
+  max-width: var(--rowhead);
+  padding: 0 10px 0 0;
+}
+
+.crossRowHeadInner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.crossRowHeadInner:hover .crossTeamLink {
+  color: var(--color-primary);
+}
+
+.crossLogo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.crossTeamLink {
+  color: var(--color-accent-bright);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crossTd,
+.crossDiag,
+.crossEmpty {
+  width: var(--cell);
+  height: 34px;
+  padding: 0;
+}
+
+.crossDiag {
+  background: var(--color-bg);
+  border-radius: 2px;
+}
+
+.crossEmpty {
+  background: rgba(30, 30, 56, 0.35);
+  border-radius: 2px;
+}
+
+.crossCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  color: #fff;
+  text-decoration: none;
+  line-height: 1.05;
+}
+
+.crossCell:hover {
+  outline: 1.5px solid #fff;
+  outline-offset: -1.5px;
+}
+
+.cellWl {
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.cellPct {
+  font-size: 0.62rem;
+  opacity: 0.85;
+}
+
+/* --- Team grid --------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.card {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* --- Card header ------------------------------------------- */
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.cardIdentity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.cardLogo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.teamName {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 1.25rem;
+  color: var(--color-text);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.teamName:hover {
+  color: var(--color-primary);
+}
+
+.aka {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+.glicko {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.glickoValue {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  color: var(--color-accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.glickoLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+}
+
+/* --- Records ----------------------------------------------- */
+.records {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.recordChip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+}
+
+.recordContext {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.recordWl {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.recordSep {
+  color: var(--color-text-muted);
+  margin: 0 2px;
+}
+
+.recordWr {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--color-text-secondary);
+}
+
+.win {
+  color: var(--color-win);
+  font-weight: 600;
+}
+
+.loss {
+  color: var(--color-loss);
+  font-weight: 600;
+}
+
+/* --- Sections ---------------------------------------------- */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-dim);
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.predictedTag {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+}
+
+/* --- Highlights -------------------------------------------- */
+.highlights,
+.playerHighlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.highlight {
+  border-left: 2px solid rgba(196, 139, 196, var(--accent-a, 0.5));
+  padding: 2px 0 2px 10px;
+}
+
+.highlightHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: 2px;
+}
+
+.highlightLabel {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+}
+
+.highlightContext {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--color-text-muted);
+}
+
+.highlightText {
+  font-size: 0.8rem;
+  color: var(--color-text);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.heroIcons {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.heroIcon {
+  height: 22px;
+  width: auto;
+  border-radius: 2px;
+}
+
+.milestoneBar {
+  margin-top: 6px;
+  height: 4px;
+  background: var(--color-bg-raised);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.milestoneFill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary-dim), var(--color-accent-bright));
+}
+
+/* --- Players ----------------------------------------------- */
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.playerHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.playerName {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-accent-bright);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.playerName:hover {
+  color: var(--color-primary);
+}
+
+.playerStats {
+  display: flex;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.playerStat {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.playerStatUnit {
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.playerHighlights {
+  padding-left: var(--space-sm);
+}
+
+/* --- Mobile ------------------------------------------------ */
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.75rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .playerHead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+}

@@ -99,6 +99,7 @@ const NAV_ITEMS: NavItem[] = [
         heading: 'Leagues',
         items: [
           { label: 'All Leagues', to: '/leagues' },
+          { label: 'TI2026 Preview', to: '/leagues/preview/ti-2026' },
           { label: 'LAN Event Pedigrees', to: '/leagues/pedigrees' },
           { label: 'Contested Heroes', to: '/leagues/contested-heroes' },
         ],
