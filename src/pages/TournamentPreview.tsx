@@ -175,24 +175,6 @@ function cellColor(wr: number): string {
   return '#1e1e38'
 }
 
-/** Match-finder query params that reproduce a context's time window. */
-function finderParamsForContext(key: string, label: string): Record<string, string> {
-  if (key === 'PATCH') {
-    const m = label.match(/(\d+\.\d+[a-z]?)/i)
-    return m ? { patch: m[1] } : {}
-  }
-  if (key === 'SEASON') {
-    const m = label.match(/(\d{4}-\d{2}-\d{2})/)
-    return m ? { after: m[1] } : {}
-  }
-  if (key === 'LAST_3_MONTHS') {
-    const d = new Date()
-    d.setMonth(d.getMonth() - 3)
-    return { after: d.toISOString().slice(0, 10) }
-  }
-  return {}
-}
-
 const H2H_ROW_HEAD_W = 168
 
 function useElementWidth(ref: React.RefObject<HTMLElement | null>): number {
@@ -238,7 +220,7 @@ function H2HCrossSection({
 
   const matrix = headToHead.matrix[activeCtx] ?? {}
   const cell = Math.max(44, Math.min(72, Math.floor(((width || 900) - H2H_ROW_HEAD_W) / n)))
-  const ctxParams = finderParamsForContext(activeCtx, contextLabel(activeCtx))
+  const today = new Date().toISOString().slice(0, 10)
 
   const cellData = (rowId: number, colId: number): H2HRecord | null => {
     const direct = matrix[rowId]?.[colId]
@@ -248,15 +230,13 @@ function H2HCrossSection({
     return null
   }
 
-  const finderHref = (rowId: number, colId: number): string => {
+  const h2hHref = (rowId: number, colId: number): string => {
     const params = new URLSearchParams({
       'team-a': String(rowId),
       'team-b': String(colId),
-      tier: '1,2,3',
-      threshold: '1',
-      ...ctxParams,
+      before: today,
     })
-    return `/matches/finder?${params.toString()}`
+    return `/teams/head-to-head?${params.toString()}`
   }
 
   return (
@@ -345,7 +325,7 @@ function H2HCrossSection({
                     <td key={colT.valveId} className={styles.crossTd}>
                       <a
                         className={styles.crossCell}
-                        href={finderHref(rowT.valveId, colT.valveId)}
+                        href={h2hHref(rowT.valveId, colT.valveId)}
                         target="_blank"
                         rel="noreferrer"
                         style={{ background: cellColor(wr) }}
@@ -421,13 +401,20 @@ function HighlightRow({ h, contextLabel }: { h: Highlight; contextLabel: (k: str
 
 /* ── Team card ──────────────────────────────────────────── */
 
-function TeamCard({ team, contextLabel }: { team: Team; contextLabel: (k: string) => string }) {
+function TeamCard({
+  team,
+  contextKeys,
+  contextLabel,
+}: {
+  team: Team
+  contextKeys: string[]
+  contextLabel: (k: string) => string
+}) {
   const glicko = team.commonStats.find(isGlicko)
-  const records = useMemo(() => {
-    const recs = team.commonStats.filter(isRecord)
-    return [...recs].sort(
-      (a, b) => CONTEXT_ORDER.indexOf(a.context) - CONTEXT_ORDER.indexOf(b.context),
-    )
+  const recordByCtx = useMemo(() => {
+    const m = new Map<string, RecordStat>()
+    for (const s of team.commonStats) if (isRecord(s)) m.set(s.context, s)
+    return m
   }, [team.commonStats])
 
   for (const s of team.commonStats) {
@@ -463,19 +450,24 @@ function TeamCard({ team, contextLabel }: { team: Team; contextLabel: (k: string
         )}
       </header>
 
-      {records.length > 0 && (
+      {contextKeys.length > 0 && (
         <div className={styles.records}>
-          {records.map((r) => {
-            const ctx = splitLabel(contextLabel(r.context))
+          {contextKeys.map((ctxKey) => {
+            const r = recordByCtx.get(ctxKey)
+            const wins = r?.wins ?? 0
+            const losses = r?.losses ?? 0
+            const games = r?.games ?? 0
+            const wr = games > 0 ? (wins / games) * 100 : null
+            const ctx = splitLabel(contextLabel(ctxKey))
             return (
-              <div key={r.context} className={styles.recordChip}>
+              <div key={ctxKey} className={styles.recordChip}>
                 <span className={styles.recordContext} title={ctx.full}>{ctx.short}</span>
                 <span className={styles.recordWl}>
-                  <span className={styles.win}>{r.wins}</span>
+                  <span className={styles.win}>{wins}</span>
                   <span className={styles.recordSep}>–</span>
-                  <span className={styles.loss}>{r.losses}</span>
+                  <span className={styles.loss}>{losses}</span>
                 </span>
-                <span className={styles.recordWr}>{r.winrate.toFixed(1)}%</span>
+                <span className={styles.recordWr}>{wr != null ? `${wr.toFixed(1)}%` : ' '}</span>
               </div>
             )
           })}
@@ -565,6 +557,11 @@ export default function TournamentPreview() {
     return (key: string) => map.get(key) ?? CONTEXT_SHORT[key] ?? key
   }, [previewContexts])
 
+  const contextKeys = useMemo(
+    () => CONTEXT_ORDER.filter((k) => (previewContexts ?? []).some((c) => c.key === k)),
+    [previewContexts],
+  )
+
   const teams = useMemo(() => {
     if (!previewTeams) return []
     return [...previewTeams].sort((a, b) => {
@@ -622,7 +619,7 @@ export default function TournamentPreview() {
           )}
           <div className={styles.grid}>
             {teams.map((team) => (
-              <TeamCard key={team.valveId} team={team} contextLabel={contextLabel} />
+              <TeamCard key={team.valveId} team={team} contextKeys={contextKeys} contextLabel={contextLabel} />
             ))}
           </div>
         </>

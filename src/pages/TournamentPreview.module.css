@@ -109,7 +109,7 @@
 .crossDiag,
 .crossEmpty {
   width: var(--cell);
-  height: 34px;
+  height: 43px;
   padding: 0;
 }
 
@@ -142,14 +142,15 @@
 }
 
 .cellWl {
-  font-size: 0.82rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
+  opacity: 0.95;
 }
 
 .cellPct {
-  font-size: 0.62rem;
-  opacity: 0.85;
+  font-size: 0.64rem;
+  opacity: 0.78;
 }
 
 /* --- Team grid --------------------------------------------- */
@@ -285,6 +286,7 @@
   font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-text-secondary);
+  min-height: 0.75rem;
 }
 
 .win {
