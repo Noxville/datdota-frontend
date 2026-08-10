@@ -1,7 +1,118 @@
+import { useState } from 'react'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import styles from './Mockups.module.css'
+
+/* ── Font pairings to explore ────────────────────────────────
+   Each keeps a monospace "data" face (the site is data-heavy) but swaps in a
+   display face with more character. All load from Google Fonts except the
+   current pairing, which is self-hosted. To ship one, copy its --display /
+   --body into --font-display / --font-body in styles/global.css. */
+
+interface FontOption {
+  key: string
+  name: string
+  personality: string
+  desc: string
+  display: string
+  body: string
+  displayName: string
+  bodyName: string
+  displayWeight: number
+  bodyWeight: number
+}
+
+const FONT_OPTIONS: FontOption[] = [
+  {
+    key: 'current',
+    name: 'Plus Jakarta Sans',
+    personality: 'Crisp & modern',
+    desc: 'Current pairing. Plus Jakarta Sans 800 + Fira Code 300 — contemporary geometric with generous x-height and open apertures.',
+    display: "'Plus Jakarta Sans', sans-serif",
+    body: "'Fira Code', monospace",
+    displayName: 'Plus Jakarta Sans 800',
+    bodyName: 'Fira Code 300',
+    displayWeight: 800,
+    bodyWeight: 300,
+  },
+  {
+    key: 'grotesk',
+    name: 'Space Grotesk',
+    personality: 'Technical & quirky',
+    desc: 'Space Grotesk 700 + IBM Plex Mono 400 — a proportional grotesk with odd, engineered details paired with IBM’s technical mono.',
+    display: "'Space Grotesk', sans-serif",
+    body: "'IBM Plex Mono', monospace",
+    displayName: 'Space Grotesk 700',
+    bodyName: 'IBM Plex Mono 400',
+    displayWeight: 700,
+    bodyWeight: 400,
+  },
+  {
+    key: 'archivo',
+    name: 'Archivo',
+    personality: 'Bold & engineered',
+    desc: 'Archivo 800 + JetBrains Mono 400 — a sturdy American grotesque with real weight, over a coder’s mono built for dense numerals.',
+    display: "'Archivo', sans-serif",
+    body: "'JetBrains Mono', monospace",
+    displayName: 'Archivo 800',
+    bodyName: 'JetBrains Mono 400',
+    displayWeight: 800,
+    bodyWeight: 400,
+  },
+  {
+    key: 'bricolage',
+    name: 'Bricolage Grotesque',
+    personality: 'Editorial & characterful',
+    desc: 'Bricolage Grotesque 800 + Red Hat Mono 400 — a warm, slightly irregular display face with editorial personality over a clean mono.',
+    display: "'Bricolage Grotesque', sans-serif",
+    body: "'Red Hat Mono', monospace",
+    displayName: 'Bricolage Grotesque 800',
+    bodyName: 'Red Hat Mono 400',
+    displayWeight: 800,
+    bodyWeight: 400,
+  },
+  {
+    key: 'sora',
+    name: 'Sora',
+    personality: 'Geometric & fresh',
+    desc: 'Sora 800 + Spline Sans Mono 400 — a low-contrast geometric sans with quiet quirks, paired with a modern, rounded data mono.',
+    display: "'Sora', sans-serif",
+    body: "'Spline Sans Mono', monospace",
+    displayName: 'Sora 800',
+    bodyName: 'Spline Sans Mono 400',
+    displayWeight: 800,
+    bodyWeight: 400,
+  },
+  {
+    key: 'chivo',
+    name: 'Chivo',
+    personality: 'Unified superfamily',
+    desc: 'Chivo 900 + Chivo Mono 300 — one type family in two flavours: a hard-edged grotesque display over its matching monospace, for total cohesion.',
+    display: "'Chivo', sans-serif",
+    body: "'Chivo Mono', monospace",
+    displayName: 'Chivo 900',
+    bodyName: 'Chivo Mono 300',
+    displayWeight: 900,
+    bodyWeight: 300,
+  },
+]
+
+const GOOGLE_FONTS_URL =
+  'https://fonts.googleapis.com/css2?' +
+  [
+    'family=Space+Grotesk:wght@300..700',
+    'family=IBM+Plex+Mono:wght@300;400;500;600;700',
+    'family=Archivo:wght@300..900',
+    'family=JetBrains+Mono:wght@300..800',
+    'family=Bricolage+Grotesque:opsz,wght@12..96,200..800',
+    'family=Red+Hat+Mono:wght@300..700',
+    'family=Sora:wght@100..800',
+    'family=Spline+Sans+Mono:wght@300..700',
+    'family=Chivo:wght@100..900',
+    'family=Chivo+Mono:wght@100..900',
+  ].join('&') +
+  '&display=swap'
 
 const SAMPLE_HEROES = [
   { name: 'Anti-Mage', games: 1247, wins: 612, winrate: 49.08, picks: 892, bans: 1583 },
@@ -47,37 +158,71 @@ function WinrateBar({ value }: { value: number }) {
 }
 
 export default function Mockups() {
+  const [fontIdx, setFontIdx] = useState(0)
+  const font = FONT_OPTIONS[fontIdx]
+
   return (
     <>
       <PageMeta title="datdota Styleguide" description="datdota design system styleguide and mockup playground." noindex />
+      {/* Load the candidate fonts (Google Fonts) — scoped to this page's use.
+          React 19 hoists these link/style tags into <head>. */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link rel="stylesheet" href={GOOGLE_FONTS_URL} />
       <div
         className={styles.mockups}
         style={
           {
-            '--mock-display': "'Plus Jakarta Sans', sans-serif",
-            '--mock-body': "'Fira Code', monospace",
-            '--mock-display-weight': 800,
-            '--mock-body-weight': 300,
+            '--mock-display': font.display,
+            '--mock-body': font.body,
+            '--mock-display-weight': font.displayWeight,
+            '--mock-body-weight': font.bodyWeight,
           } as React.CSSProperties
         }
       >
+        {/* Font Explorer */}
+        <section className={styles.fontExplorer}>
+          <h3 className={styles.sectionTitle}>Font Explorer</h3>
+          <p className={styles.explorerHint}>
+            Pick a pairing — every sample below updates live. To ship one, copy its display / body
+            into <code>--font-display</code> / <code>--font-body</code> in <code>styles/global.css</code>.
+          </p>
+          <div className={styles.fontOptions}>
+            {FONT_OPTIONS.map((o, i) => (
+              <button
+                key={o.key}
+                type="button"
+                className={`${styles.fontOption} ${i === fontIdx ? styles.fontOptionActive : ''}`}
+                onClick={() => setFontIdx(i)}
+              >
+                <span className={styles.fontOptionName} style={{ fontFamily: o.display, fontWeight: o.displayWeight }}>
+                  {o.name}
+                </span>
+                <span className={styles.fontOptionMeta} style={{ fontFamily: o.body, fontWeight: o.bodyWeight }}>
+                  {o.personality}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* Font Pairing */}
         <div className={styles.pairingInfo}>
           <div className={styles.pairingMeta}>
-            <span className={styles.pairingPersonality}>Crisp &amp; modern</span>
-            <p className={styles.pairingDesc}>Plus Jakarta Sans 800 + Fira Code 300 — Contemporary geometric with generous x-height and open apertures.</p>
+            <span className={styles.pairingPersonality}>{font.personality}</span>
+            <p className={styles.pairingDesc}>{font.desc}</p>
           </div>
           <div className={styles.fontSpecs}>
             <div className={styles.fontSpec}>
               <span className={styles.fontSpecLabel}>Display</span>
-              <span className={styles.fontSpecValue} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800 }}>
-                Plus Jakarta Sans 800
+              <span className={styles.fontSpecValue} style={{ fontFamily: font.display, fontWeight: font.displayWeight }}>
+                {font.displayName}
               </span>
             </div>
             <div className={styles.fontSpec}>
-              <span className={styles.fontSpecLabel}>Body</span>
-              <span className={styles.fontSpecValue} style={{ fontFamily: "'Fira Code', monospace", fontWeight: 300 }}>
-                Fira Code 300
+              <span className={styles.fontSpecLabel}>Body / Data</span>
+              <span className={styles.fontSpecValue} style={{ fontFamily: font.body, fontWeight: font.bodyWeight }}>
+                {font.bodyName}
               </span>
             </div>
           </div>
