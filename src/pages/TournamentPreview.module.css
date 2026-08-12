@@ -113,6 +113,23 @@
   padding: 0;
 }
 
+.crossTotalHead {
+  width: var(--total);
+  padding: 0 0 6px 8px;
+  vertical-align: bottom;
+  text-align: center;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+}
+
+.crossTotalTd {
+  width: var(--total);
+  height: 43px;
+  padding: 0 0 0 8px;
+}
+
 .crossDiag {
   background: var(--color-bg);
   border-radius: 2px;
@@ -169,6 +186,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  scroll-margin-top: calc(var(--nav-height) + var(--space-md));
 }
 
 /* --- Card header ------------------------------------------- */

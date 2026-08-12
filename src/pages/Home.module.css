@@ -184,15 +184,30 @@
   background: rgba(196, 139, 196, 0.04);
 }
 
+.recentSide {
+  width: 100%;
+  min-width: 0;
+}
+
 .recentTeam {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex: 1;
+  min-width: 0;
 }
 
 .recentTeamRight {
   justify-content: flex-end;
   text-align: right;
+}
+
+.recentVs {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  min-width: 14px;
 }
 
 .recentLogo {
@@ -210,26 +225,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.recentNameWin {
-  color: var(--color-primary);
-}
-
-.recentArrowLeft,
-.recentArrowRight {
-  font-size: 0.75rem;
-  line-height: 1;
-  text-align: center;
-  min-width: 14px;
-}
-
-.recentArrowLeft {
-  color: var(--color-win);
-}
-
-.recentArrowRight {
-  color: var(--color-loss);
+  min-width: 0;
 }
 
 .recentDuration {

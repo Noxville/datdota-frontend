@@ -176,6 +176,7 @@ function cellColor(wr: number): string {
 }
 
 const H2H_ROW_HEAD_W = 168
+const H2H_TOTAL_W = 68
 
 function useElementWidth(ref: React.RefObject<HTMLElement | null>): number {
   const [width, setWidth] = useState(0)
@@ -207,6 +208,22 @@ function H2HCrossSection({
     return m
   }, [teams])
 
+  const glickoById = useMemo(() => {
+    const m = new Map<number, number>()
+    for (const t of teams) {
+      const g = t.commonStats.find(isGlicko)
+      if (g && g.value != null) m.set(t.valveId, g.value)
+    }
+    return m
+  }, [teams])
+
+  const order = useMemo(
+    () => [...headToHead.teams].sort(
+      (a, b) => (glickoById.get(b.valveId) ?? -Infinity) - (glickoById.get(a.valveId) ?? -Infinity),
+    ),
+    [headToHead.teams, glickoById],
+  )
+
   const availCtx = useMemo(
     () => CONTEXT_ORDER.filter((k) => headToHead.matrix[k]),
     [headToHead.matrix],
@@ -214,12 +231,11 @@ function H2HCrossSection({
   const [ctx, setCtx] = useState('PATCH')
   const activeCtx = availCtx.includes(ctx) ? ctx : availCtx[0] ?? 'LIFETIME'
 
-  const order = headToHead.teams
   const n = order.length
   if (n < 2) return null
 
   const matrix = headToHead.matrix[activeCtx] ?? {}
-  const cell = Math.max(44, Math.min(72, Math.floor(((width || 900) - H2H_ROW_HEAD_W) / n)))
+  const cell = Math.max(44, Math.min(72, Math.floor(((width || 900) - H2H_ROW_HEAD_W - H2H_TOTAL_W) / n)))
   const today = new Date().toISOString().slice(0, 10)
 
   const cellData = (rowId: number, colId: number): H2HRecord | null => {
@@ -230,6 +246,17 @@ function H2HCrossSection({
     return null
   }
 
+  const rowTotal = (rowId: number): H2HRecord => {
+    let wins = 0
+    let losses = 0
+    for (const colT of order) {
+      if (colT.valveId === rowId) continue
+      const d = cellData(rowId, colT.valveId)
+      if (d) { wins += d.wins; losses += d.losses }
+    }
+    return { games: wins + losses, wins, losses }
+  }
+
   const h2hHref = (rowId: number, colId: number): string => {
     const params = new URLSearchParams({
       'team-a': String(rowId),
@@ -237,6 +264,11 @@ function H2HCrossSection({
       before: today,
     })
     return `/teams/head-to-head?${params.toString()}`
+  }
+
+  const scrollToTeam = (valveId: number) => (e: React.MouseEvent) => {
+    e.preventDefault()
+    document.getElementById(`team-${valveId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
@@ -261,7 +293,11 @@ function H2HCrossSection({
       <div className={styles.crossWrap} ref={wrapRef}>
         <table
           className={styles.cross}
-          style={{ '--cell': `${cell}px`, '--rowhead': `${H2H_ROW_HEAD_W}px` } as React.CSSProperties}
+          style={{
+            '--cell': `${cell}px`,
+            '--rowhead': `${H2H_ROW_HEAD_W}px`,
+            '--total': `${H2H_TOTAL_W}px`,
+          } as React.CSSProperties}
         >
           <thead>
             <tr>
@@ -269,11 +305,10 @@ function H2HCrossSection({
               {order.map((t) => (
                 <th key={t.valveId} className={styles.crossColHead}>
                   <a
-                    href={`/teams/${t.valveId}`}
-                    target="_blank"
-                    rel="noreferrer"
+                    href={`#team-${t.valveId}`}
+                    onClick={scrollToTeam(t.valveId)}
                     className={styles.colHeadLink}
-                    title={t.name}
+                    title={`Jump to ${t.name}`}
                   >
                     {logoById.get(t.valveId) && (
                       <img
@@ -287,6 +322,7 @@ function H2HCrossSection({
                   </a>
                 </th>
               ))}
+              <th className={styles.crossTotalHead}>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -294,11 +330,10 @@ function H2HCrossSection({
               <tr key={rowT.valveId}>
                 <th className={styles.crossRowHead}>
                   <a
-                    href={`/teams/${rowT.valveId}`}
-                    target="_blank"
-                    rel="noreferrer"
+                    href={`#team-${rowT.valveId}`}
+                    onClick={scrollToTeam(rowT.valveId)}
                     className={styles.crossRowHeadInner}
-                    title={rowT.name}
+                    title={`Jump to ${rowT.name}`}
                   >
                     {logoById.get(rowT.valveId) && (
                       <img
@@ -337,6 +372,23 @@ function H2HCrossSection({
                     </td>
                   )
                 })}
+                {(() => {
+                  const t = rowTotal(rowT.valveId)
+                  if (t.games === 0) return <td className={styles.crossTotalTd} />
+                  const wr = t.wins / t.games
+                  return (
+                    <td className={styles.crossTotalTd}>
+                      <div
+                        className={styles.crossCell}
+                        style={{ background: cellColor(wr) }}
+                        title={`${rowT.name} vs the field: ${t.wins}–${t.losses} (${(wr * 100).toFixed(0)}%)`}
+                      >
+                        <span className={styles.cellWl}>{t.wins}–{t.losses}</span>
+                        <span className={styles.cellPct}>{(wr * 100).toFixed(0)}%</span>
+                      </div>
+                    </td>
+                  )
+                })()}
               </tr>
             ))}
           </tbody>
@@ -423,7 +475,7 @@ function TeamCard({
   }
 
   return (
-    <article className={styles.card}>
+    <article id={`team-${team.valveId}`} className={styles.card}>
       <header className={styles.cardHeader}>
         <div className={styles.cardIdentity}>
           {team.logo && (
@@ -436,9 +488,14 @@ function TeamCard({
             />
           )}
           <div className={styles.cardTitle}>
-            <Link to={`/teams/${team.valveId}`} className={styles.teamName}>
+            <a
+              href={`/teams/${team.valveId}`}
+              target="_blank"
+              rel="noreferrer"
+              className={styles.teamName}
+            >
               {team.name}
-            </Link>
+            </a>
             {team.aka && <span className={styles.aka}>aka {team.aka}</span>}
           </div>
         </div>

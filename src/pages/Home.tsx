@@ -8,6 +8,7 @@ import { patches } from '../data/patches'
 import { heroImageUrl, teamLogoUrl, leagueLogoUrl } from '../config'
 import { formatDuration } from '../lib/live'
 import { TeamLogo } from '../components/DataTable'
+import Outcome from '../components/Outcome'
 import PageMeta from '../components/PageMeta'
 import { buildOrganization, buildWebSite } from '../lib/seo'
 import styles from './Home.module.css'
@@ -463,17 +464,19 @@ function RecentGames({ games }: { games: RecentGame[] }) {
               const isParsed = g.state === 'parsed'
               return (
                 <Link key={g.matchId} to={`/matches/${g.matchId}`} className={styles.recentCard}>
-                  <div className={styles.recentTeam}>
-                    <TeamLogo logoUrl={teamLogoUrl(radLogo)} name={radName} className={styles.recentLogo} />
-                    <span className={`${styles.recentName} ${radWon ? styles.recentNameWin : ''}`}>{radName}</span>
-                  </div>
-                  <span className={radWon ? styles.recentArrowLeft : styles.recentArrowRight}>
-                    {radWon ? '\u276E' : '\u276F'}
-                  </span>
-                  <div className={`${styles.recentTeam} ${styles.recentTeamRight}`}>
-                    <span className={`${styles.recentName} ${!radWon ? styles.recentNameWin : ''}`}>{direName}</span>
-                    <TeamLogo logoUrl={teamLogoUrl(direLogo)} name={direName} className={styles.recentLogo} />
-                  </div>
+                  <Outcome won={radWon} subtle className={styles.recentSide}>
+                    <div className={styles.recentTeam}>
+                      <TeamLogo logoUrl={teamLogoUrl(radLogo)} name={radName} className={styles.recentLogo} />
+                      <span className={styles.recentName}>{radName}</span>
+                    </div>
+                  </Outcome>
+                  <span className={styles.recentVs}>vs</span>
+                  <Outcome won={!radWon} subtle className={styles.recentSide}>
+                    <div className={`${styles.recentTeam} ${styles.recentTeamRight}`}>
+                      <span className={styles.recentName}>{direName}</span>
+                      <TeamLogo logoUrl={teamLogoUrl(direLogo)} name={direName} className={styles.recentLogo} />
+                    </div>
+                  </Outcome>
                   <span className={styles.recentDuration}>{formatDuration(g.duration)}</span>
                   <span
                     className={`${styles.recentParsed} ${isParsed ? styles.recentParsedYes : ''}`}

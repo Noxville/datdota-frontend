@@ -9,6 +9,7 @@ import { heroesById } from '../data/heroes'
 import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/DataTable'
 import EnigmaLoader from '../components/EnigmaLoader'
 import ErrorState from '../components/ErrorState'
+import Outcome from '../components/Outcome'
 import styles from './EntityShow.module.css'
 import filterStyles from '../components/FilterPanel.module.css'
 import PageMeta from '../components/PageMeta'
@@ -221,37 +222,37 @@ function makeMatchColumns(leftName: string, rightName: string): ColumnDef<H2HMat
       id: 'leftHeroes',
       accessorFn: () => '',
       header: leftName,
-      size: 140,
+      size: 150,
       enableSorting: false,
-      cell: ({ row }) => <HeroIcons heroIds={row.original.left.heroes} />,
+      cell: ({ row }) => (
+        <Outcome won={row.original.left.won}>
+          <HeroIcons heroIds={row.original.left.heroes} />
+        </Outcome>
+      ),
     },
     {
       id: 'result',
       accessorFn: (row) => row.left.won ? 'W' : 'L',
       header: '',
-      size: 40,
+      size: 34,
       enableSorting: false,
-      cell: ({ row }) => {
-        const leftWon = row.original.left.won
-        return (
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 800,
-            fontSize: '0.9rem',
-            color: 'var(--color-text-muted)',
-          }}>
-            {leftWon ? '\u276F' : '\u276E'}
-          </span>
-        )
-      },
+      cell: () => (
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--color-text-muted)' }}>
+          vs
+        </span>
+      ),
     },
     {
       id: 'rightHeroes',
       accessorFn: () => '',
       header: rightName,
-      size: 140,
+      size: 150,
       enableSorting: false,
-      cell: ({ row }) => <HeroIcons heroIds={row.original.right.heroes} />,
+      cell: ({ row }) => (
+        <Outcome won={row.original.right.won}>
+          <HeroIcons heroIds={row.original.right.heroes} />
+        </Outcome>
+      ),
     },
   ]
 }

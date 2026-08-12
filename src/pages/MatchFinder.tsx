@@ -9,6 +9,7 @@ import { heroesById } from '../data/heroes'
 import { patches } from '../data/patches'
 import DataTable from '../components/DataTable'
 import LeagueLogo from '../components/LeagueLogo'
+import Outcome from '../components/Outcome'
 import FilterPanel from '../components/FilterPanel'
 import TableSkeleton from '../components/TableSkeleton'
 import type { MatchFinderEntry, MatchFinderResponse } from '../types'
@@ -268,17 +269,14 @@ const columns: ColumnDef<MatchFinderEntry, unknown>[] = [
     accessorKey: 'radName',
     header: 'Radiant',
     size: 130,
-    cell: ({ row }) => {
-      const won = row.original.radVictory
-      return (
-        <a
-          href={`/teams/${row.original.radTeamId}`}
-          style={{ fontSize: '0.8rem', fontWeight: won ? 600 : 400, color: won ? 'var(--color-success)' : 'var(--color-accent-bright)', textDecoration: 'none' }}
-        >
-          {row.original.radName || 'Unknown'}
-        </a>
-      )
-    },
+    cell: ({ row }) => (
+      <a
+        href={`/teams/${row.original.radTeamId}`}
+        style={{ fontSize: '0.8rem', color: 'var(--color-accent-bright)', textDecoration: 'none' }}
+      >
+        {row.original.radName || 'Unknown'}
+      </a>
+    ),
   },
   {
     id: 'radPicks',
@@ -286,24 +284,25 @@ const columns: ColumnDef<MatchFinderEntry, unknown>[] = [
     header: 'Radiant Heroes',
     size: 210,
     enableSorting: false,
-    cell: ({ row }) => <HeroIcons heroIds={row.original.radPicks} />,
+    cell: ({ row }) => (
+      <Outcome won={row.original.radVictory}>
+        <HeroIcons heroIds={row.original.radPicks} />
+      </Outcome>
+    ),
   },
   {
     id: 'direName',
     accessorKey: 'direName',
     header: 'Dire',
     size: 130,
-    cell: ({ row }) => {
-      const won = !row.original.radVictory
-      return (
-        <a
-          href={`/teams/${row.original.direTeamId}`}
-          style={{ fontSize: '0.8rem', fontWeight: won ? 600 : 400, color: won ? 'var(--color-success)' : 'var(--color-accent-bright)', textDecoration: 'none' }}
-        >
-          {row.original.direName || 'Unknown'}
-        </a>
-      )
-    },
+    cell: ({ row }) => (
+      <a
+        href={`/teams/${row.original.direTeamId}`}
+        style={{ fontSize: '0.8rem', color: 'var(--color-accent-bright)', textDecoration: 'none' }}
+      >
+        {row.original.direName || 'Unknown'}
+      </a>
+    ),
   },
   {
     id: 'direPicks',
@@ -311,16 +310,10 @@ const columns: ColumnDef<MatchFinderEntry, unknown>[] = [
     header: 'Dire Heroes',
     size: 210,
     enableSorting: false,
-    cell: ({ row }) => <HeroIcons heroIds={row.original.direPicks} />,
-  },
-  {
-    id: 'winner',
-    accessorFn: (row) => (row.radVictory ? 'Radiant' : 'Dire'),
-    header: 'Winner',
-    size: 75,
-    enableSorting: false,
-    cell: ({ getValue }) => (
-      <span style={{ fontSize: '0.8rem', color: 'var(--color-success)', fontWeight: 600 }}>{getValue() as string}</span>
+    cell: ({ row }) => (
+      <Outcome won={!row.original.radVictory}>
+        <HeroIcons heroIds={row.original.direPicks} />
+      </Outcome>
     ),
   },
 ]
