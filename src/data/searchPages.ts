@@ -118,6 +118,8 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Worst Team Streaks', path: '/trivia/team-streaks/worst', keywords: ['trivia', 'team', 'streak', 'lose'] },
   { label: 'Best Player-Hero Streaks', path: '/trivia/player-hero-streaks/best', keywords: ['trivia', 'player', 'hero', 'streak'] },
   { label: 'Worst Player-Hero Streaks', path: '/trivia/player-hero-streaks/worst', keywords: ['trivia', 'player', 'hero', 'streak'] },
+  { label: 'Best Hero Streaks', path: '/trivia/hero-streaks/best', keywords: ['trivia', 'hero', 'streak', 'win'] },
+  { label: 'Worst Hero Streaks', path: '/trivia/hero-streaks/worst', keywords: ['trivia', 'hero', 'streak', 'lose'] },
   { label: 'Akke Award', path: '/trivia/akke', keywords: ['trivia', 'akke', 'award'] },
   { label: 'Maelk Award', path: '/trivia/maelk', keywords: ['trivia', 'maelk', 'award'] },
   { label: 'Cty Award', path: '/trivia/cty', keywords: ['trivia', 'cty', 'award'] },

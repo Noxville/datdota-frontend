@@ -234,6 +234,13 @@ const NAV_ITEMS: NavItem[] = [
         ],
       },
       {
+        heading: 'Hero Records',
+        items: [
+          { label: 'Best Streaks', to: '/trivia/hero-streaks/best' },
+          { label: 'Worst Streaks', to: '/trivia/hero-streaks/worst' },
+        ],
+      },
+      {
         heading: 'Caps',
         items: [
           { label: 'Caps', to: '/trivia/caps' },
