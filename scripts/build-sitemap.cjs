@@ -113,6 +113,8 @@ const STATIC_ROUTES = [
   '/trivia/team-streaks/worst',
   '/trivia/player-hero-streaks/best',
   '/trivia/player-hero-streaks/worst',
+  '/trivia/hero-streaks/best',
+  '/trivia/hero-streaks/worst',
   '/trivia/best-runs',
   '/trivia/caps',
   '/trivia/akke',
