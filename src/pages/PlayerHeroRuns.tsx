@@ -17,6 +17,8 @@ interface PlayerHeroRun {
   games: number
   firstMatch: number
   lastMatch: number
+  firstDate: string
+  lastDate: string
 }
 
 interface RunRow extends PlayerHeroRun {
@@ -34,6 +36,14 @@ const RUN_LENGTHS = [25, 50, 75, 100, 150]
 function getInitialWindow(): number {
   const parsed = parseInt(window.location.hash.replace('#', ''), 10)
   return RUN_LENGTHS.includes(parsed) ? parsed : RUN_LENGTHS[0]
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 function heroName(id: number): string {
@@ -88,6 +98,22 @@ function buildColumns(windowSize: number) {
           </span>
         )
       },
+    }) as ColumnDef<RunRow, unknown>,
+    ch.accessor('firstDate', {
+      id: 'firstDate',
+      header: 'Start',
+      size: 130,
+      cell: ({ getValue }) => (
+        <span className={styles.dateCell}>{formatDate(getValue())}</span>
+      ),
+    }) as ColumnDef<RunRow, unknown>,
+    ch.accessor('lastDate', {
+      id: 'lastDate',
+      header: 'End',
+      size: 130,
+      cell: ({ getValue }) => (
+        <span className={styles.dateCell}>{formatDate(getValue())}</span>
+      ),
     }) as ColumnDef<RunRow, unknown>,
     ch.accessor('wins', {
       id: 'wins',
