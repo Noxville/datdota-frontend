@@ -116,6 +116,7 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Caps — Most Hero-Experienced Five-Stacks', path: '/trivia/caps#hero-team', keywords: ['trivia', 'caps', 'hero', 'team', 'veteran'] },
   { label: 'Best Team Streaks', path: '/trivia/team-streaks/best', keywords: ['trivia', 'team', 'streak', 'win'] },
   { label: 'Worst Team Streaks', path: '/trivia/team-streaks/worst', keywords: ['trivia', 'team', 'streak', 'lose'] },
+  { label: 'Best Player-Hero Runs', path: '/trivia/player-hero-runs', keywords: ['trivia', 'player', 'hero', 'run', 'wins', 'window'] },
   { label: 'Best Player-Hero Streaks', path: '/trivia/player-hero-streaks/best', keywords: ['trivia', 'player', 'hero', 'streak'] },
   { label: 'Worst Player-Hero Streaks', path: '/trivia/player-hero-streaks/worst', keywords: ['trivia', 'player', 'hero', 'streak'] },
   { label: 'Best Hero Streaks', path: '/trivia/hero-streaks/best', keywords: ['trivia', 'hero', 'streak', 'win'] },
