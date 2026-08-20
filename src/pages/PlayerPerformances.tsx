@@ -6,6 +6,7 @@ import DataTable, { NumericCell, PercentCell, PlayerCell } from '../components/D
 import FilterPanel from '../components/FilterPanel'
 import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
+import QuickLinks from '../components/QuickLinks'
 import type { PlayerPerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -184,6 +185,7 @@ export default function PlayerPerformances() {
         <p className={styles.subtitle}>
           Average statistics per player across filtered matches
         </p>
+        <QuickLinks links={[{ label: 'Single Performances', to: '/players/single-performances' }]} />
       </div>
 
       <FilterPanel

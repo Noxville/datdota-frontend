@@ -9,6 +9,7 @@ import DataTable, { NumericCell, PlayerCell } from '../components/DataTable'
 import FilterPanel from '../components/FilterPanel'
 import TableSkeleton from '../components/TableSkeleton'
 import PageMeta from '../components/PageMeta'
+import QuickLinks from '../components/QuickLinks'
 import type { PlayerSinglePerformanceLine } from '../types'
 import styles from './PlayerPerformances.module.css'
 
@@ -254,6 +255,12 @@ export default function PlayerSinglePerformances() {
         <p className={styles.subtitle}>
           Individual match-level player statistics
         </p>
+        <QuickLinks
+          links={[
+            { label: 'Avg Player Performances', to: '/players/performances' },
+            { label: 'Avg Hero Performances', to: '/heroes/performances' },
+          ]}
+        />
       </div>
 
       <FilterPanel
