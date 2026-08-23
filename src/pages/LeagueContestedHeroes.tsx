@@ -7,7 +7,7 @@ import ErrorState from '../components/ErrorState'
 import PageMeta from '../components/PageMeta'
 import { formatDate } from '../utils/format'
 import { heroesById } from '../data/heroes'
-import { LeagueCell, HeroIcons } from './notableCells'
+import { HeroIcons } from './notableCells'
 import styles from './Notable.module.css'
 
 function heroNames(heroIds: number[]): string {
@@ -40,7 +40,15 @@ function buildColumns(w90: number, w95: number): ColumnDef<ContestedRow, unknown
       id: 'league_name',
       header: 'Event / Split',
       size: 280,
-      cell: ({ getValue }) => <LeagueCell leagueName={getValue()} isLan={false} />,
+      cell: ({ row }) => (
+        <a
+          href={`/drafts?splits=${row.original.split_id}`}
+          className={styles.draftLink}
+          title={`View drafts for ${row.original.league_name}`}
+        >
+          {row.original.league_name}
+        </a>
+      ),
     }) as ColumnDef<ContestedRow, unknown>,
     ch.accessor('total_matches', {
       id: 'total_matches',
@@ -95,7 +103,7 @@ export default function LeagueContestedHeroes() {
       />
       <div className={styles.header}>
         <h1>Contested Heroes by Event</h1>
-        <p className={styles.subtitle}>Heroes picked or banned in almost every game of an event</p>
+        <p className={styles.subtitle}>Heroes picked or banned in almost every game of an event — LAN splits only</p>
         <p className={styles.description}>
           For each event/split with 25 or more drafted games, the heroes that were picked or banned in 90–95% and
           95–100% of that split's games — the near-mandatory heroes of the moment.

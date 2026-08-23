@@ -61,6 +61,22 @@
   color: var(--color-text);
 }
 
+.draftLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.draftLink:hover {
+  color: color-mix(in srgb, var(--color-primary) 70%, white);
+}
+
 .leagueText {
   color: var(--color-text-secondary);
   white-space: nowrap;

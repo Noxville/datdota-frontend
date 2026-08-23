@@ -211,112 +211,144 @@ function HeroInput({ label, value, onChange }: { label: string; value: string; o
   )
 }
 
-const columns: ColumnDef<MatchFinderEntry, unknown>[] = [
-  {
-    id: 'matchId',
-    accessorKey: 'matchId',
-    header: 'Match',
-    size: 100,
-    cell: ({ getValue }) => (
-      <a href={`/matches/${getValue()}`} style={{ color: 'var(--color-accent-bright)', textDecoration: 'none', fontSize: '0.8rem' }}>
-        {String(getValue())}
-      </a>
-    ),
-  },
-  {
-    id: 'leagueName',
-    accessorKey: 'leagueName',
-    header: 'League',
-    size: 180,
-    enableSorting: false,
-    cell: ({ row }) => (
-      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <LeagueLogo leagueId={row.original.leagueId} size={28} />
-        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>{row.original.leagueName}</span>
-      </span>
-    ),
-  },
-  {
-    id: 'patch',
-    accessorFn: (row) => patchFromMatchId(row.matchId),
-    header: 'Patch',
-    size: 65,
-    cell: ({ getValue }) => (
-      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{getValue() as string}</span>
-    ),
-  },
-  {
-    id: 'date',
-    accessorKey: 'date',
-    header: 'Date',
-    size: 95,
-    cell: ({ getValue }) => (
-      <span style={{ fontSize: '0.8rem', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(getValue() as string)}</span>
-    ),
-  },
-  {
-    id: 'duration',
-    accessorKey: 'duration',
-    header: 'Duration',
-    size: 75,
-    meta: { numeric: true, heatmap: 'high-good' as const, tooltip: 'Match Duration' },
-    cell: ({ getValue }) => (
-      <span style={{ fontSize: '0.8rem', fontVariantNumeric: 'tabular-nums' }}>{fmtTime(getValue() as number)}</span>
-    ),
-  },
-  {
-    id: 'radName',
-    accessorKey: 'radName',
-    header: 'Radiant',
-    size: 130,
-    cell: ({ row }) => (
-      <a
-        href={`/teams/${row.original.radTeamId}`}
-        style={{ fontSize: '0.8rem', color: 'var(--color-accent-bright)', textDecoration: 'none' }}
-      >
-        {row.original.radName || 'Unknown'}
-      </a>
-    ),
-  },
-  {
-    id: 'radPicks',
-    accessorFn: (row) => row.radPicks.map((id) => heroesById[String(id)]?.name ?? '').join(' '),
-    header: 'Radiant Heroes',
-    size: 210,
-    enableSorting: false,
-    cell: ({ row }) => (
-      <Outcome won={row.original.radVictory}>
-        <HeroIcons heroIds={row.original.radPicks} />
-      </Outcome>
-    ),
-  },
-  {
-    id: 'direName',
-    accessorKey: 'direName',
-    header: 'Dire',
-    size: 130,
-    cell: ({ row }) => (
-      <a
-        href={`/teams/${row.original.direTeamId}`}
-        style={{ fontSize: '0.8rem', color: 'var(--color-accent-bright)', textDecoration: 'none' }}
-      >
-        {row.original.direName || 'Unknown'}
-      </a>
-    ),
-  },
-  {
-    id: 'direPicks',
-    accessorFn: (row) => row.direPicks.map((id) => heroesById[String(id)]?.name ?? '').join(' '),
-    header: 'Dire Heroes',
-    size: 210,
-    enableSorting: false,
-    cell: ({ row }) => (
-      <Outcome won={!row.original.radVictory}>
-        <HeroIcons heroIds={row.original.direPicks} />
-      </Outcome>
-    ),
-  },
-]
+/* ── Side A / Side B orientation ─────────────────────────────
+   Match Finder is a Side A vs Side B tool. A given match's radiant/dire is
+   oriented so Side A = whichever side matches the Team A / Heroes A filter
+   (falling back to Team B / Heroes B), independent of radiant/dire. */
+
+interface SideAnchors {
+  teamA: string
+  teamB: string
+  heroesA: number[]
+  heroesB: number[]
+}
+
+function radiantIsSideA(row: MatchFinderEntry, a: SideAnchors): boolean {
+  if (a.teamA) {
+    if (String(row.radTeamId) === a.teamA) return true
+    if (String(row.direTeamId) === a.teamA) return false
+  }
+  if (a.teamB) {
+    if (String(row.radTeamId) === a.teamB) return false
+    if (String(row.direTeamId) === a.teamB) return true
+  }
+  const has = (picks: number[], set: number[]) => set.length > 0 && set.every((h) => picks.includes(h))
+  if (has(row.radPicks, a.heroesA)) return true
+  if (has(row.direPicks, a.heroesA)) return false
+  if (has(row.radPicks, a.heroesB)) return false
+  if (has(row.direPicks, a.heroesB)) return true
+  return true
+}
+
+interface SideView {
+  name: string
+  teamId: number
+  picks: number[]
+  won: boolean
+}
+
+function sideOf(row: MatchFinderEntry, side: 'A' | 'B', anchors: SideAnchors): SideView {
+  const useRad = (side === 'A') === radiantIsSideA(row, anchors)
+  return useRad
+    ? { name: row.radName, teamId: row.radTeamId, picks: row.radPicks, won: row.radVictory }
+    : { name: row.direName, teamId: row.direTeamId, picks: row.direPicks, won: !row.radVictory }
+}
+
+function sideColumns(side: 'A' | 'B', anchors: SideAnchors): ColumnDef<MatchFinderEntry, unknown>[] {
+  return [
+    {
+      id: `side${side}Name`,
+      accessorFn: (row) => sideOf(row, side, anchors).name,
+      header: `Side ${side}`,
+      size: 130,
+      cell: ({ row }) => {
+        const s = sideOf(row.original, side, anchors)
+        return (
+          <a
+            href={`/teams/${s.teamId}`}
+            style={{ fontSize: '0.8rem', color: 'var(--color-accent-bright)', textDecoration: 'none' }}
+          >
+            {s.name || 'Unknown'}
+          </a>
+        )
+      },
+    },
+    {
+      id: `side${side}Picks`,
+      accessorFn: (row) => sideOf(row, side, anchors).picks.map((id) => heroesById[String(id)]?.name ?? '').join(' '),
+      header: `Side ${side} Heroes`,
+      size: 210,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const s = sideOf(row.original, side, anchors)
+        return (
+          <Outcome won={s.won}>
+            <HeroIcons heroIds={s.picks} />
+          </Outcome>
+        )
+      },
+    },
+  ]
+}
+
+function buildColumns(anchors: SideAnchors): ColumnDef<MatchFinderEntry, unknown>[] {
+  return [
+    {
+      id: 'matchId',
+      accessorKey: 'matchId',
+      header: 'Match',
+      size: 100,
+      cell: ({ getValue }) => (
+        <a href={`/matches/${getValue()}`} style={{ color: 'var(--color-accent-bright)', textDecoration: 'none', fontSize: '0.8rem' }}>
+          {String(getValue())}
+        </a>
+      ),
+    },
+    {
+      id: 'leagueName',
+      accessorKey: 'leagueName',
+      header: 'League',
+      size: 180,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <LeagueLogo leagueId={row.original.leagueId} size={28} />
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>{row.original.leagueName}</span>
+        </span>
+      ),
+    },
+    {
+      id: 'patch',
+      accessorFn: (row) => patchFromMatchId(row.matchId),
+      header: 'Patch',
+      size: 65,
+      cell: ({ getValue }) => (
+        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{getValue() as string}</span>
+      ),
+    },
+    {
+      id: 'date',
+      accessorKey: 'date',
+      header: 'Date',
+      size: 95,
+      cell: ({ getValue }) => (
+        <span style={{ fontSize: '0.8rem', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(getValue() as string)}</span>
+      ),
+    },
+    {
+      id: 'duration',
+      accessorKey: 'duration',
+      header: 'Duration',
+      size: 75,
+      meta: { numeric: true, heatmap: 'high-good' as const, tooltip: 'Match Duration' },
+      cell: ({ getValue }) => (
+        <span style={{ fontSize: '0.8rem', fontVariantNumeric: 'tabular-nums' }}>{fmtTime(getValue() as number)}</span>
+      ),
+    },
+    ...sideColumns('A', anchors),
+    ...sideColumns('B', anchors),
+  ]
+}
 
 export default function MatchFinder() {
   const [abCollapsed, setAbCollapsed] = useState(false)
@@ -343,6 +375,13 @@ export default function MatchFinder() {
   const teamB = filters['team-b'] ?? ''
   const heroesA = filters['heroes-a'] ?? ''
   const heroesB = filters['heroes-b'] ?? ''
+
+  const columns = useMemo(() => buildColumns({
+    teamA,
+    teamB,
+    heroesA: heroesA ? heroesA.split(',').map(Number).filter(Number.isFinite) : [],
+    heroesB: heroesB ? heroesB.split(',').map(Number).filter(Number.isFinite) : [],
+  }), [teamA, teamB, heroesA, heroesB])
 
   // When FilterPanel apply is clicked, merge A/B draft into filters
   const handleApply = useCallback((f: typeof filters) => {
