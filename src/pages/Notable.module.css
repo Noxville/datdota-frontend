@@ -77,6 +77,30 @@
   color: color-mix(in srgb, var(--color-primary) 70%, white);
 }
 
+/* "?" help icon in a column header, links to the glossary */
+.headerHelp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 5px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-decoration: none;
+  line-height: 1;
+  vertical-align: middle;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.headerHelp:hover {
+  color: var(--color-accent-bright);
+  border-color: var(--color-primary-dim);
+}
+
 .leagueText {
   color: var(--color-text-secondary);
   white-space: nowrap;
@@ -154,7 +178,49 @@
   flex-shrink: 0;
 }
 
+/* Aura for a hero contested in every game of the split (100%). */
+.heroIconMax {
+  box-shadow: 0 0 0 1.5px var(--color-accent-bright), 0 0 9px 1px rgba(45, 212, 191, 0.65);
+  animation: heroPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes heroPulse {
+  0%, 100% { box-shadow: 0 0 0 1.5px var(--color-accent-bright), 0 0 6px 1px rgba(45, 212, 191, 0.5); }
+  50% { box-shadow: 0 0 0 1.5px var(--color-accent-bright), 0 0 12px 2px rgba(45, 212, 191, 0.8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroIconMax { animation: none; }
+}
+
 .muted {
+  color: var(--color-text-muted);
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.slider {
+  width: 200px;
+  max-width: 50vw;
+  accent-color: var(--color-primary);
+}
+
+.controlValue {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  min-width: 42px;
+}
+
+.controlCount {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
   color: var(--color-text-muted);
 }
 

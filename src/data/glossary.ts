@@ -177,6 +177,14 @@ const glossary: GlossaryEntry[] = [
       '(post-event) alone — should never happen.',
     ],
   },
+  {
+    id: 'contest-balance',
+    term: 'Contest Balance',
+    section: 'Leagues',
+    summary: 'How evenly pick+ban attention was spread across the hero roster in a split. 1 = every hero contested equally; near 0 = a few heroes dominated.',
+    detail:
+      'For a split, we measure each available hero’s contest rate (the share of that split’s games in which the hero was picked or banned), then compute the Gini coefficient of those rates. Contest Balance is 1 minus that Gini coefficient: 1.0 means every available hero was contested equally (a perfectly flat meta), while values near 0 mean a small handful of heroes soaked up almost all the pick+ban attention (a top-heavy meta). The available roster per split comes from real hero release dates, so older events are not penalised for heroes that did not exist yet.',
+  },
 
   // ── Benchmarks ──
   {

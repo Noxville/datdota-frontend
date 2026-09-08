@@ -106,15 +106,15 @@ const columns: ColumnDef<DraftLine, unknown>[] = [
       {
         id: 'pickCount',
         accessorKey: 'picks',
-        header: 'Count',
-        size: 70,
+        header: 'Total Picks',
+        size: 80,
         meta: { numeric: true, tooltip: 'Total times picked' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
       },
       {
         id: 'pickPct',
         accessorKey: 'pickPercent',
-        header: '%',
+        header: 'Pick %',
         size: 65,
         meta: { numeric: true, tooltip: 'Pick rate (% of games)', heatmap: 'high-good' as const },
         cell: ({ getValue }) => <PercentCell value={getValue() as number} />,
@@ -160,15 +160,15 @@ const columns: ColumnDef<DraftLine, unknown>[] = [
       {
         id: 'banCount',
         accessorKey: 'bans',
-        header: 'Count',
-        size: 70,
+        header: 'Total Bans',
+        size: 80,
         meta: { numeric: true, tooltip: 'Total times banned' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
       },
       {
         id: 'banPct',
         accessorKey: 'banPercent',
-        header: '%',
+        header: 'Ban %',
         size: 65,
         meta: { numeric: true, tooltip: 'Ban rate (% of games)', heatmap: 'high-good' as const },
         cell: ({ getValue }) => <PercentCell value={getValue() as number} />,
@@ -176,7 +176,7 @@ const columns: ColumnDef<DraftLine, unknown>[] = [
       {
         id: 'p1Bans',
         accessorKey: 'firstPhaseBans',
-        header: 'P1',
+        header: 'B1',
         size: 55,
         meta: { numeric: true, tooltip: '1st phase bans' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
@@ -184,7 +184,7 @@ const columns: ColumnDef<DraftLine, unknown>[] = [
       {
         id: 'p2Bans',
         accessorKey: 'secondPhaseBans',
-        header: 'P2',
+        header: 'B2',
         size: 55,
         meta: { numeric: true, tooltip: '2nd phase bans' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
@@ -192,7 +192,7 @@ const columns: ColumnDef<DraftLine, unknown>[] = [
       {
         id: 'p3Bans',
         accessorKey: 'thirdPhaseBans',
-        header: 'P3',
+        header: 'B3',
         size: 55,
         meta: { numeric: true, tooltip: '3rd phase bans' },
         cell: ({ getValue }) => <NumericCell value={getValue() as number} />,
@@ -214,7 +214,7 @@ const columns: ColumnDef<DraftLine, unknown>[] = [
       {
         id: 'totalPBPct',
         accessorFn: (row) => (row.pickPercent ?? 0) + (row.banPercent ?? 0),
-        header: '%',
+        header: 'P+B%',
         size: 65,
         meta: { numeric: true, heatmap: 'high-good' as const, tooltip: 'Contestation rate (pick% + ban%)' },
         cell: ({ getValue }) => <PercentCell value={getValue() as number} />,

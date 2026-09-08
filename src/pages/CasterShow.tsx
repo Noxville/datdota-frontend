@@ -29,7 +29,7 @@ interface CasterData {
   steam32: number
   steam64: number
   nickname: string
-  studio: { id: number; name: string }
+  studio: { id: number; name: string } | null
   totalGames: number
   recentMatches: RecentMatch[]
   cocasters: Cocaster[]
@@ -182,7 +182,7 @@ export default function CasterShow() {
         <div className={styles.headerInfo}>
           <h1>{caster.nickname}</h1>
           <div className={styles.headerMeta}>
-            <span>{caster.studio.name}</span>
+            {caster.studio && <span>{caster.studio.name}</span>}
             <a
               href={`https://steamcommunity.com/profiles/${caster.steam64}`}
               target="_blank"
