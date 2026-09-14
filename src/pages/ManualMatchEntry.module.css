@@ -1,0 +1,653 @@
+.page {
+  animation: fadeUp 350ms ease both;
+  padding-bottom: var(--space-2xl);
+}
+
+.header {
+  margin-bottom: var(--space-md);
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  margin-top: var(--space-xs);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  max-width: 760px;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.tabActive {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary) inset;
+}
+
+.tabLabel {
+  all: unset;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-text);
+}
+
+.tabClose {
+  all: unset;
+  cursor: pointer;
+  padding: 5px 8px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.tabClose:hover { color: var(--color-loss); }
+
+.tabAdd {
+  all: unset;
+  cursor: pointer;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  color: var(--color-accent-bright);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.tabAdd:hover { border-color: var(--color-primary-dim); color: var(--color-primary); }
+
+/* ── Toolbar ──────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+
+.spacer { flex: 1; }
+
+.btn, .btnPrimary, .btnSmall {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-body);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-raised);
+}
+
+.btn:hover { border-color: var(--color-primary-dim); color: var(--color-text); }
+
+.btnPrimary {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+}
+
+.btnPrimary:hover { background: var(--color-primary); }
+
+.btnPrimary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btnSmall {
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-raised);
+}
+
+.btnSmall:hover { border-color: var(--color-primary-dim); color: var(--color-text); }
+
+.validOk { font-family: var(--font-mono); font-size: 0.78rem; color: var(--color-win); }
+.validBad { font-family: var(--font-mono); font-size: 0.78rem; color: var(--color-loss); }
+
+/* ── Import panel ─────────────────────────────────────────── */
+.importPanel {
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.importTextarea {
+  width: 100%;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 8px;
+  resize: vertical;
+}
+
+.importError {
+  color: var(--color-loss);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  margin-top: 6px;
+}
+
+.importActions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+/* ── Problems ─────────────────────────────────────────────── */
+.problems {
+  background: rgba(248, 113, 113, 0.06);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.problemsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  font-size: 0.78rem;
+  color: var(--color-loss);
+  flex-wrap: wrap;
+}
+
+.forceLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.problemsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.problemItem {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-raised);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+}
+
+.warnings {
+  background: rgba(250, 204, 21, 0.06);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.warningsHead {
+  font-size: 0.78rem;
+  color: #facc15;
+}
+
+.warnItem {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-raised);
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+}
+
+/* ── Sections ─────────────────────────────────────────────── */
+.section {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  background: var(--color-bg-raised);
+  padding: 8px 12px;
+}
+
+.sectionToggle {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.8rem;
+  color: var(--color-text);
+}
+
+.caret { color: var(--color-primary); margin-right: 4px; }
+
+.sectionBody { padding: var(--space-md); }
+
+/* ── Field grid ───────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--space-sm) var(--space-md);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fieldLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+.unsetDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-loss);
+  flex-shrink: 0;
+}
+
+.warnDot {
+  color: #facc15;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.fieldWarn .numInput {
+  border-color: rgba(250, 204, 21, 0.55);
+}
+
+.fieldControl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.numInput, .textInput, .select, .pickerInput, .tsInput {
+  width: 100%;
+  min-width: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 5px 7px;
+}
+
+.fieldUnset .numInput,
+.fieldUnset .textInput,
+.fieldUnset .select,
+.fieldUnset .pickerInput,
+.fieldUnset .tsInput {
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.numInput:focus, .textInput:focus, .select:focus, .pickerInput:focus, .tsInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.nullBtn {
+  all: unset;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.nullBtn:hover { color: var(--color-draw); border-color: var(--color-draw); }
+
+.nullChip {
+  all: unset;
+  cursor: pointer;
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-draw);
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 5px 7px;
+}
+
+/* ── Pickers ──────────────────────────────────────────────── */
+.picker { position: relative; width: 100%; }
+
+.pickerValueWrap {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+}
+
+.pickerValue {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  padding: 5px 7px;
+}
+
+.pickerValue:hover { border-color: var(--color-primary-dim); }
+
+.pickerClear {
+  all: unset;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  line-height: 1.9;
+}
+
+.pickerClear:hover { color: var(--color-loss); border-color: var(--color-loss); }
+
+.pickerId { color: var(--color-text-muted); font-family: var(--font-mono); font-size: 0.65rem; }
+
+.pickerValueMain {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pickerIcon {
+  height: 18px;
+  width: auto;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.pickerMenu {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+}
+
+.pickerOption {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 9px;
+  font-size: 0.76rem;
+  color: var(--color-text-secondary);
+}
+
+.pickerOption:hover { background: var(--color-bg-hover); color: var(--color-text); }
+
+/* ── Timestamp ────────────────────────────────────────────── */
+.tsControl { display: flex; align-items: center; gap: 5px; width: 100%; }
+.tsUnix { font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted); flex-shrink: 0; }
+.tsErr { border-color: var(--color-loss) !important; }
+
+/* ── Players ──────────────────────────────────────────────── */
+.players {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+.playerGroups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.playerGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.groupHead {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.groupRadiant {
+  color: var(--color-radiant);
+  background: rgba(110, 231, 183, 0.08);
+  border: 1px solid rgba(110, 231, 183, 0.25);
+}
+
+.groupDire {
+  color: var(--color-dire);
+  background: rgba(252, 165, 165, 0.08);
+  border: 1px solid rgba(252, 165, 165, 0.25);
+}
+
+.slotTag {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.firstPick {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.fpBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 3px 9px;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fpActive {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+@media (max-width: 720px) {
+  .playerGroups { grid-template-columns: 1fr; }
+}
+
+.playerCard {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  background: var(--color-bg-raised);
+  transition: border-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.playerDragging {
+  opacity: 0.5;
+  border-color: var(--color-primary);
+}
+
+.playerHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-primary-dim);
+  margin-bottom: var(--space-sm);
+}
+
+.dragHandle {
+  cursor: grab;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  letter-spacing: -2px;
+  padding: 0 2px;
+}
+
+.dragHandle:active { cursor: grabbing; }
+.dragHandle:hover { color: var(--color-text); }
+
+/* ── Picks / bans ─────────────────────────────────────────── */
+.pickbans { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.pbRow {
+  display: grid;
+  grid-template-columns: 70px 120px minmax(120px, 1fr) minmax(160px, 1.4fr) auto;
+  gap: var(--space-md);
+  align-items: end;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.pbOrder, .pbType, .pbTeam, .pbHero {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.toggle {
+  display: inline-flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.toggleBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.toggleBtn:hover { color: var(--color-text); }
+
+.togglePick {
+  background: rgba(45, 212, 191, 0.15);
+  color: var(--color-win);
+}
+
+.toggleBan {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--color-loss);
+}
+
+.importHint {
+  margin-top: var(--space-sm);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.pbRemove {
+  all: unset;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  padding: 5px 8px;
+}
+
+.pbRemove:hover { color: var(--color-loss); }
+
+.pbActions { display: inline-flex; gap: 6px; }
+
+.muted { color: var(--color-text-muted); font-size: 0.8rem; }
+
+@media (max-width: 640px) {
+  .pbRow { grid-template-columns: 1fr 1fr; }
+}

@@ -102,14 +102,14 @@ html {
 
   /* Brand */
   --color-primary: #c48bc4;
-  --color-primary-dim: #9a6a9a;
+  --color-primary-dim: #a67ca6;
   --color-accent: #19aa8d;
   --color-accent-bright: #2dd4bf;
 
   /* Text */
   --color-text: #e8e6f0;
   --color-text-secondary: #a9a6b8;
-  --color-text-muted: #6e6b80;
+  --color-text-muted: #8e8c9c;
 
   /* Borders */
   --color-border: #2a2a44;

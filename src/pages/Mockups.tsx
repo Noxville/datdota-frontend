@@ -129,7 +129,7 @@ const COLORS = [
   { name: 'bg-raised', var: '--color-bg-raised', hex: '#16162a' },
   { name: 'bg-elevated', var: '--color-bg-elevated', hex: '#1e1e38' },
   { name: 'primary', var: '--color-primary', hex: '#c48bc4' },
-  { name: 'primary-dim', var: '--color-primary-dim', hex: '#9a6a9a' },
+  { name: 'primary-dim', var: '--color-primary-dim', hex: '#a67ca6' },
   { name: 'accent', var: '--color-accent', hex: '#19aa8d' },
   { name: 'accent-bright', var: '--color-accent-bright', hex: '#2dd4bf' },
   { name: 'win', var: '--color-win', hex: '#2dd4bf' },
@@ -713,7 +713,7 @@ function OgCard() {
           fontFamily: "'Fira Code', monospace",
           fontWeight: 400,
           fontSize: 18,
-          color: '#6e6b80',
+          color: '#8e8c9c',
           letterSpacing: '0.04em',
         }}
       >

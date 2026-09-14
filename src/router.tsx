@@ -23,6 +23,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <Home /> },
       { path: '/styleguide', element: lz(() => import('./pages/Mockups')) },
+      { path: '/manual-match-entry', element: lz(() => import('./pages/ManualMatchEntry')) },
       { path: '/metrics', element: lz(() => import('./pages/Metrics')) },
 
       // Heroes

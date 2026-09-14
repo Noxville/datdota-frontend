@@ -750,7 +750,7 @@ function ActivityChart({ data }: { data: WeekStats[] }) {
           .attr('y', y(p.total))
           .attr('width', barW)
           .attr('height', y(p.lan) - y(p.total))
-          .attr('fill', '#9a6a9a')
+          .attr('fill', '#a67ca6')
           .attr('rx', Math.min(1, barW / 4))
       }
     }
@@ -764,13 +764,13 @@ function ActivityChart({ data }: { data: WeekStats[] }) {
       )
       .call((sel) => sel.select('.domain').attr('stroke', '#2a2a44'))
       .call((sel) => sel.selectAll('.tick line').attr('stroke', '#2a2a44'))
-      .call((sel) => sel.selectAll('.tick text').attr('fill', '#6e6b80').attr('font-size', '0.55rem').attr('font-family', 'Fira Code'))
+      .call((sel) => sel.selectAll('.tick text').attr('fill', '#8e8c9c').attr('font-size', '0.55rem').attr('font-family', 'Fira Code'))
 
     g.append('g')
       .call(d3.axisLeft(y).ticks(5).tickFormat((d) => String(d)))
       .call((sel) => sel.select('.domain').attr('stroke', '#2a2a44'))
       .call((sel) => sel.selectAll('.tick line').attr('stroke', '#2a2a44'))
-      .call((sel) => sel.selectAll('.tick text').attr('fill', '#6e6b80').attr('font-size', '0.55rem').attr('font-family', 'Fira Code'))
+      .call((sel) => sel.selectAll('.tick text').attr('fill', '#8e8c9c').attr('font-size', '0.55rem').attr('font-family', 'Fira Code'))
 
     const overlay = g.append('rect')
       .attr('width', innerW)
@@ -804,7 +804,7 @@ function ActivityChart({ data }: { data: WeekStats[] }) {
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', color: 'var(--color-text-muted)', fontWeight: 400, letterSpacing: 0, textTransform: 'none', marginLeft: 8 }}>
           <span style={{ color: '#2dd4bf' }}>LAN</span>
           {' + '}
-          <span style={{ color: '#9a6a9a' }}>online</span>
+          <span style={{ color: '#a67ca6' }}>online</span>
         </span>
       </div>
       <div ref={containerRef} className={styles.chartContainer}>
