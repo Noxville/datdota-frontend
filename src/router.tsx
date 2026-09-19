@@ -24,6 +24,7 @@ const router = createBrowserRouter([
       { path: '/', element: <Home /> },
       { path: '/styleguide', element: lz(() => import('./pages/Mockups')) },
       { path: '/manual-match-entry', element: lz(() => import('./pages/ManualMatchEntry')) },
+      { path: '/map-calibration', element: lz(() => import('./pages/MapCalibration')) },
       { path: '/metrics', element: lz(() => import('./pages/Metrics')) },
 
       // Heroes
