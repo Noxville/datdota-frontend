@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useApiQuery } from '../api/queries'
+import { isNotFoundError } from '../api/client'
 import { useNoIndex } from '../hooks/useNoIndex'
 import { leagueLogoUrl } from '../config'
 import DataTable, { NumericCell } from '../components/DataTable'
@@ -305,8 +306,7 @@ export default function LeagueShow() {
     return { first: first.startDate, last: last.startDate }
   }, [sortedMatches])
 
-  const notFound = !isLoading && (!!error || !league)
-  useNoIndex(notFound)
+  useNoIndex(!isLoading && !league && (!error || isNotFoundError(error)))
 
   if (isLoading) return <div className={styles.page}><EnigmaLoader text="Loading league..." /></div>
 

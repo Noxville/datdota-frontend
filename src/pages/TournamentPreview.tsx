@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useApiQuery } from '../api/queries'
+import { isNotFoundError } from '../api/client'
 import { useNoIndex } from '../hooks/useNoIndex'
 import { miniHeroImageUrl } from '../config'
 import { heroesById } from '../data/heroes'
@@ -628,8 +629,7 @@ export default function TournamentPreview() {
     })
   }, [previewTeams])
 
-  const notFound = !isLoading && (!!error || !preview)
-  useNoIndex(notFound)
+  useNoIndex(!isLoading && !preview && (!error || isNotFoundError(error)))
 
   if (isLoading) {
     return <div className={styles.page}><EnigmaLoader text="Loading tournament preview..." /></div>

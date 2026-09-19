@@ -12,6 +12,13 @@ export class ApiError extends Error {
   }
 }
 
+/** True only for a definitive "does not exist" response (404/410). Transient
+ * failures — network errors, 5xx, 429, Cloudflare challenges — return false, so
+ * callers never treat a blocked/failed fetch as a missing entity. */
+export function isNotFoundError(err: unknown): boolean {
+  return err instanceof ApiError && (err.status === 404 || err.status === 410)
+}
+
 export async function apiFetch<T>(
   path: string,
   params?: Record<string, string | string[] | number | undefined>,

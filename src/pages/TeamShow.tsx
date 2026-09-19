@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import * as d3 from 'd3'
 import { useApiQuery } from '../api/queries'
+import { isNotFoundError } from '../api/client'
 import { useNoIndex } from '../hooks/useNoIndex'
 import { teamLogoUrl, leagueLogoUrl } from '../config'
 import DataTable, { NumericCell, PlayerCell, TeamCell } from '../components/DataTable'
@@ -425,8 +426,7 @@ export default function TeamShow() {
 
   const matchRows = useMemo(() => team?.matches ?? [], [team?.matches])
 
-  const notFound = !isLoading && (!!error || !team)
-  useNoIndex(notFound)
+  useNoIndex(!isLoading && !team && (!error || isNotFoundError(error)))
 
   if (isLoading) return <div className={styles.page}><EnigmaLoader text="Loading team..." /></div>
 

@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Temp files
+tmp/
+
 # Generated search index (rebuilt by scripts/build-sitemap.cjs)
 public/search-index.json
 

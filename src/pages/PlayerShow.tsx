@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import * as d3 from 'd3'
 import { useApiQuery } from '../api/queries'
+import { isNotFoundError } from '../api/client'
 import { useNoIndex } from '../hooks/useNoIndex'
 import { heroImageUrl, teamLogoUrl } from '../config'
 import { heroesById } from '../data/heroes'
@@ -677,8 +678,7 @@ export default function PlayerShow() {
 
   // The API returns an empty object for unknown players with no tracked games.
   const hasData = !!player && player.totalGames != null
-  const notFound = !isLoading && (!!error || !hasData)
-  useNoIndex(notFound)
+  useNoIndex(!isLoading && !hasData && (!error || isNotFoundError(error)))
 
   if (isLoading) return <div className={styles.page}><EnigmaLoader text="Loading player..." /></div>
 
