@@ -555,6 +555,11 @@ export interface FilterValues {
   building_lane?: string
   building_type?: string
   building_tier?: string
+  'stage-type'?: string
+  'stage-format'?: string
+  'event-phase'?: string
+  'match-format'?: string
+  'series-flag'?: string
   winner?: string
   'first-pick'?: string
   picked?: string

@@ -10,9 +10,14 @@ export interface PatchData {
 /** All patches, newest first */
 export const patches: PatchData[] = [
   {
+    "name": "7.42",
+    "lowerBound": 9095871384,
+    "upperBound": 9999999999
+  },
+  {
     "name": "7.41",
     "lowerBound": 8742591748,
-    "upperBound": 9999999999
+    "upperBound": 9095871383
   },
   {
     "name": "7.40",

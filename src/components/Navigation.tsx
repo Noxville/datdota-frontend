@@ -221,6 +221,7 @@ const NAV_ITEMS: NavItem[] = [
       {
         heading: 'Team Records',
         items: [
+          { label: 'Lineal Aegis Titles', to: '/trivia/lineal-titles' },
           { label: 'Best Runs', to: '/trivia/best-runs' },
           { label: 'Best Streaks', to: '/trivia/team-streaks/best' },
           { label: 'Worst Streaks', to: '/trivia/team-streaks/worst' },

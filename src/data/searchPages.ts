@@ -107,6 +107,7 @@ export const SEARCH_PAGES: SearchPage[] = [
   { label: 'Contested Heroes by Event', path: '/leagues/contested-heroes', keywords: ['league', 'contested', 'hero', 'pick', 'ban', 'meta'] },
 
   // Trivia
+  { label: 'Lineal Aegis Titles', path: '/trivia/lineal-titles', keywords: ['trivia', 'lineal', 'aegis', 'title', 'champion', 'belt', 'ti', 'holder'] },
   { label: 'Best Runs', path: '/trivia/best-runs', keywords: ['trivia', 'run', 'best'] },
   { label: 'Caps', path: '/trivia/caps', keywords: ['trivia', 'caps', 'experience', 'games', 'veteran'] },
   { label: 'Caps — Biggest Experience Gaps', path: '/trivia/caps#count-gap', keywords: ['trivia', 'caps', 'gap', 'mismatch', 'experience'] },

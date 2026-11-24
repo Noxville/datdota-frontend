@@ -145,6 +145,7 @@ const router = createBrowserRouter([
       { path: '/trivia/best-runs', element: lz(() => import('./pages/BestRuns')) },
       { path: '/trivia/player-hero-runs', element: lz(() => import('./pages/PlayerHeroRuns')) },
       { path: '/trivia/caps', element: lz(() => import('./pages/TriviaCaps')) },
+      { path: '/trivia/lineal-titles', element: lz(() => import('./pages/LinealTitles')) },
       { path: '/trivia/akke', element: lz(() => import('./pages/TriviaAward')) },
       { path: '/trivia/maelk', element: lz(() => import('./pages/TriviaAward')) },
       { path: '/trivia/cty', element: lz(() => import('./pages/TriviaAward')) },

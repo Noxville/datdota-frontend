@@ -117,7 +117,11 @@ export function buildSportsEvent({
     name,
     url: `${SITE_URL}/leagues/${leagueId}`,
     sport: 'Dota 2',
-    eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
+    eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
+    location: {
+      '@type': 'VirtualLocation',
+      url: `${SITE_URL}/leagues/${leagueId}`,
+    },
   }
   if (description) obj.description = description
   if (startDate) obj.startDate = startDate.slice(0, 10)

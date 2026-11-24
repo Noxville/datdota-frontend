@@ -182,14 +182,17 @@ export default function Home() {
     refetchInterval: POLL_INTERVAL,
   })
 
-  const { data: liveData } = useQuery<{ data: LiveGames }>({
+  const liveQuery = useQuery<{ data: LiveGames }>({
     queryKey: ['api', '/api/livegames'],
     queryFn: () => apiFetch<{ data: LiveGames }>('/api/livegames'),
     staleTime: 10_000,
     refetchInterval: LIVE_POLL_INTERVAL,
   })
+  const liveData = liveQuery.data
 
-  if (!data) return null
+  // Wait for the live query to settle (success or error) before first paint so
+  // the live banner doesn't pop in afterwards and shove the page down (CLS).
+  if (!data || liveQuery.status === 'pending') return null
 
   return (
     <div className={styles.page}>

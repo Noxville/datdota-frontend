@@ -243,6 +243,17 @@ interface TooltipState {
   headerOnly?: boolean
 }
 
+function rankOf(sorted: number[], value: number): number {
+  let lo = 0
+  let hi = sorted.length
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1
+    if (sorted[mid] > value) hi = mid
+    else lo = mid + 1
+  }
+  return sorted.length - lo + 1
+}
+
 function SparklineSorted({
   stats,
   value,
@@ -847,6 +858,13 @@ export default function DataTable<T>({
                 <span>
                   max <strong>{tooltipStats.max.toFixed(2)}</strong>
                 </span>
+              </div>
+              <div className={styles.tooltipRank}>
+                rank{' '}
+                <strong style={{ color: '#c48bc4' }}>
+                  #{rankOf(tooltipStats.sorted, tooltip.value)}
+                </strong>{' '}
+                of {tooltipStats.sorted.length}
               </div>
               {renderTooltipExtra && tooltipRow && (
                 renderTooltipExtra(tooltipRow, tooltip.colId, tooltip.value)

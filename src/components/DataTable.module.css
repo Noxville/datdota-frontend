@@ -363,6 +363,18 @@
   font-weight: 400;
 }
 
+.tooltipRank {
+  margin-top: 4px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
+.tooltipRank strong {
+  font-weight: 600;
+}
+
 /* --- Mobile ----------------------------------------------- */
 @media (max-width: 768px) {
   .toolbar {

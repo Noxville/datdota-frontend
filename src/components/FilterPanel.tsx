@@ -147,6 +147,7 @@ const FILTER_CONFIG = {
   'item-slots': true,
   'building-filters': true,
   'draft-filters': true,
+  'liquipedia-filters': true,
 } as const
 
 function AutocompleteInput({
@@ -526,6 +527,111 @@ const TIER_AND_TYPE_OPTIONS = [
   { id: 'post-event', label: 'Post-event', group: 'split-type' as const },
 ]
 
+type LiquipediaKey =
+  | 'stage-type'
+  | 'stage-format'
+  | 'event-phase'
+  | 'match-format'
+  | 'series-flag'
+
+/** Anchor on the FAQ page explaining each series-filter category. */
+const SERIES_FAQ = '/faq'
+
+type LiqOption = { v: string; label: string; short?: string }
+
+const LIQUIPEDIA_LINES: {
+  key: LiquipediaKey
+  label: string
+  chip: string
+  faq: string
+  row: 2 | 3
+  fmt?: boolean
+  hint?: string
+  options: LiqOption[]
+}[] = [
+  {
+    key: 'stage-type',
+    label: 'Stage type',
+    chip: 'Stage',
+    faq: 'stage-type',
+    row: 3,
+    options: [
+      { v: 'GROUP', label: 'Group' },
+      { v: 'LEAGUE', label: 'League' },
+      { v: 'PLAYOFF', label: 'Playoff' },
+    ],
+  },
+  {
+    key: 'stage-format',
+    label: 'Bracket',
+    chip: 'Bracket',
+    faq: 'bracket',
+    row: 3,
+    options: [
+      { v: 'ROUND_ROBIN', label: 'Round Robin' },
+      { v: 'SWISS', label: 'Swiss' },
+      { v: 'SINGLE_ELIM', label: 'Single Elim' },
+      { v: 'DOUBLE_ELIM', label: 'Double Elim' },
+    ],
+  },
+  {
+    key: 'match-format',
+    label: 'Match format',
+    chip: 'Format',
+    faq: 'match-format',
+    row: 3,
+    fmt: true,
+    options: [
+      { v: 'BO1', label: 'Bo1' },
+      { v: 'BO2', label: 'Bo2' },
+      { v: 'BO3', label: 'Bo3' },
+      { v: 'BO5', label: 'Bo5' },
+      { v: 'BO7', label: 'Bo7' },
+    ],
+  },
+  {
+    key: 'event-phase',
+    label: 'Event phase',
+    chip: 'Phase',
+    faq: 'event-phase',
+    row: 2,
+    options: [
+      { v: 'MAIN_EVENT', label: 'Main Event' },
+      { v: 'OPEN_QUALIFIER', label: 'Open Qualifier', short: 'Open Qual' },
+      { v: 'CLOSED_QUALIFIER', label: 'Closed Qualifier', short: 'Closed Qual' },
+      { v: 'QUALIFIER', label: 'Qualifier', short: 'Qual' },
+      { v: 'PLAY_IN', label: 'Play-In' },
+    ],
+  },
+  {
+    key: 'series-flag',
+    label: 'Series flags',
+    chip: 'Series',
+    faq: 'series-flags',
+    row: 2,
+    hint: '· all must match',
+    options: [
+      { v: 'ELIMINATION', label: 'Elimination' },
+      { v: 'DECIDER', label: 'Decider' },
+      { v: 'TIEBREAKER', label: 'Tiebreaker' },
+      { v: 'THIRD_PLACE', label: 'Third Place', short: '3rd Place' },
+      { v: 'QUALIFYING', label: 'Qualifying' },
+      { v: 'WINNERS_MATCH', label: "Winners' Match", short: "Winners'" },
+      { v: 'LOSERS_MATCH', label: "Losers' Match", short: "Losers'" },
+    ],
+  },
+]
+
+function liquipediaChipValue(key: LiquipediaKey, csv: string): string {
+  const line = LIQUIPEDIA_LINES.find((l) => l.key === key)
+  const map = Object.fromEntries((line?.options ?? []).map((o) => [o.v, o.label]))
+  return csv
+    .split(',')
+    .filter(Boolean)
+    .map((v) => map[v] ?? v)
+    .join('/')
+}
+
 /**
  * Compress a list of patch names into ranges where consecutive.
  * Uses the canonical patch order list so that cross-major boundaries
@@ -671,6 +777,11 @@ function buildSummaryChips(
   if (filters.building_lane) chips.push({ label: 'Lane', value: filters.building_lane.split(',').join('/') })
   if (filters.building_tier) chips.push({ label: 'Bldg Tier', value: filters.building_tier.split(',').join('/') })
 
+  for (const line of LIQUIPEDIA_LINES) {
+    const val = filters[line.key]
+    if (val) chips.push({ label: line.chip, value: liquipediaChipValue(line.key, val) })
+  }
+
   if (filters.winner) chips.push({ label: 'Winner', value: filters.winner })
   if (filters['first-pick']) chips.push({ label: '1st Pick', value: filters['first-pick'] })
   if (filters.picked) chips.push({ label: 'Picked', value: `${filters.picked.split(',').length} heroes` })
@@ -798,9 +909,17 @@ export default function FilterPanel({
   }
 
   // Items/item-slots are opt-in only (never shown by default)
-  const OPT_IN_ONLY: (keyof typeof FILTER_CONFIG)[] = ['items', 'item-slots', 'building-filters', 'draft-filters']
+  const OPT_IN_ONLY: (keyof typeof FILTER_CONFIG)[] = ['items', 'item-slots', 'building-filters', 'draft-filters', 'liquipedia-filters']
   const show = (key: keyof typeof FILTER_CONFIG) =>
     showFilters ? showFilters.includes(key) : !OPT_IN_ONLY.includes(key)
+
+  // Liquipedia event-structure filters apply to any match-based query, so they
+  // ride along on every page that already exposes tier/leagues.
+  const showLiquipedia = showFilters
+    ? showFilters.includes('liquipedia-filters') ||
+      showFilters.includes('tier') ||
+      showFilters.includes('leagues')
+    : true
 
   const hasRow1 =
     show('players') || show('teams') || show('heroes') || show('leagues') || show('splits') || show('patch') || show('items') || show('item-slots')
@@ -838,6 +957,45 @@ export default function FilterPanel({
 
   // Threshold helpers
   const thresholdValue = draft.threshold ?? '1'
+
+  const renderLiqGroup = (line: (typeof LIQUIPEDIA_LINES)[number]) => {
+    const sel = draft[line.key] ? draft[line.key]!.split(',').filter(Boolean) : []
+    const toggle = (v: string) => {
+      const next = sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v]
+      update(line.key, next.join(','))
+    }
+    return (
+      <div key={line.key} className={styles.capGroup}>
+        <div className={styles.grpCap}>
+          <span>{line.label}</span>
+          {line.hint && <span className={styles.andHint}>{line.hint}</span>}
+          <a
+            className={styles.help}
+            href={`${SERIES_FAQ}#${line.faq}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`What ${line.label.toLowerCase()} means`}
+          >
+            ?
+          </a>
+        </div>
+        <div className={styles.segSet}>
+          {line.options.map((o) => (
+            <button
+              key={o.v}
+              type="button"
+              className={`${styles.segBtn}${line.fmt ? ` ${styles.segBtnFmt}` : ''}`}
+              aria-pressed={sel.includes(o.v)}
+              title={o.short ? o.label : undefined}
+              onClick={() => toggle(o.v)}
+            >
+              {o.short ?? o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.outer}>
@@ -1017,31 +1175,37 @@ export default function FilterPanel({
                         {show('tier') && (
                           <div className={styles.checkboxLine}>
                             <span className={styles.checkboxLineLabel}>Tier</span>
-                            {TIER_AND_TYPE_OPTIONS.filter((o) => o.group === 'tier').map((opt) => (
-                              <label key={opt.id} className={styles.checkbox}>
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked(opt)}
-                                  onChange={() => toggleTierOrType(opt)}
-                                />
-                                <span>{opt.label}</span>
-                              </label>
-                            ))}
+                            <div className={styles.segSet}>
+                              {TIER_AND_TYPE_OPTIONS.filter((o) => o.group === 'tier').map((opt) => (
+                                <button
+                                  key={opt.id}
+                                  type="button"
+                                  className={styles.segBtn}
+                                  aria-pressed={isChecked(opt)}
+                                  onClick={() => toggleTierOrType(opt)}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         )}
                         {show('split-type') && (
                           <div className={styles.checkboxLine}>
                             <span className={styles.checkboxLineLabel}>Type</span>
-                            {TIER_AND_TYPE_OPTIONS.filter((o) => o.group === 'split-type').map((opt) => (
-                              <label key={opt.id} className={styles.checkbox}>
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked(opt)}
-                                  onChange={() => toggleTierOrType(opt)}
-                                />
-                                <span>{opt.label}</span>
-                              </label>
-                            ))}
+                            <div className={styles.segSet}>
+                              {TIER_AND_TYPE_OPTIONS.filter((o) => o.group === 'split-type').map((opt) => (
+                                <button
+                                  key={opt.id}
+                                  type="button"
+                                  className={styles.segBtn}
+                                  aria-pressed={isChecked(opt)}
+                                  onClick={() => toggleTierOrType(opt)}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1054,49 +1218,53 @@ export default function FilterPanel({
                       <div className={styles.checkboxStack}>
                         <div className={styles.checkboxLine}>
                           <span className={styles.checkboxLineLabel}>Result</span>
-                          <label className={styles.checkbox}>
-                            <input
-                              type="checkbox"
-                              checked={draft['in-wins'] === 'true'}
-                              onChange={() =>
+                          <div className={styles.segSet}>
+                            <button
+                              type="button"
+                              className={styles.segBtn}
+                              aria-pressed={draft['in-wins'] === 'true'}
+                              onClick={() =>
                                 update('in-wins', draft['in-wins'] === 'true' ? '' : 'true')
                               }
-                            />
-                            <span>Wins</span>
-                          </label>
-                          <label className={styles.checkbox}>
-                            <input
-                              type="checkbox"
-                              checked={draft['in-losses'] === 'true'}
-                              onChange={() =>
+                            >
+                              Wins
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.segBtn}
+                              aria-pressed={draft['in-losses'] === 'true'}
+                              onClick={() =>
                                 update('in-losses', draft['in-losses'] === 'true' ? '' : 'true')
                               }
-                            />
-                            <span>Losses</span>
-                          </label>
+                            >
+                              Losses
+                            </button>
+                          </div>
                         </div>
                         <div className={styles.checkboxLine}>
                           <span className={styles.checkboxLineLabel}>Faction</span>
-                          <label className={styles.checkbox}>
-                            <input
-                              type="checkbox"
-                              checked={draft['on-radiant'] === 'true'}
-                              onChange={() =>
+                          <div className={styles.segSet}>
+                            <button
+                              type="button"
+                              className={styles.segBtn}
+                              aria-pressed={draft['on-radiant'] === 'true'}
+                              onClick={() =>
                                 update('on-radiant', draft['on-radiant'] === 'true' ? '' : 'true')
                               }
-                            />
-                            <span>Radiant</span>
-                          </label>
-                          <label className={styles.checkbox}>
-                            <input
-                              type="checkbox"
-                              checked={draft['on-dire'] === 'true'}
-                              onChange={() =>
+                            >
+                              Radiant
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.segBtn}
+                              aria-pressed={draft['on-dire'] === 'true'}
+                              onClick={() =>
                                 update('on-dire', draft['on-dire'] === 'true' ? '' : 'true')
                               }
-                            />
-                            <span>Dire</span>
-                          </label>
+                            >
+                              Dire
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1303,6 +1471,18 @@ export default function FilterPanel({
                 </div>
               )
             })()}
+
+            {showLiquipedia && (
+              <div className={styles.section}>
+                <div className={styles.sectionLabel}>Series Filters</div>
+                <div className={styles.liqRow3}>
+                  {LIQUIPEDIA_LINES.filter((l) => l.row === 3).map(renderLiqGroup)}
+                </div>
+                <div className={styles.liqRow2}>
+                  {LIQUIPEDIA_LINES.filter((l) => l.row === 2).map(renderLiqGroup)}
+                </div>
+              </div>
+            )}
 
             {renderExtra?.()}
 

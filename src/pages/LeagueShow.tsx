@@ -335,14 +335,16 @@ export default function LeagueShow() {
         title={`${displayName} — Pro Dota 2 Tournament Stats`}
         description={`Match results, hero pick & ban data, and team performance for the ${displayName} Dota 2 tournament. ${m.total} matches.`}
         jsonLd={[
-          buildSportsEvent({
-            leagueId: info.leagueId,
-            name: displayName,
-            description: info.description,
-            startDate: dateRange?.first ?? null,
-            endDate: dateRange?.last ?? null,
-            logo: leagueLogoUrl(info.leagueId),
-          }),
+          ...(dateRange?.first
+            ? [buildSportsEvent({
+                leagueId: info.leagueId,
+                name: displayName,
+                description: info.description,
+                startDate: dateRange.first,
+                endDate: dateRange.last ?? null,
+                logo: leagueLogoUrl(info.leagueId),
+              })]
+            : []),
           buildBreadcrumbs([
             { name: 'Home', path: '/' },
             { name: 'Leagues', path: '/leagues' },
