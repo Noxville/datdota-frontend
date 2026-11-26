@@ -22,8 +22,16 @@
 const fs = require('fs')
 const path = require('path')
 
+const envPath = path.join(__dirname, '../.env')
+if (fs.existsSync(envPath)) {
+  process.loadEnvFile(envPath)
+}
+
 const SITE_URL = 'https://datdota.com'
 const API_BASE = 'https://api.datdota.com'
+const USER_AGENT = process.env.DATDOTA_USER_AGENT || 'datdota-sitemap-builder/1.0'
+const CDN_BASE = 'https://cdn.datdota.com'
+const OG_IMAGE = `${SITE_URL}/og-default.png`
 const SITEMAP_PATH = path.join(__dirname, '../dist/sitemap.xml')
 const SEARCH_INDEX_PATH = path.join(__dirname, '../dist/search-index.json')
 // Also written to public/ so the vite dev server serves it at /search-index.json
@@ -118,6 +126,7 @@ const STATIC_ROUTES = [
   '/trivia/best-runs',
   '/trivia/player-hero-runs',
   '/trivia/caps',
+  '/trivia/lineal-titles',
   '/trivia/akke',
   '/trivia/maelk',
   '/trivia/cty',
@@ -137,7 +146,7 @@ async function fetchJson(url) {
   const res = await fetch(url, {
     headers: {
       'Accept': 'application/json',
-      'User-Agent': 'datdota-sitemap-builder/1.0',
+      'User-Agent': USER_AGENT,
     },
   })
   if (!res.ok) throw new Error(`${url} → ${res.status}`)
@@ -259,10 +268,187 @@ function buildSearchIndex({ players, teams, leagues }) {
   console.log(`Wrote ${index.entities.length} entities (${sizeKb} KB) to public/ and dist/`)
 }
 
+/* ── Prerender (bake per-entity head tags into static HTML) ──────────────
+ * These builders mirror src/lib/seo.ts and the entity <PageMeta> usage in
+ * PlayerShow / TeamShow / LeagueShow. Keep them in sync until a shared module
+ * is extracted (SEO phase 3). */
+
+function escAttr(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function personLd(id, name) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${SITE_URL}/players/${id}#person`,
+    name,
+    alternateName: name,
+    url: `${SITE_URL}/players/${id}`,
+    jobTitle: 'Professional Dota 2 Player',
+  }
+}
+
+function teamLd(id, name, logo) {
+  const o = {
+    '@context': 'https://schema.org',
+    '@type': 'SportsTeam',
+    '@id': `${SITE_URL}/teams/${id}#team`,
+    name,
+    url: `${SITE_URL}/teams/${id}`,
+    sport: 'Dota 2',
+  }
+  if (logo) o.logo = logo
+  return o
+}
+
+// NOTE: we intentionally do NOT emit SportsEvent in the prerender. A valid
+// Event needs a startDate, which the sitemap entity feed doesn't include, so a
+// prerendered Event would always be invalid. LeagueShow (React) emits the valid
+// Event with dates + VirtualLocation at render time; prerender ships breadcrumbs.
+
+function breadcrumbsLd(items) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((it, i) => {
+      const el = { '@type': 'ListItem', position: i + 1, name: it.name }
+      if (it.path) el.item = `${SITE_URL}${it.path}`
+      return el
+    }),
+  }
+}
+
+// Minimal unique content baked into the prerendered <body> so crawlers see a
+// real page (name + summary + internal links) without executing JS — this is
+// what prevents the SPA "empty body → Soft 404". React (createRoot) replaces
+// it on mount.
+function bodyShell(name, lead, crumbHtml) {
+  return (
+    '<div style="max-width:900px;margin:0 auto;padding:40px 20px;font-family:system-ui,-apple-system,sans-serif;color:#e8e6f0">' +
+    `<nav style="font-size:0.85rem;color:#8e8c9c;margin-bottom:16px">${crumbHtml}</nav>` +
+    `<h1 style="font-size:2rem;font-weight:800;margin:0 0 12px">${escAttr(name)}</h1>` +
+    `<p style="line-height:1.6;color:#c9c6d8;max-width:65ch">${escAttr(lead)}</p>` +
+    '</div>'
+  )
+}
+
+function headBlock({ title, description, canonical, ogType, jsonLd }) {
+  const full = title.includes('datdota') ? title : `${title} | datdota`
+  const lines = [
+    `<title>${escAttr(full)}</title>`,
+    `<meta name="description" content="${escAttr(description)}" />`,
+    `<link rel="canonical" href="${canonical}" />`,
+    `<meta property="og:site_name" content="datdota" />`,
+    `<meta property="og:type" content="${ogType}" />`,
+    `<meta property="og:title" content="${escAttr(full)}" />`,
+    `<meta property="og:description" content="${escAttr(description)}" />`,
+    `<meta property="og:url" content="${canonical}" />`,
+    `<meta property="og:image" content="${OG_IMAGE}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${escAttr(full)}" />`,
+    `<meta name="twitter:description" content="${escAttr(description)}" />`,
+    `<meta name="twitter:image" content="${OG_IMAGE}" />`,
+  ]
+  for (const ld of jsonLd) {
+    lines.push(`<script type="application/ld+json">${JSON.stringify(ld)}</script>`)
+  }
+  return lines.join('\n    ')
+}
+
+function buildPrerender({ players, teams, leagues }) {
+  const tplPath = path.join(__dirname, '../dist/index.html')
+  if (!fs.existsSync(tplPath)) {
+    console.warn('dist/index.html not found — skipping prerender (run `vite build` first).')
+    return
+  }
+  const tpl = fs.readFileSync(tplPath, 'utf8')
+  const START = '<!-- SEO:START -->'
+  const END = '<!-- SEO:END -->'
+  const i = tpl.indexOf(START)
+  const j = tpl.indexOf(END)
+  if (i < 0 || j < 0) {
+    console.warn('SEO markers not found in dist/index.html — skipping prerender.')
+    return
+  }
+  const pre = tpl.slice(0, i + START.length)
+  const post = tpl.slice(j)
+  const ROOT = '<div id="root"></div>'
+
+  let count = 0
+  const write = (routePath, block, body) => {
+    let html = `${pre}\n    ${block}\n    ${post}`
+    if (body) html = html.replace(ROOT, `<div id="root">${body}</div>`)
+    const file = path.join(__dirname, '../dist', `${routePath}.html`)
+    fs.mkdirSync(path.dirname(file), { recursive: true })
+    fs.writeFileSync(file, html, 'utf8')
+    count++
+  }
+
+  const crumb = (label, path) =>
+    `<a href="/" style="color:#8e8c9c">datdota</a> › <a href="${path}" style="color:#8e8c9c">${label}</a>`
+
+  for (const p of players) {
+    const games = p.w ? p.w.toLocaleString() : ''
+    write(`players/${p.id}`, headBlock({
+      title: `${p.n} — Pro Dota 2 Player Stats`,
+      description: `Match history, hero pool, signature heroes and team stints for pro Dota 2 player ${p.n}.${p.w ? ` ${p.w.toLocaleString()} tracked games.` : ''}`,
+      canonical: `${SITE_URL}/players/${p.id}`,
+      ogType: 'profile',
+      jsonLd: [
+        personLd(p.id, p.n),
+        breadcrumbsLd([{ name: 'Home', path: '/' }, { name: 'Players', path: '/players/performances' }, { name: p.n }]),
+      ],
+    }), bodyShell(
+      p.n,
+      `${p.n} is a professional Dota 2 player tracked on datdota${games ? `, with ${games} recorded competitive games` : ''}. Explore their match history, hero pool, signature heroes, ratings and the teams they have played for.`,
+      crumb('Players', '/players/performances'),
+    ))
+  }
+  for (const t of teams) {
+    write(`teams/${t.id}`, headBlock({
+      title: `${t.n} — Pro Dota 2 Team Stats`,
+      description: `Match history, roster, ratings and tournament results for pro Dota 2 team ${t.n}.`,
+      canonical: `${SITE_URL}/teams/${t.id}`,
+      ogType: 'website',
+      jsonLd: [
+        teamLd(t.id, t.n, t.logo ? `${CDN_BASE}/images/${t.logo}.png` : undefined),
+        breadcrumbsLd([{ name: 'Home', path: '/' }, { name: 'Teams', path: '/teams/performances' }, { name: t.n }]),
+      ],
+    }), bodyShell(
+      t.n,
+      `${t.n} is a professional Dota 2 team tracked on datdota. See their current roster, match history, head-to-head records, tournament results and Elo/Glicko ratings.`,
+      crumb('Teams', '/teams/performances'),
+    ))
+  }
+  for (const l of leagues) {
+    const matches = l.w ? l.w.toLocaleString() : ''
+    write(`leagues/${l.id}`, headBlock({
+      title: `${l.n} — Pro Dota 2 Tournament Stats`,
+      description: `Match results, hero pick & ban data, and team performance for the ${l.n} Dota 2 tournament.${l.w ? ` ${l.w.toLocaleString()} matches.` : ''}`,
+      canonical: `${SITE_URL}/leagues/${l.id}`,
+      ogType: 'website',
+      jsonLd: [
+        breadcrumbsLd([{ name: 'Home', path: '/' }, { name: 'Leagues', path: '/leagues' }, { name: l.n }]),
+      ],
+    }), bodyShell(
+      l.n,
+      `${l.n} is a professional Dota 2 tournament tracked on datdota. Browse full match results, hero pick and ban statistics, and team performance${matches ? ` across ${matches} matches` : ''}.`,
+      crumb('Tournaments', '/leagues'),
+    ))
+  }
+  console.log(`Prerendered ${count} entity pages into dist/ (with body content)`)
+}
+
 async function main() {
   const entities = await fetchEntities()
   buildSitemap(entities)
   buildSearchIndex(entities)
+  buildPrerender(entities)
 }
 
 main().catch((err) => {
