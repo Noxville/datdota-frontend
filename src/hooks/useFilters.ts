@@ -60,6 +60,10 @@ const FILTER_KEYS: (keyof FilterValues)[] = [
   'default',
 ]
 
+// Params not in FILTER_KEYS (e.g. `fc`, page-specific client params like
+// `spell-*`) are never sent to the API and must survive filter rewrites.
+const FILTER_KEY_SET = new Set<string>(FILTER_KEYS)
+
 /**
  * Build default filters client-side, matching FilterService.groovy.
  * `exclude` lets pages skip irrelevant defaults (e.g. frames-only fields).
@@ -134,9 +138,9 @@ export function useFilters(excludeDefaults?: (keyof FilterValues)[]) {
           params.set(key, value)
         }
       }
-      // Preserve fc (filter-collapsed) state across filter changes
-      if (searchParams.get('fc')) {
-        params.set('fc', searchParams.get('fc')!)
+      // Preserve non-API params (fc, spell-*, …) across filter changes
+      for (const [key, value] of searchParams.entries()) {
+        if (!FILTER_KEY_SET.has(key)) params.set(key, value)
       }
       setSearchParams(params)
     },
@@ -167,17 +171,17 @@ export function useFilters(excludeDefaults?: (keyof FilterValues)[]) {
     for (const [key, value] of Object.entries(defaults)) {
       if (value) params.set(key, value)
     }
-    if (searchParams.get('fc')) {
-      params.set('fc', searchParams.get('fc')!)
+    for (const [key, value] of searchParams.entries()) {
+      if (!FILTER_KEY_SET.has(key)) params.set(key, value)
     }
     setSearchParams(params)
   }, [latestPatch, excludeDefaults, setSearchParams, searchParams])
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams()
-    // Preserve fc state when clearing filters
-    if (searchParams.get('fc')) {
-      params.set('fc', searchParams.get('fc')!)
+    // Preserve non-API params (fc, spell-*, …) when clearing filters
+    for (const [key, value] of searchParams.entries()) {
+      if (!FILTER_KEY_SET.has(key)) params.set(key, value)
     }
     setSearchParams(params)
   }, [setSearchParams, searchParams])

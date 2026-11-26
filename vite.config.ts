@@ -1,5 +1,12 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+
+// Named User-Agent lets dev API requests clear the Cloudflare challenge.
+const envPath = path.resolve(__dirname, '.env')
+if (fs.existsSync(envPath)) process.loadEnvFile(envPath)
+const DATDOTA_USER_AGENT = process.env.DATDOTA_USER_AGENT || 'datdota-dev-proxy/1.0'
 
 export default defineConfig({
   plugins: [react()],
@@ -10,6 +17,7 @@ export default defineConfig({
         target: 'https://api.datdota.com',
         changeOrigin: true,
         secure: true,
+        headers: { 'User-Agent': DATDOTA_USER_AGENT },
       },
     },
   },
